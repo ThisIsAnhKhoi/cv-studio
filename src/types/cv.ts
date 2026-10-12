@@ -71,14 +71,15 @@ export interface CertificateItem {
 }
 
 export type ColorPreset = 'teal' | 'orange' | 'red' | 'blue' | 'purple' | 'emerald';
+export type HeadingFontOption = 'Gilroy' | 'iCiel Cubano' | 'SVN-Optima' | 'Be Vietnam Pro' | 'Montserrat';
 
 export interface ThemeConfig {
   templateId: string;
   primaryColor: string;
   primaryColorPreset: ColorPreset;
   accentColor: string;
-  fontHeading: 'Outfit' | 'Be Vietnam Pro' | 'Playfair Display' | 'Montserrat';
-  fontBody: 'Be Vietnam Pro' | 'Outfit' | 'Inter';
+  fontHeading: HeadingFontOption;
+  fontBody: 'Be Vietnam Pro' | 'Gilroy' | 'Montserrat';
   darkMode: boolean;
 }
 

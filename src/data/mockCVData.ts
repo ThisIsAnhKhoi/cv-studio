@@ -9,7 +9,7 @@ export const mockCVData: CVData = {
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
     fullName: 'Nguyễn Lê Thanh Trúc',
     title: 'Giảng Viên Lập Trình & Full-stack Developer',
-    email: 'thanhtruc.nguyen@example.com',
+    email: 'thanhtruc.dev@gmail.com',
     phone: '0912 345 678',
     location: 'Quận 1, TP. Hồ Chí Minh',
     birthday: '15/08/2002',
@@ -18,7 +18,7 @@ export const mockCVData: CVData = {
     linkedin: 'linkedin.com/in/thanhtruc',
   },
   summary:
-    'Cử nhân Công nghệ Thông tin đam mê sâu sắc với sư phạm công nghệ và phát triển web hiện đại. Hơn 3 năm kinh nghiệm trực tiếp giảng dạy lập trình (React, Python, Web Full-stack) cho 300+ học viên trẻ, đồng thời tham gia xây dựng các sản phẩm thực tế. Thế mạnh nổi bật về tư duy giải thuật, truyền cảm hứng học tập, kiên nhẫn và luôn cập nhật các tiêu chuẩn UI/UX mới nhất.',
+    'Cử nhân Công nghệ Thông tin đam mê sâu sắc với sư phạm công nghệ và phát triển web hiện đại. Hơn 3 năm kinh nghiệm đào tạo 300+ học viên về lập trình web full-stack, kết hợp xây dựng các sản phẩm thực tế với tư duy giải thuật vững chắc và trải nghiệm người dùng tối ưu.',
   experiences: [
     {
       id: 'exp-1',
@@ -29,8 +29,7 @@ export const mockCVData: CVData = {
       isCurrent: true,
       location: 'TP. Hồ Chí Minh',
       descriptions: [
-        'Trực tiếp đứng lớp giảng dạy các khóa học Lập trình Web Frontend (React, TypeScript, Tailwind) và Python từ cơ bản đến nâng cao cho hơn 150+ học viên.',
-        'Tỉ lệ học viên hoàn thành đồ án tốt nghiệp xuất sắc đạt 96%, nhận điểm hài lòng phụ huynh trung bình 4.9/5.0 qua các kỳ đánh giá.',
+        'Trực tiếp đào tạo các khóa học Web Frontend (React, TypeScript, Tailwind) và Python nâng cao cho hơn 150+ học viên, tỉ lệ hoàn thành đồ án đạt 96%.',
         'Cố vấn trực tiếp 2 nhóm học viên đạt Giải Nhì và Giải Khuyến khích tại Hội thi Sáng tạo Công nghệ Trẻ cấp thành phố.',
       ],
     },
@@ -43,9 +42,8 @@ export const mockCVData: CVData = {
       isCurrent: false,
       location: 'TP. Hồ Chí Minh',
       descriptions: [
-        'Hỗ trợ giải đáp bài tập, chấm điểm đồ án và tổ chức các buổi phụ đạo 1-1 cho các bạn học viên cần củng cố kiến thức giải thuật.',
-        'Đồng biên soạn bộ tài liệu thực hành Mini-Project React và ngân hàng bài kiểm tra đánh giá năng lực tư duy lập trình.',
-        'Tổ chức thành công 4 buổi Workshop chia sẻ định hướng nghề nghiệp công nghệ cho tân sinh viên.',
+        'Đồng biên soạn bộ giáo trình thực hành Mini-Project React và ngân hàng bài tập giải thuật tương tác cho 200+ học viên.',
+        'Kèm cặp 1-1 và giải đáp kỹ thuật, giúp 100% học viên lớp phụ trách vượt qua kỳ thi đánh giá năng lực cuối kỳ.',
       ],
     },
   ],
@@ -64,33 +62,23 @@ export const mockCVData: CVData = {
   skillCategories: [
     {
       id: 'skill-cat-1',
-      categoryName: 'Công Nghệ & Lập Trình',
+      categoryName: 'Kỹ Thuật Lập Trình',
       skills: [
-        { name: 'React.js / Next.js', level: 5 },
+        { name: 'React & Next.js', level: 5 },
         { name: 'TypeScript & JavaScript', level: 5 },
-        { name: 'Tailwind CSS / UI Styling', level: 5 },
-        { name: 'Python / Flask', level: 4 },
-        { name: 'Node.js / RESTful API', level: 4 },
+        { name: 'Tailwind CSS & UI Polish', level: 5 },
+        { name: 'Python & Node.js', level: 4 },
         { name: 'Git & GitHub Workflow', level: 5 },
       ],
     },
     {
       id: 'skill-cat-2',
-      categoryName: 'Kỹ Năng Sư Phạm',
+      categoryName: 'Kỹ Năng Giảng Dạy & Mềm',
       skills: [
-        { name: 'Thiết kế giáo án tương tác', level: 5 },
-        { name: 'Kèm cặp & Coaching 1-1', level: 5 },
-        { name: 'Truyền cảm hứng & Tạo động lực', level: 5 },
-        { name: 'Quản lý lớp học năng động', level: 4 },
-      ],
-    },
-    {
-      id: 'skill-cat-3',
-      categoryName: 'Ngôn Ngữ & Kỹ Năng Mềm',
-      skills: [
+        { name: 'Soạn giáo án tương tác', level: 5 },
+        { name: 'Truyền cảm hứng học tập', level: 5 },
         { name: 'Tiếng Anh (IELTS 7.0)', level: 4 },
         { name: 'Thuyết trình trước đám đông', level: 5 },
-        { name: 'Tư duy phản biện & Giải quyết vấn đề', level: 5 },
       ],
     },
   ],
@@ -98,10 +86,10 @@ export const mockCVData: CVData = {
     {
       id: 'proj-1',
       name: 'EduCode Live — Nền Tảng Học Code Trực Tuyến',
-      role: 'Lead Developer & Giáo Viên Soạn Đề',
+      role: 'Lead Developer & Soạn Giảng',
       description:
-        'Hệ thống web học lập trình tương tác cho phép học sinh chạy code trực tiếp trên trình duyệt, chấm bài trắc nghiệm tự động và nhận phản hồi trực tiếp từ giáo viên.',
-      techStack: ['React', 'TypeScript', 'Tailwind CSS', 'Monaco Editor', 'Firebase'],
+        'Hệ thống web học lập trình tương tác cho phép học sinh chạy code trực tiếp trên trình duyệt và nhận phản hồi trực tiếp từ giáo viên.',
+      techStack: ['React', 'TypeScript', 'Tailwind', 'Monaco Editor'],
       link: 'https://educode-demo.vercel.app',
     },
     {
@@ -109,8 +97,8 @@ export const mockCVData: CVData = {
       name: 'CV Studio — Nền Tảng Tạo CV & Hồ Sơ Cá Nhân',
       role: 'Full-stack Developer',
       description:
-        'Hệ thống tạo CV chuyên nghiệp với nhiều mẫu thiết kế hiện đại, tùy biến màu sắc, hỗ trợ Dark/Light mode và xuất bản in PDF chuẩn kích thước A4 quốc tế.',
-      techStack: ['React 18', 'Vite', 'TypeScript', 'Tailwind CSS', 'Lucide Icons'],
+        'Hệ thống tạo CV chuyên nghiệp với nhiều mẫu hiện đại, tùy biến màu sắc, hỗ trợ Dark/Light mode và xuất file in PDF chuẩn A4.',
+      techStack: ['React 18', 'Vite', 'TypeScript', 'Tailwind CSS'],
       link: 'https://github.com/thanhtruc/cv-studio',
     },
   ],
@@ -120,14 +108,13 @@ export const mockCVData: CVData = {
       title: 'Giảng Viên Xuất Sắc Của Quý (Top Instructor Q2/2024)',
       issuer: 'MindX Technology School',
       year: '2024',
-      description: 'Được bình chọn bởi 100% học viên và ban cố vấn chuyên môn với điểm đánh giá tuyệt đối.',
+      description: 'Được bình chọn bởi 100% học viên với điểm đánh giá hài lòng tuyệt đối 4.9/5.0.',
     },
     {
       id: 'ach-2',
       title: 'Giải Nhì Hội Thi Sáng Tạo Kỹ Thuật Sinh Viên',
       issuer: 'Thành Đoàn TP. Hồ Chí Minh',
       year: '2023',
-      description: 'Đề tài ứng dụng công nghệ giáo dục số cho học sinh phổ thông.',
     },
   ],
   certificates: [
@@ -136,19 +123,12 @@ export const mockCVData: CVData = {
       name: 'Meta Certified Front-End Developer',
       issuer: 'Meta & Coursera',
       issueDate: '2023',
-      credentialUrl: 'https://coursera.org/verify/meta-frontend',
     },
     {
       id: 'cert-2',
       name: 'Chứng Chỉ Bồi Dưỡng Nghiệp Vụ Sư Phạm',
-      issuer: 'Trường Đại học Sư phạm TP.HCM',
+      issuer: 'Đại học Sư phạm TP.HCM',
       issueDate: '2024',
-    },
-    {
-      id: 'cert-3',
-      name: 'IELTS Academic 7.0 Overall',
-      issuer: 'IDP Education',
-      issueDate: '2023',
     },
   ],
   themeConfig: {
@@ -156,7 +136,7 @@ export const mockCVData: CVData = {
     primaryColor: '#0E7C6B',
     primaryColorPreset: 'teal',
     accentColor: '#E86C50',
-    fontHeading: 'Outfit',
+    fontHeading: 'iCiel Cubano',
     fontBody: 'Be Vietnam Pro',
     darkMode: false,
   },

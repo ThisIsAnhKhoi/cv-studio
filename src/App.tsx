@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { mockCVData } from './data/mockCVData';
 import { getTemplateComponent } from './features/cv-templates/TemplateRegistry';
-import { ColorPreset, ThemeConfig } from './types/cv';
+import { ColorPreset, HeadingFontOption, ThemeConfig } from './types/cv';
 import {
   Moon,
   Sun,
@@ -12,7 +12,6 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCcw,
-  Download,
   Check,
 } from 'lucide-react';
 
@@ -20,7 +19,6 @@ export const App: React.FC = () => {
   const [cvData] = useState(mockCVData);
   const [theme, setTheme] = useState<ThemeConfig>(mockCVData.themeConfig);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
-  const [copiedLink, setCopiedLink] = useState(false);
 
   // Sync dark mode class on document element
   useEffect(() => {
@@ -42,7 +40,7 @@ export const App: React.FC = () => {
     }));
   };
 
-  const handleFontChange = (font: 'Outfit' | 'Be Vietnam Pro' | 'Playfair Display' | 'Montserrat') => {
+  const handleFontChange = (font: HeadingFontOption) => {
     setTheme((prev) => ({
       ...prev,
       fontHeading: font,
@@ -62,11 +60,13 @@ export const App: React.FC = () => {
     { id: 'emerald', label: 'Emerald Xanh Ngọc', bgClass: 'bg-emerald-700' },
   ];
 
-  const fonts: ('Outfit' | 'Be Vietnam Pro' | 'Playfair Display' | 'Montserrat')[] = [
-    'Outfit',
-    'Be Vietnam Pro',
-    'Playfair Display',
-    'Montserrat',
+  // Local fonts from user system
+  const localFonts: { id: HeadingFontOption; label: string }[] = [
+    { id: 'iCiel Cubano', label: 'iCiel Cubano (Font máy)' },
+    { id: 'SVN-Optima', label: 'SVN-Optima (Font máy)' },
+    { id: 'Gilroy', label: 'Gilroy (Font máy)' },
+    { id: 'Be Vietnam Pro', label: 'Be Vietnam Pro (Chuẩn)' },
+    { id: 'Montserrat', label: 'Montserrat (Font máy)' },
   ];
 
   const TemplateComponent = getTemplateComponent(theme.templateId);
@@ -87,11 +87,11 @@ export const App: React.FC = () => {
                   CV Studio
                 </span>
                 <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
-                  Mẫu số 1 (Default)
+                  Mẫu 1 (Classic Teal)
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
-                Xem trước giao diện chuẩn in A4 & Chế độ đổi màu / font chữ
+                Font từ máy tính • Hover tương tác • Căn lề chuẩn A4
               </p>
             </div>
           </div>
@@ -108,24 +108,24 @@ export const App: React.FC = () => {
                   title={c.label}
                   className={`w-5 h-5 rounded-full ${c.bgClass} transition-transform ${
                     theme.primaryColorPreset === c.id
-                      ? 'ring-2 ring-offset-2 ring-slate-800 dark:ring-white scale-110'
+                      ? 'ring-2 ring-offset-2 ring-slate-800 dark:ring-white scale-110 shadow-sm'
                       : 'hover:scale-105 opacity-80 hover:opacity-100'
                   }`}
                 />
               ))}
             </div>
 
-            {/* Font Picker */}
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
-              <Type className="w-3.5 h-3.5 text-slate-400" />
+            {/* Font Picker with Local Fonts */}
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
+              <Type className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <select
                 value={theme.fontHeading}
                 onChange={(e) => handleFontChange(e.target.value as any)}
-                className="bg-transparent font-medium focus:outline-none cursor-pointer text-slate-700 dark:text-slate-200 text-xs"
+                className="bg-transparent font-semibold focus:outline-none cursor-pointer text-slate-800 dark:text-slate-200 text-xs"
               >
-                {fonts.map((f) => (
-                  <option key={f} value={f} className="dark:bg-slate-900 text-slate-900 dark:text-white">
-                    {f}
+                {localFonts.map((f) => (
+                  <option key={f.id} value={f.id} className="dark:bg-slate-900 text-slate-900 dark:text-white">
+                    {f.label}
                   </option>
                 ))}
               </select>
@@ -192,14 +192,15 @@ export const App: React.FC = () => {
       <footer className="no-print bg-white/80 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-800 py-3 px-4 text-center text-xs text-slate-500 dark:text-slate-400">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>
-            Khổ giấy: <strong>210mm × 297mm (Chuẩn A4)</strong> • Hỗ trợ Dark Mode & Đổi màu Accent thời gian thực
+            Khổ giấy: <strong>210mm × 297mm (Chuẩn A4)</strong> • Tương tác: Nhấp vào Email để copy, rê chuột vào Thẻ dự án / Kỹ năng để xem hiệu ứng
           </span>
           <span className="text-[11px] text-teal-600 dark:text-teal-400 font-medium">
-            Giai đoạn 1: Duyệt Mẫu số 1 → Giai đoạn 2: Trình Editor động
+            Font tiêu đề đang dùng: <strong>{theme.fontHeading}</strong>
           </span>
         </div>
       </footer>
     </div>
   );
 };
+
 export default App;

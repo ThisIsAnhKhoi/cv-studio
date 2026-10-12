@@ -2,6 +2,88 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   LOCAL FONTS (Trích xuất trực tiếp từ máy tính của bạn)
+   ========================================================================== */
+
+/* 1. iCiel Cubano (Font Display việt hóa đầy đặn, phong cách ấn tượng) */
+@font-face {
+  font-family: 'iCiel Cubano';
+  src: url('/fonts/iCielBCCubano-Normal.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 2. SVN-Optima (Font serif việt hóa thanh lịch, chuẩn mực, sang trọng) */
+@font-face {
+  font-family: 'SVN-Optima';
+  src: url('/fonts/SVN-Optima Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SVN-Optima';
+  src: url('/fonts/SVN-Optima DemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SVN-Optima';
+  src: url('/fonts/SVN-Optima Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 3. Gilroy (Font Sans-serif hình khối hiện đại) */
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-Regular1.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-Medium1.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-Semibold1.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-Bold1.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-Black1.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   THEME VARIABLES & BASE STYLES
+   ========================================================================== */
 :root {
   --color-primary: #0E7C6B;
   --color-primary-light: #E6F5F1;
@@ -18,7 +100,7 @@
 }
 
 .dark {
-  --color-bg: #0F172A;
+  --color-bg: #0B0F19;
   --color-surface: #1E293B;
   --color-text: #F1F5F9;
   --color-text-secondary: #94A3B8;
@@ -44,7 +126,9 @@
   background: rgba(100, 116, 139, 0.6);
 }
 
-/* Print Rules - Standard A4 output */
+/* ==========================================================================
+   PRINT RULES (Xuất PDF chuẩn A4, loại bỏ hiệu ứng web khi in)
+   ========================================================================== */
 @media print {
   @page {
     size: A4 portrait;
@@ -72,5 +156,6 @@
     border-radius: 0 !important;
     page-break-inside: avoid;
     break-inside: avoid;
+    transform: none !important;
   }
 }

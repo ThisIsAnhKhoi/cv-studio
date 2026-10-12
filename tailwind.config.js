@@ -8,10 +8,13 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Outfit', 'system-ui', 'sans-serif'],
-        body: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
-        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-        script: ['Pacifico', 'cursive'],
+        cubano: ["'iCiel Cubano'", 'sans-serif'],
+        optima: ["'SVN-Optima'", 'serif'],
+        gilroy: ['Gilroy', 'sans-serif'],
+        vietnam: ['"Be Vietnam Pro"', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
+        display: ['Gilroy', '"Be Vietnam Pro"', 'sans-serif'],
+        body: ['"Be Vietnam Pro"', 'sans-serif'],
       },
       colors: {
         brand: {
@@ -32,8 +35,8 @@ export default {
         },
       },
       boxShadow: {
-        'paper': '0 4px 30px rgba(0, 0, 0, 0.10)',
-        'paper-dark': '0 4px 30px rgba(0, 0, 0, 0.40)',
+        'paper': '0 10px 40px -10px rgba(0, 0, 0, 0.12), 0 2px 10px -2px rgba(0, 0, 0, 0.05)',
+        'paper-dark': '0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 2px 10px -2px rgba(0, 0, 0, 0.3)',
       },
       screens: {
         'print': {'raw': 'print'},
