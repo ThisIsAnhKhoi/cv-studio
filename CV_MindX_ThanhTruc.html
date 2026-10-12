@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Nguyễn Lê Thanh Trúc — Ứng tuyển Giáo viên MindX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       DESIGN TOKENS
+       Palette: Education-forward, warm & trustworthy
+       Teal (#0E7C6B) = primary – signals growth, knowledge
+       Warm white (#FAFAF8) = background
+       Charcoal (#2D2D2D) = body text
+       Soft gray (#E8E8E4) = dividers & subtle bg
+       Coral (#E86C50) = accent highlight (sparingly)
+    ======================================== */
+
+    :root {
+      --color-primary: #0E7C6B;
+      --color-primary-light: #E6F5F1;
+      --color-primary-dark: #095C50;
+      --color-accent: #E86C50;
+      --color-bg: #FAFAF8;
+      --color-surface: #FFFFFF;
+      --color-text: #2D2D2D;
+      --color-text-secondary: #5A5A5A;
+      --color-divider: #E0E0DC;
+      --color-tag-bg: #EFF6F4;
+      --color-tag-text: #0E7C6B;
+
+      --font-main: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
+      --fs-name: 28px;
+      --fs-position: 15px;
+      --fs-section-title: 13px;
+      --fs-body: 13px;
+      --fs-small: 11.5px;
+      --fs-tiny: 10.5px;
+
+      --page-width: 210mm;
+      --page-min-height: 297mm;
+      --page-padding: 28mm 24mm 20mm 24mm;
+      --sidebar-width: 200px;
+    }
+
+    /* ========================================
+       RESET & BASE
+    ======================================== */
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-main);
+      font-size: var(--fs-body);
+      color: var(--color-text);
+      background: #E8E8E4;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========================================
+       PAGE CONTAINER (A4)
+    ======================================== */
+
+    .page {
+      width: var(--page-width);
+      min-height: var(--page-min-height);
+      margin: 20px auto;
+      background: var(--color-surface);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+
+    /* ========================================
+       HEADER — Spans full width
+    ======================================== */
+
+    .header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 28px 32px 24px;
+      background: var(--color-primary);
+      color: #FFFFFF;
+      position: relative;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--color-accent);
+    }
+
+    .avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      flex-shrink: 0;
+      letter-spacing: 1px;
+    }
+
+    .header-info {
+      flex: 1;
+    }
+
+    .header-name {
+      font-size: var(--fs-name);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+
+    .header-position {
+      font-size: var(--fs-position);
+      font-weight: 400;
+      opacity: 0.88;
+      letter-spacing: 0.3px;
+    }
+
+    .header-position em {
+      font-style: italic;
+      opacity: 0.75;
+      font-weight: 300;
+    }
+
+    /* ========================================
+       SIDEBAR
+    ======================================== */
+
+    .sidebar {
+      background: var(--color-primary-light);
+      padding: 24px 20px 28px;
+      border-right: 1px solid var(--color-divider);
+    }
+
+    .sidebar .section + .section {
+      margin-top: 20px;
+    }
+
+    .section-title {
+      font-size: var(--fs-section-title);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--color-primary-dark);
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid var(--color-primary);
+      display: inline-block;
+    }
+
+    .contact-list {
+      list-style: none;
+    }
+
+    .contact-list li {
+      font-size: var(--fs-small);
+      color: var(--color-text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.45;
+    }
+
+    .contact-icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      margin-top: 1px;
+    }
+
+    .contact-icon svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--color-primary);
+    }
+
+    .contact-label {
+      font-weight: 600;
+      color: var(--color-primary-dark);
+      font-size: var(--fs-tiny);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 1px;
+    }
+
+    /* Skill bars */
+    .skill-item {
+      margin-bottom: 10px;
+    }
+
+    .skill-name {
+      font-size: var(--fs-small);
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--color-text);
+    }
+
+    .skill-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(14,124,107,0.15);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .skill-fill {
+      height: 100%;
+      background: var(--color-primary);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    /* Tags for soft skills */
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .tag {
+      font-size: var(--fs-tiny);
+      padding: 3px 9px;
+      background: rgba(14,124,107,0.12);
+      color: var(--color-primary-dark);
+      border-radius: 12px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* Interests */
+    .interest-item {
+      font-size: var(--fs-small);
+      color: var(--color-text-secondary);
+      margin-bottom: 5px;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .interest-item::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--color-primary);
+      font-size: 11px;
+    }
+
+    /* ========================================
+       MAIN CONTENT
+    ======================================== */
+
+    .main {
+      padding: 24px 32px 28px 28px;
+    }
+
+    .main .section + .section {
+      margin-top: 18px;
+    }
+
+    .main .section-title {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+      margin-bottom: 10px;
+    }
+
+    /* Objective block */
+    .objective-text {
+      font-size: var(--fs-body);
+      color: var(--color-text);
+      line-height: 1.65;
+      padding: 12px 16px;
+      background: var(--color-primary-light);
+      border-left: 3px solid var(--color-primary);
+      border-radius: 0 6px 6px 0;
+    }
+
+    .objective-text strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* Timeline entries (experience, education) */
+    .timeline-entry {
+      position: relative;
+      padding-left: 16px;
+      margin-bottom: 14px;
+    }
+
+    .timeline-entry::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 7px;
+      height: 7px;
+      background: var(--color-primary);
+      border-radius: 50%;
+    }
+
+    .timeline-entry::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 16px;
+      bottom: -8px;
+      width: 1px;
+      background: var(--color-divider);
+    }
+
+    .timeline-entry:last-child::after {
+      display: none;
+    }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 3px;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .entry-title {
+      font-size: var(--fs-body);
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .entry-period {
+      font-size: var(--fs-tiny);
+      color: var(--color-text-secondary);
+      font-style: italic;
+      white-space: nowrap;
+    }
+
+    .entry-org {
+      font-size: var(--fs-small);
+      color: var(--color-primary);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .entry-details {
+      list-style: none;
+    }
+
+    .entry-details li {
+      font-size: var(--fs-small);
+      color: var(--color-text-secondary);
+      margin-bottom: 3px;
+      padding-left: 12px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .entry-details li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* Activity highlight */
+    .highlight-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #FFF8F6;
+      border: 1px solid #F5D5CC;
+      border-radius: 6px;
+      margin-top: 6px;
+    }
+
+    .highlight-icon {
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .highlight-content {
+      font-size: var(--fs-small);
+      color: var(--color-text);
+      line-height: 1.5;
+    }
+
+    .highlight-content strong {
+      color: var(--color-accent);
+    }
+
+    /* ========================================
+       PRINT STYLES
+    ======================================== */
+
+    @media print {
+      body {
+        background: #FFFFFF;
+      }
+
+      .page {
+        margin: 0;
+        box-shadow: none;
+        width: 100%;
+        min-height: 100vh;
+      }
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <div class="avatar">TT</div>
+      <div class="header-info">
+        <h1 class="header-name">NGUYỄN LÊ THANH TRÚC</h1>
+        <p class="header-position">Ứng tuyển: Giáo viên Coding &amp; Robotics — <em>MindX Technology School</em></p>
+      </div>
+    </header>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+
+      <!-- Contact -->
+      <div class="section">
+        <h2 class="section-title">Liên hệ</h2>
+        <ul class="contact-list">
+          <li>
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.49a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.2 2.2z"/></svg>
+            </span>
+            <div>
+              <span class="contact-label">Điện thoại</span>
+              0948 360 563
+            </div>
+          </li>
+          <li>
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </span>
+            <div>
+              <span class="contact-label">Email</span>
+              tnguyenle927@gmail.com
+            </div>
+          </li>
+          <li>
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></svg>
+            </span>
+            <div>
+              <span class="contact-label">Khu vực</span>
+              TP. Hồ Chí Minh
+            </div>
+          </li>
+          <li>
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 17.93A8 8 0 0113 4.07V5h-2v-.93A8 8 0 014.07 11H5v2h-.93A8 8 0 0111 19.93V19h2v.93A8 8 0 0019.93 13H19v-2h.93A8 8 0 0013 4.07z"/></svg>
+            </span>
+            <div>
+              <span class="contact-label">Năm sinh</span>
+              2008
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Technical Skills -->
+      <div class="section">
+        <h2 class="section-title">Chuyên môn</h2>
+
+        <div class="skill-item">
+          <div class="skill-name">Python</div>
+          <div class="skill-bar"><div class="skill-fill" style="width: 70%"></div></div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-name">Scratch</div>
+          <div class="skill-bar"><div class="skill-fill" style="width: 80%"></div></div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-name">Microsoft Excel</div>
+          <div class="skill-bar"><div class="skill-fill" style="width: 85%"></div></div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-name">PowerPoint &amp; Canva</div>
+          <div class="skill-bar"><div class="skill-fill" style="width: 90%"></div></div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-name">Microsoft Word</div>
+          <div class="skill-bar"><div class="skill-fill" style="width: 85%"></div></div>
+        </div>
+      </div>
+
+      <!-- Soft Skills -->
+      <div class="section">
+        <h2 class="section-title">Kỹ năng mềm</h2>
+        <div class="tag-list">
+          <span class="tag">Thuyết trình</span>
+          <span class="tag">Soạn bài giảng</span>
+          <span class="tag">Giao tiếp</span>
+          <span class="tag">Kiên nhẫn</span>
+          <span class="tag">Làm việc nhóm</span>
+          <span class="tag">Xử lý tình huống</span>
+          <span class="tag">Nắm bắt tâm lý học viên</span>
+          <span class="tag">Sáng tạo</span>
+        </div>
+      </div>
+
+      <!-- Interests -->
+      <div class="section">
+        <h2 class="section-title">Sở thích</h2>
+        <div class="interest-item">Giao lưu, tạo mối quan hệ mới</div>
+        <div class="interest-item">Tiếp xúc và chơi với các bạn nhỏ</div>
+        <div class="interest-item">Soạn bài và thử đứng giảng</div>
+        <div class="interest-item">Tự học lập trình mỗi ngày</div>
+      </div>
+
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main">
+
+      <!-- Objective -->
+      <div class="section">
+        <h2 class="section-title">Mục tiêu nghề nghiệp</h2>
+        <div class="objective-text">
+          Tìm kiếm một công việc <strong>part-time Giáo viên Coding &amp; Robotics</strong> tại MindX để có cơ hội trau dồi kỹ năng sư phạm, tích lũy kinh nghiệm thực tế và phát triển bản thân. Biết lập trình Python, Scratch và thích dạy học — muốn biến điều đó thành công việc nghiêm túc, <strong>cống hiến và gắn bó lâu dài</strong>.
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="section">
+        <h2 class="section-title">Học vấn</h2>
+        <div class="timeline-entry">
+          <div class="entry-header">
+            <span class="entry-title">Quản trị Kinh doanh</span>
+            <span class="entry-period">2026</span>
+          </div>
+          <div class="entry-org">Đại học Công nghiệp TP. Hồ Chí Minh (IUH)</div>
+          <ul class="entry-details">
+            <li>Vừa trúng tuyển. Ngành QTKD giúp rèn tư duy tổ chức, lên kế hoạch — hỗ trợ tốt cho việc soạn bài và quản lý lớp học.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-entry">
+          <div class="entry-header">
+            <span class="entry-title">Tốt nghiệp THPT</span>
+            <span class="entry-period">2026</span>
+          </div>
+          <div class="entry-org">Trường THPT Tân An</div>
+        </div>
+      </div>
+
+      <!-- Experience -->
+      <div class="section">
+        <h2 class="section-title">Kinh nghiệm hoạt động</h2>
+
+        <div class="timeline-entry">
+          <div class="entry-header">
+            <span class="entry-title">Cuộc thi NCKH InnoGreen</span>
+            <span class="entry-period">2026 – nay</span>
+          </div>
+          <ul class="entry-details">
+            <li>Nghiên cứu đề tài ứng dụng công nghệ cho môi trường. Làm nhóm, tự tìm tài liệu, giải quyết vấn đề thực tế.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-entry">
+          <div class="entry-header">
+            <span class="entry-title">CTV Hotline — Tư vấn khách hàng</span>
+            <span class="entry-period">2024 – 2025</span>
+          </div>
+          <ul class="entry-details">
+            <li>Nghe điện thoại, giải đáp thắc mắc. Quen với việc giải thích rõ ràng, kiên nhẫn khi người ta chưa hiểu.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-entry">
+          <div class="entry-header">
+            <span class="entry-title">CTV Sale — Cho thuê Homestay</span>
+            <span class="entry-period">2024 – 2025</span>
+          </div>
+          <ul class="entry-details">
+            <li>Tư vấn, chốt đơn qua mạng. Tự viết nội dung quảng bá — biết cách trình bày ngắn gọn, dễ hiểu.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-entry">
+          <div class="entry-header">
+            <span class="entry-title">Thuyết trình &amp; Soạn bài</span>
+            <span class="entry-period">2022 – nay</span>
+          </div>
+          <ul class="entry-details">
+            <li>Thuyết trình nhiều lần cho dự án nhóm ở trường. Tự tin nói trước đám đông.</li>
+            <li>Soạn slide bằng PowerPoint, Canva. Biết bố cục nội dung cho dễ nhìn, dễ theo dõi.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Why MindX -->
+      <div class="section">
+        <h2 class="section-title">Vì sao chọn MindX?</h2>
+        <div class="objective-text" style="border-left-color: var(--color-accent); background: #FFF8F6;">
+          Em đã dành thời gian xem các video <strong>anh chị giáo viên MindX đứng giảng</strong> và cả những video <strong>các bạn học sinh tự thuyết trình</strong> sản phẩm của mình. Thấy được một môi trường mà giáo viên không chỉ dạy kiến thức mà còn giúp học viên tự tin thể hiện bản thân. Đó là môi trường em muốn được học hỏi, được rèn luyện. Em mong muốn trở thành <strong>một giáo viên thế hệ mới</strong> như cách MindX đang xây dựng — gần gũi, thực tế và luôn đặt học viên lên đầu.
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</body>
+</html>

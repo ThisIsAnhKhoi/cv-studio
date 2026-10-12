@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Nguyễn Lê Thanh Trúc — MindX v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       DESIGN V2 — "Warm Bold"
+       
+       Direction: Confident, young, education-forward.
+       A full-bleed dark header with warm orange accent
+       creates immediate visual impact. Below, a clean
+       single-flow layout with generous whitespace lets
+       the content breathe. Skills and sidebar info live
+       in the right column with a light warm background.
+       
+       Palette:
+       Ink (#1E293B) — header, headings, authority
+       Tangerine (#F97316) — accent, energy, youth
+       Warm sand (#FDF8F3) — right column bg
+       Snow (#FFFFFF) — left column bg
+       Slate (#475569) — body text
+       Mist (#F1F5F9) — subtle card bg
+    ======================================== */
+
+    :root {
+      --ink: #1E293B;
+      --tangerine: #F97316;
+      --tangerine-soft: #FFF7ED;
+      --tangerine-mid: #FDBA74;
+      --sand: #FDF8F3;
+      --snow: #FFFFFF;
+      --slate: #475569;
+      --slate-light: #94A3B8;
+      --mist: #F1F5F9;
+      --border: #E2E8F0;
+
+      --font-display: 'Outfit', system-ui, sans-serif;
+      --font-body: 'Be Vietnam Pro', system-ui, sans-serif;
+
+      --page-w: 210mm;
+      --page-h: 297mm;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      color: var(--slate);
+      background: #CBD5E1;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========================================
+       PAGE
+    ======================================== */
+
+    .page {
+      width: var(--page-w);
+      min-height: var(--page-h);
+      margin: 20px auto;
+      background: var(--snow);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    /* ========================================
+       HEADER — Full bleed dark with diagonal accent
+    ======================================== */
+
+    .header {
+      background: var(--ink);
+      color: #FFFFFF;
+      padding: 32px 36px 28px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    /* Diagonal orange stripe at bottom */
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--tangerine) 0%, var(--tangerine-mid) 100%);
+    }
+
+    .avatar-ring {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      border: 3px solid var(--tangerine);
+      flex-shrink: 0;
+      overflow: hidden;
+      background: rgba(249,115,22,0.10);
+    }
+
+    .avatar-ring img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    .header-text {
+      flex: 1;
+    }
+
+    .header-name {
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      line-height: 1.15;
+      margin-bottom: 4px;
+    }
+
+    .header-role {
+      font-family: var(--font-display);
+      font-size: 13.5px;
+      font-weight: 400;
+      color: var(--tangerine-mid);
+      letter-spacing: 0.3px;
+    }
+
+    .header-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .contact-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .contact-chip svg {
+      width: 13px;
+      height: 13px;
+      fill: var(--tangerine);
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       BODY — Two columns, content left, sidebar right
+    ======================================== */
+
+    .body {
+      display: grid;
+      grid-template-columns: 1fr 195px;
+    }
+
+    /* ---- Left column (main content) ---- */
+
+    .content {
+      padding: 24px 28px 28px 36px;
+    }
+
+    .content .section + .section {
+      margin-top: 18px;
+    }
+
+    /* Section titles */
+    .section-head {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--ink);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-head::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: var(--border);
+    }
+
+    .section-head .accent-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--tangerine);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Objective card */
+    .objective-card {
+      padding: 14px 18px;
+      background: var(--mist);
+      border-radius: 8px;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--slate);
+      border-left: 3px solid var(--tangerine);
+    }
+
+    .objective-card strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 8px;
+      bottom: 4px;
+      width: 1.5px;
+      background: var(--border);
+    }
+
+    .tl-item {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .tl-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -18px;
+      top: 6px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 2px solid var(--tangerine);
+      background: var(--snow);
+      z-index: 1;
+    }
+
+    .tl-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tl-title {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .tl-period {
+      font-size: 10.5px;
+      color: var(--slate-light);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .tl-org {
+      font-size: 11.5px;
+      color: var(--tangerine);
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    .tl-desc {
+      list-style: none;
+      margin-top: 4px;
+    }
+
+    .tl-desc li {
+      font-size: 11.5px;
+      color: var(--slate);
+      line-height: 1.55;
+      padding-left: 12px;
+      position: relative;
+      margin-bottom: 2px;
+    }
+
+    .tl-desc li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--tangerine);
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    /* Why MindX - special card */
+    .mindx-card {
+      padding: 14px 18px;
+      background: var(--tangerine-soft);
+      border-radius: 8px;
+      border: 1px solid var(--tangerine-mid);
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--slate);
+    }
+
+    .mindx-card strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* ---- Right column (sidebar) ---- */
+
+    .sidebar {
+      background: var(--sand);
+      padding: 24px 20px 28px;
+      border-left: 1px solid var(--border);
+    }
+
+    .sidebar .section + .section {
+      margin-top: 20px;
+    }
+
+    .sidebar .section-head {
+      font-size: 10.5px;
+      letter-spacing: 1.8px;
+      color: var(--ink);
+    }
+
+    .sidebar .section-head::after {
+      display: none;
+    }
+
+    .sidebar .section-head .accent-dot {
+      width: 5px;
+      height: 5px;
+    }
+
+    /* Skills — pill style */
+    .skill-row {
+      margin-bottom: 8px;
+    }
+
+    .skill-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .skill-track {
+      width: 100%;
+      height: 5px;
+      background: rgba(30,41,59,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .skill-track-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--tangerine), var(--tangerine-mid));
+    }
+
+    /* Soft skill tags */
+    .pill-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .pill {
+      font-size: 10px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: var(--snow);
+      color: var(--ink);
+      border: 1px solid var(--border);
+      line-height: 1.4;
+    }
+
+    .pill.accent {
+      background: var(--tangerine);
+      color: #FFFFFF;
+      border-color: var(--tangerine);
+    }
+
+    /* Interests */
+    .interest {
+      font-size: 11px;
+      color: var(--slate);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .interest-dot {
+      width: 4px;
+      height: 4px;
+      background: var(--tangerine);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       PRINT
+    ======================================== */
+
+    @media print {
+      body { background: #FFF; }
+      .page {
+        margin: 0;
+        box-shadow: none;
+        width: 100%;
+        min-height: 100vh;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .section, .tl-item, .objective-card, .mindx-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .body {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+    }
+
+    @page { size: A4; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <div class="avatar-ring"><img src="avatar_sq.jpg" alt="Ảnh chân dung Nguyễn Lê Thanh Trúc"></div>
+      <div class="header-text">
+        <h1 class="header-name">NGUYỄN LÊ THANH TRÚC</h1>
+        <p class="header-role">Ứng tuyển Giáo viên Coding &amp; Robotics — MindX Technology School</p>
+      </div>
+      <div class="header-contact">
+        <div class="contact-chip">
+          <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.49a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.2 2.2z"/></svg>
+          0948 360 563
+        </div>
+        <div class="contact-chip">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          tnguyenle927@gmail.com
+        </div>
+        <div class="contact-chip">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></svg>
+          TP. Hồ Chí Minh · Sinh năm 2008
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== BODY ===== -->
+    <div class="body">
+
+      <!-- ---- Main Content ---- -->
+      <div class="content">
+
+        <!-- Objective -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Mục tiêu nghề nghiệp</h2>
+          <div class="objective-card">
+            Tìm kiếm một công việc <strong>part-time Giáo viên Coding &amp; Robotics</strong> tại MindX để có cơ hội trau dồi kỹ năng sư phạm, tích lũy kinh nghiệm thực tế và phát triển bản thân. Biết lập trình Python, Scratch và thích dạy học — muốn biến điều đó thành công việc nghiêm túc, <strong>cống hiến và gắn bó lâu dài</strong>.
+          </div>
+        </div>
+
+        <!-- Education -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Học vấn</h2>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">Quản trị Kinh doanh</span>
+                <span class="tl-period">2026</span>
+              </div>
+              <div class="tl-org">Đại học Công nghiệp TP. HCM (IUH)</div>
+              <ul class="tl-desc">
+                <li>Vừa trúng tuyển. Ngành QTKD giúp rèn tư duy tổ chức, lên kế hoạch — hỗ trợ tốt cho việc soạn bài và quản lý lớp học.</li>
+              </ul>
+            </div>
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">Tốt nghiệp THPT</span>
+                <span class="tl-period">2026</span>
+              </div>
+              <div class="tl-org">Trường THPT Tân An</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experience -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Kinh nghiệm hoạt động</h2>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">Cuộc thi NCKH InnoGreen</span>
+                <span class="tl-period">2026 – nay</span>
+              </div>
+              <ul class="tl-desc">
+                <li>Nghiên cứu đề tài ứng dụng công nghệ cho môi trường. Làm nhóm, tự tìm tài liệu, giải quyết vấn đề thực tế.</li>
+              </ul>
+            </div>
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">CTV Hotline — Tư vấn khách hàng</span>
+                <span class="tl-period">2024 – 2025</span>
+              </div>
+              <ul class="tl-desc">
+                <li>Nghe điện thoại, giải đáp thắc mắc. Quen với việc giải thích rõ ràng, kiên nhẫn khi người ta chưa hiểu.</li>
+              </ul>
+            </div>
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">CTV Sale — Cho thuê Homestay</span>
+                <span class="tl-period">2024 – 2025</span>
+              </div>
+              <ul class="tl-desc">
+                <li>Tư vấn, chốt đơn qua mạng. Tự viết nội dung quảng bá — biết cách trình bày ngắn gọn, dễ hiểu.</li>
+              </ul>
+            </div>
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">Thuyết trình &amp; Soạn bài</span>
+                <span class="tl-period">2022 – nay</span>
+              </div>
+              <ul class="tl-desc">
+                <li>Thuyết trình nhiều lần cho dự án nhóm ở trường. Tự tin nói trước đám đông.</li>
+                <li>Soạn slide bằng PowerPoint, Canva. Biết bố cục nội dung cho dễ nhìn, dễ theo dõi.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Why MindX -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Vì sao chọn MindX?</h2>
+          <div class="mindx-card">
+            Em đã dành thời gian xem các video <strong>anh chị giáo viên MindX đứng giảng</strong> và cả những video <strong>các bạn học sinh tự thuyết trình</strong> sản phẩm của mình. Thấy được một môi trường mà giáo viên không chỉ dạy kiến thức mà còn giúp học viên tự tin thể hiện bản thân. Đó là môi trường em muốn được học hỏi, được rèn luyện. Em mong muốn trở thành <strong>một giáo viên thế hệ mới</strong> như cách MindX đang xây dựng — gần gũi, thực tế và luôn đặt học viên lên đầu.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ---- Sidebar ---- -->
+      <aside class="sidebar">
+
+        <!-- Skills -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Chuyên môn</h2>
+
+          <div class="skill-row">
+            <div class="skill-label">Python</div>
+            <div class="skill-track"><div class="skill-track-fill" style="width:70%"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-label">Scratch</div>
+            <div class="skill-track"><div class="skill-track-fill" style="width:80%"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-label">Excel</div>
+            <div class="skill-track"><div class="skill-track-fill" style="width:85%"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-label">PowerPoint &amp; Canva</div>
+            <div class="skill-track"><div class="skill-track-fill" style="width:90%"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-label">Word</div>
+            <div class="skill-track"><div class="skill-track-fill" style="width:85%"></div></div>
+          </div>
+        </div>
+
+        <!-- Soft Skills -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Kỹ năng mềm</h2>
+          <div class="pill-wrap">
+            <span class="pill accent">Thuyết trình</span>
+            <span class="pill accent">Soạn bài giảng</span>
+            <span class="pill">Giao tiếp</span>
+            <span class="pill">Kiên nhẫn</span>
+            <span class="pill">Làm việc nhóm</span>
+            <span class="pill">Xử lý tình huống</span>
+            <span class="pill">Nắm bắt tâm lý</span>
+            <span class="pill">Sáng tạo</span>
+          </div>
+        </div>
+
+        <!-- Interests -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Sở thích</h2>
+          <div class="interest"><span class="interest-dot"></span>Giao lưu, tạo mối quan hệ mới</div>
+          <div class="interest"><span class="interest-dot"></span>Tiếp xúc và chơi với các bạn nhỏ</div>
+          <div class="interest"><span class="interest-dot"></span>Soạn bài và thử đứng giảng</div>
+          <div class="interest"><span class="interest-dot"></span>Tự học lập trình mỗi ngày</div>
+        </div>
+
+      </aside>
+    </div>
+
+  </div>
+</body>
+</html>

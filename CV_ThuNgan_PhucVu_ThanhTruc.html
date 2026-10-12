@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Nguyễn Lê Thanh Trúc — Ứng tuyển Thu Ngân & Phục Vụ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       DESIGN — "Service & Retail"
+       
+       Direction: Professional, energetic, approachable.
+       Using a dynamic red/crimson and warm tone to fit F&B and Retail (Tops Market / Dookki vibe).
+    ======================================== */
+
+    :root {
+      --ink: #1E293B;
+      --primary: #D92D20; /* Energetic Red */
+      --primary-soft: #FEF3F2;
+      --primary-mid: #F04438;
+      --sand: #FCFAFA;
+      --snow: #FFFFFF;
+      --slate: #475569;
+      --slate-light: #94A3B8;
+      --mist: #F1F5F9;
+      --border: #E2E8F0;
+
+      --font-display: 'Outfit', system-ui, sans-serif;
+      --font-body: 'Be Vietnam Pro', system-ui, sans-serif;
+
+      --page-w: 210mm;
+      --page-h: 297mm;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      color: var(--slate);
+      background: #CBD5E1;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========================================
+       PAGE
+    ======================================== */
+
+    .page {
+      width: var(--page-w);
+      min-height: var(--page-h);
+      margin: 20px auto;
+      background: var(--snow);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    /* ========================================
+       HEADER
+    ======================================== */
+
+    .header {
+      background: var(--ink);
+      color: #FFFFFF;
+      padding: 32px 36px 28px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--primary-mid) 100%);
+    }
+
+    .avatar-ring {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      border: 3px solid var(--primary);
+      flex-shrink: 0;
+      overflow: hidden;
+      background: rgba(217,45,32,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-ring img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    .header-text {
+      flex: 1;
+    }
+
+    .header-name {
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      line-height: 1.15;
+      margin-bottom: 4px;
+    }
+
+    .header-role {
+      font-family: var(--font-display);
+      font-size: 13.5px;
+      font-weight: 400;
+      color: var(--primary-mid);
+      letter-spacing: 0.3px;
+    }
+
+    .header-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .contact-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .contact-chip svg {
+      width: 13px;
+      height: 13px;
+      fill: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       BODY — Two columns, content left, sidebar right
+    ======================================== */
+
+    .body {
+      display: grid;
+      grid-template-columns: 1fr 195px;
+    }
+
+    /* ---- Left column (main content) ---- */
+
+    .content {
+      padding: 24px 28px 28px 36px;
+    }
+
+    .content .section + .section {
+      margin-top: 18px;
+    }
+
+    /* Section titles */
+    .section-head {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--ink);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-head::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: var(--border);
+    }
+
+    .section-head .accent-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--primary);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Objective card */
+    .objective-card {
+      padding: 14px 18px;
+      background: var(--mist);
+      border-radius: 8px;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--slate);
+      border-left: 3px solid var(--primary);
+    }
+
+    .objective-card strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 8px;
+      bottom: 4px;
+      width: 1.5px;
+      background: var(--border);
+    }
+
+    .tl-item {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .tl-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -18px;
+      top: 6px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      background: var(--snow);
+      z-index: 1;
+    }
+
+    .tl-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tl-title {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .tl-period {
+      font-size: 10.5px;
+      color: var(--slate-light);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .tl-org {
+      font-size: 11.5px;
+      color: var(--primary);
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    .tl-desc {
+      list-style: none;
+      margin-top: 4px;
+    }
+
+    .tl-desc li {
+      font-size: 11.5px;
+      color: var(--slate);
+      line-height: 1.55;
+      padding-left: 12px;
+      position: relative;
+      margin-bottom: 2px;
+    }
+
+    .tl-desc li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    /* Highlight card */
+    .highlight-card {
+      padding: 14px 18px;
+      background: var(--primary-soft);
+      border-radius: 8px;
+      border: 1px solid var(--primary-mid);
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--slate);
+    }
+
+    .highlight-card strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    
+    .highlight-card ul {
+      margin-top: 8px;
+      padding-left: 16px;
+    }
+
+    /* ---- Right column (sidebar) ---- */
+
+    .sidebar {
+      background: var(--sand);
+      padding: 24px 20px 28px;
+      border-left: 1px solid var(--border);
+    }
+
+    .sidebar .section + .section {
+      margin-top: 20px;
+    }
+
+    .sidebar .section-head {
+      font-size: 10.5px;
+      letter-spacing: 1.8px;
+      color: var(--ink);
+    }
+
+    .sidebar .section-head::after {
+      display: none;
+    }
+
+    .sidebar .section-head .accent-dot {
+      width: 5px;
+      height: 5px;
+    }
+
+    /* Skills — pill style */
+    .skill-row {
+      margin-bottom: 8px;
+    }
+
+    .skill-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .skill-track {
+      width: 100%;
+      height: 5px;
+      background: rgba(30,41,59,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .skill-track-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-mid));
+    }
+
+    /* Soft skill tags */
+    .pill-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .pill {
+      font-size: 10px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: var(--snow);
+      color: var(--ink);
+      border: 1px solid var(--border);
+      line-height: 1.4;
+    }
+
+    .pill.accent {
+      background: var(--primary);
+      color: #FFFFFF;
+      border-color: var(--primary);
+    }
+
+    /* Interests */
+    .interest {
+      font-size: 11px;
+      color: var(--slate);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .interest-dot {
+      width: 4px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       PRINT
+    ======================================== */
+
+    @media print {
+      body { background: #FFF; }
+      .page {
+        margin: 0;
+        box-shadow: none;
+        width: 100%;
+        min-height: 100vh;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .section, .tl-item, .objective-card, .highlight-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .body {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+    }
+
+    @page { size: A4; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <div class="avatar-ring"><img src="avatar_sq.jpg" alt="Ảnh chân dung Nguyễn Lê Thanh Trúc"></div>
+      <div class="header-text">
+        <h1 class="header-name">NGUYỄN LÊ THANH TRÚC</h1>
+        <p class="header-role">Ứng tuyển: Nhân Viên Thu Ngân / Phục Vụ</p>
+      </div>
+      <div class="header-contact">
+        <div class="contact-chip">
+          <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.49a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.2 2.2z"/></svg>
+          0948 360 563
+        </div>
+        <div class="contact-chip">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          tnguyenle927@gmail.com
+        </div>
+        <div class="contact-chip">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></svg>
+          TP. Hồ Chí Minh · Đủ 18 tuổi (Sinh năm 2008)
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== BODY ===== -->
+    <div class="body">
+
+      <!-- ---- Main Content ---- -->
+      <div class="content">
+
+        <!-- Objective -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Mục tiêu nghề nghiệp</h2>
+          <div class="objective-card">
+            Mong muốn tìm kiếm công việc <strong>Thu Ngân / Phục Vụ part-time</strong> trong môi trường F&B và Bán lẻ chuyên nghiệp. Áp dụng kỹ năng giao tiếp tốt, sự nhiệt tình và nhanh nhẹn để đem lại trải nghiệm hài lòng cho khách hàng. Mục tiêu là <strong>cống hiến, gắn bó lâu dài</strong> và rèn luyện kỹ năng xử lý tình huống thực tế.
+          </div>
+        </div>
+
+        <!-- Experience -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Kinh nghiệm làm việc & Hoạt động</h2>
+          <div class="timeline">
+            
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">CTV Hotline — Chăm sóc & Tư vấn khách hàng</span>
+                <span class="tl-period">2024 – 2025</span>
+              </div>
+              <ul class="tl-desc">
+                <li>Tiếp nhận cuộc gọi, tư vấn và giải đáp các thắc mắc của khách hàng một cách lịch sự, chuyên nghiệp.</li>
+                <li>Rèn luyện tính kiên nhẫn, thái độ hòa nhã và khả năng lắng nghe khi khách hàng phản hồi.</li>
+                <li>Ghi nhận thông tin nhanh chóng, chính xác để báo cáo lại cho quản lý.</li>
+              </ul>
+            </div>
+            
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">CTV Sale — Cho thuê Homestay</span>
+                <span class="tl-period">2024 – 2025</span>
+              </div>
+              <ul class="tl-desc">
+                <li>Trao đổi trực tiếp, tư vấn chốt đơn cho khách hàng qua mạng.</li>
+                <li>Đảm bảo thông tin dịch vụ được truyền đạt đầy đủ, trung thực và rõ ràng.</li>
+                <li>Hỗ trợ khách hàng trong suốt quá trình sử dụng dịch vụ, rèn luyện tinh thần trách nhiệm cao.</li>
+              </ul>
+            </div>
+            
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">Thành viên Cuộc thi NCKH InnoGreen</span>
+                <span class="tl-period">2026 – nay</span>
+              </div>
+              <ul class="tl-desc">
+                <li>Làm việc nhóm, chủ động hoàn thành các công việc được phân công đúng thời hạn.</li>
+                <li>Có khả năng thích nghi nhanh và học hỏi các kỹ năng mới.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Education -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Học vấn</h2>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">Quản trị Kinh doanh</span>
+                <span class="tl-period">2026</span>
+              </div>
+              <div class="tl-org">Đại học Công nghiệp TP. HCM (IUH)</div>
+              <ul class="tl-desc">
+                <li>Ngành học giúp rèn luyện tư duy sắp xếp, tính toán cơ bản và quản lý thời gian hiệu quả. Có thể xoay ca linh hoạt theo lịch học.</li>
+              </ul>
+            </div>
+            <div class="tl-item">
+              <div class="tl-head">
+                <span class="tl-title">Tốt nghiệp THPT</span>
+                <span class="tl-period">2026</span>
+              </div>
+              <div class="tl-org">Trường THPT Tân An</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tố chất -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Tố chất & Sự phù hợp</h2>
+          <div class="highlight-card">
+            <ul>
+              <li><strong>Nhanh nhẹn, cẩn thận:</strong> Có khả năng tính toán cơ bản, làm quen nhanh với hệ thống thanh toán hoặc máy POS.</li>
+              <li><strong>Thái độ phục vụ tốt:</strong> Luôn niềm nở, chào đón khách hàng, giữ bình tĩnh và thân thiện trong những khung giờ cao điểm.</li>
+              <li><strong>Trung thực, trách nhiệm:</strong> Cam kết đảm bảo thu tiền và kiểm tra hàng hóa, món ăn chính xác, minh bạch. Báo cáo kịp thời các vấn đề phát sinh.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ---- Sidebar ---- -->
+      <aside class="sidebar">
+
+        <!-- Skills -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Kỹ năng mềm</h2>
+          <div class="pill-wrap">
+            <span class="pill accent">Giao tiếp tốt</span>
+            <span class="pill accent">Chăm sóc khách hàng</span>
+            <span class="pill">Trung thực</span>
+            <span class="pill">Nhanh nhẹn</span>
+            <span class="pill">Kiên nhẫn</span>
+            <span class="pill">Làm việc nhóm</span>
+            <span class="pill">Xử lý tình huống</span>
+            <span class="pill">Trách nhiệm cao</span>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Năng lực hỗ trợ</h2>
+          <div class="skill-row">
+            <div class="skill-label">Tính toán, thao tác số liệu</div>
+            <div class="skill-track"><div class="skill-track-fill" style="width:85%"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-label">Sử dụng phần mềm (học nhanh)</div>
+            <div class="skill-track"><div class="skill-track-fill" style="width:90%"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-label">Excel cơ bản (kiểm kê, báo cáo)</div>
+            <div class="skill-track"><div class="skill-track-fill" style="width:85%"></div></div>
+          </div>
+        </div>
+
+        <!-- Interests -->
+        <div class="section">
+          <h2 class="section-head"><span class="accent-dot"></span>Điểm mạnh</h2>
+          <div class="interest"><span class="interest-dot"></span>Sức khỏe tốt, chịu được áp lực cao.</div>
+          <div class="interest"><span class="interest-dot"></span>Ngoại hình sáng, gọn gàng, tác phong nhanh nhẹn.</div>
+          <div class="interest"><span class="interest-dot"></span>Có thể xoay ca làm việc linh hoạt.</div>
+        </div>
+
+      </aside>
+    </div>
+
+  </div>
+</body>
+</html>

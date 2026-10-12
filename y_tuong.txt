@@ -1,0 +1,262 @@
+================================================================================
+                    TÀI LIỆU PHÂN TÍCH VÀ ĐẶC TẢ DỰ ÁN
+              NỀN TẢNG TẠO & QUẢN LÝ CV CÁ NHÂN (CV PORTFOLIO PLATFORM)
+================================================================================
+
+1. TỔNG QUAN DỰ ÁN & MỤC TIÊU
+--------------------------------------------------------------------------------
+- Tên dự án dự kiến: CV Studio / MyPortfolio (có thể tùy chỉnh).
+- Mục đích: Xây dựng nền tảng web hiện đại cho phép người dùng tạo, tùy biến, lưu trữ và chia sẻ hồ sơ năng lực (CV/Portfolio) cá nhân trực tuyến.
+- Mô hình hoạt động:
+  + Công khai (Public): Khám phá danh sách các profile ấn tượng, xem CV của từng người với đường dẫn riêng biệt (ví dụ: /u/username hoặc /cv/:id).
+  + Cá nhân (Private/Authenticated): Người dùng có tài khoản riêng để quản lý, chỉnh sửa, thêm bớt nội dung CV của mình. Người khác chỉ có quyền xem, tuyệt đối không được chỉnh sửa.
+  + Mẫu CV (Template Engine): Bắt đầu với 1 mẫu chuẩn (Default Template) hoàn chỉnh, điền sẵn thông tin mẫu chuyên nghiệp. Thiết kế module hóa để dễ dàng thêm các mẫu CV mới trong tương lai.
+
+2. CÁC TRANG CHÍNH TRÊN HỆ THỐNG (SITEMAP & ROUTING)
+--------------------------------------------------------------------------------
+1. Trang Menu / Khám phá (Route: `/` - Home / Explore Directory):
+   - Menu điều hướng đẹp mắt, hiện đại (Logo, Khám phá, Mẫu CV, Dark/Light Switch, Nút Đăng nhập/Đăng ký).
+   - Danh sách thẻ profile đại diện cho từng người (Avatar, Tên, Chuyên môn, Vị trí, Tags kỹ năng, nút Xem CV).
+   - Thanh tìm kiếm theo tên/vị trí, bộ lọc theo ngành nghề / tags kỹ năng.
+   - Hero Section truyền cảm hứng: "Tạo CV chuyên nghiệp & Trang cá nhân ấn tượng trong vài phút".
+
+2. Trang CV Cá nhân (Route: `/cv/:id` hoặc `/u/:username` - Public CV View):
+   - Hiển thị đầy đủ nội dung CV theo template chuẩn đã chọn.
+   - Tối ưu xem trên cả điện thoại (Mobile) và máy tính (Desktop).
+   - Thanh công cụ phía trên (Action Bar): Nút tải PDF chuẩn A4, Sao chép link chia sẻ, Đổi theme Dark/Light nhanh, Nút liên hệ qua Email/LinkedIn.
+   - Phân quyền động: Nếu người dùng đang đăng nhập là CHỦ SỞ HỮU của CV này -> xuất hiện nút nổi bật "Chỉnh sửa CV" dẫn vào Editor. Nếu là khách -> chỉ ở chế độ xem.
+
+3. Trang Quản lý & Trình chỉnh sửa CV (Route: `/editor/:id` - CV Editor Dashboard):
+   - Chế độ bảo vệ (Protected Route): Bắt buộc đăng nhập và phải là chủ sở hữu CV mới được truy cập.
+   - Giao diện 2 cột thông minh:
+     * Cột trái (Editor Panel): Accordion các nhóm thông tin (Thông tin chung, Kinh nghiệm, Học vấn, Kỹ năng, Dự án,...).
+     * Có nút (+) để thêm mục động linh hoạt, nút thùng rác xóa mục, nút kéo thả sắp xếp thứ tự.
+     * Khu vực Custom Style: Chọn Font chữ, Chọn màu Accent, Đổi Template, Đổi chế độ màu.
+     * Cột phải (Live Preview): Bản xem trước CV cập nhật tức thì (real-time) theo từng phím gõ.
+   - Tính năng tự động lưu (Auto-save) kèm trạng thái thông báo trực quan (Đã lưu / Đang lưu).
+
+4. Trang Dashboard Cá nhân (Route: `/dashboard` - User Management):
+   - Quản lý danh sách các CV mà người dùng đã tạo.
+   - Nút "Tạo CV mới", nút "Nhân bản (Duplicate)", "Xóa CV", xem thống kê lượt xem.
+
+5. Trang Xác thực (Route: `/login` & `/register` - Authentication):
+   - Đăng nhập / Đăng ký bằng Email & Mật khẩu hoặc Đăng nhập 1-click bằng Google.
+   - Quên mật khẩu, cập nhật thông tin tài khoản cơ bản.
+
+3. KHUNG DỮ LIỆU CHUẨN CỦA MỘT CV (DATA SCHEMA)
+--------------------------------------------------------------------------------
+Một CV chuyên nghiệp chuẩn quốc tế sẽ bao gồm các khối thông tin sau:
+1. Thông tin cơ bản (PersonalInfo):
+   - avatarUrl (chuỗi URL), fullName (chuỗi), title (vị trí nghề nghiệp).
+   - email, phone, location (thành phố/quốc gia), website, github, linkedin.
+2. Giới thiệu bản thân (Summary / About Me):
+   - summaryText (đoạn văn tóm tắt năng lực cốt lõi, mục tiêu nghề nghiệp).
+3. Kinh nghiệm làm việc (ExperienceItem[]) [Có nút + thêm nhiều mục]:
+   - id (định danh duy nhất), company (tên công ty), position (chức danh),
+   - startDate, endDate, isCurrent (đang làm việc tại đây),
+   - description (mô tả công việc, các gạch đầu dòng kết quả đạt được kèm số liệu).
+4. Học vấn & Bằng cấp (EducationItem[]) [Có nút + thêm nhiều mục]:
+   - id, school (tên trường), degree (bằng cấp/chuyên ngành),
+   - startDate, endDate, gpa, honors (thành tích/học bổng).
+5. Kỹ năng chuyên môn (SkillCategory[]):
+   - id, categoryName (vd: Kỹ thuật lập trình, Công cụ thiết kế, Kỹ năng mềm),
+   - skills: danh sách skill (tên kỹ năng, level/độ thông thạo từ 1-5 hoặc badge).
+6. Dự án tiêu biểu (ProjectItem[]) [Có nút + thêm nhiều mục]:
+   - id, name (tên dự án), role (vai trò), description (mô tả kết quả),
+   - techStack (danh sách công nghệ), link (demo/github).
+7. Thành tựu & Giải thưởng (AchievementItem[]) [Có nút + thêm nhiều mục]:
+   - id, title (tên giải thưởng), issuer (đơn vị trao giải), year, description.
+8. Chứng chỉ chuyên ngành (CertificateItem[]) [Có nút + thêm nhiều mục]:
+   - id, name (tên chứng chỉ), issuer, issueDate, expiryDate, credentialUrl.
+9. Tùy biến giao diện CV (ThemeConfig):
+   - templateId (mã template: 'template-1', 'template-2',...),
+   - primaryColor (mã màu chủ đạo: teal, orange, red, blue, purple,...),
+   - fontHeading (tên font tiêu đề: 'Outfit', 'Montserrat', 'Playfair Display',...),
+   - fontBody (tên font nội dung: 'Be Vietnam Pro', 'Inter',...),
+   - darkMode (boolean).
+
+4. PHÂN TÍCH RÚT TỈA TỪ CÁC CV MẪU THỰC TẾ (DESIGN SYSTEM & STYLES)
+--------------------------------------------------------------------------------
+Dựa trên phân tích 3 mẫu CV thực tế đã khảo sát:
+(CV_MindX_ThanhTruc.html, CV_MindX_ThanhTruc_v2.html, CV_ThuNgan_PhucVu_ThanhTruc.html):
+
+1. Quy chuẩn kích thước trang (Page Dimension & Layout):
+   - Tỉ lệ chuẩn quốc tế: Khổ giấy A4 (Width: 210mm, Min-Height: 297mm).
+   - Hiển thị trên Web: Trình bày dạng trang giấy nổi (Paper sheet container) với bóng đổ mềm (`box-shadow: 0 4px 30px rgba(0,0,0,0.10)`), nền ngoài trang xám Slate hoặc Dark canvas giúp tập trung thị giác vào CV.
+   - Xuất file & In ấn (`@media print`): Thiết lập `@page { size: A4; margin: 0; }`, `-webkit-print-color-adjust: exact` để giữ nguyên màu sắc, không ngắt trang tùy tiện, chất lượng vector sắc nét.
+
+2. Cặp font chữ vàng (Typography Pairing) chuẩn tiếng Việt 100%:
+   - Font Tiêu đề / Tên (Display & Headings): `Outfit` hoặc `Montserrat` (hình khối hiện đại, sắc nét, sang trọng). Ngoài ra hỗ trợ các font nghệ thuật như `Playfair Display`, `Pacifico`.
+   - Font Nội dung (Body Text): `Be Vietnam Pro` (bộ font thiết kế riêng biệt tối ưu hóa cho tiếng Việt, cân đối dấu thanh, đọc cực kỳ dễ chịu và chuyên nghiệp).
+
+3. Các phong cách bố cục (Layout Archetypes):
+   - Dáng 1: Classic Sidebar Left (Header xanh Teal + Cột trái chứa Liên hệ, Học vấn, Kỹ năng + Cột phải rộng chứa Kinh nghiệm & Dự án). Phù hợp giáo dục, học thuật, quản lý.
+   - Dáng 2: Modern Warm Bold (Header tối Ink viền cam Tangerine + Cột trái chính chứa Kinh nghiệm & Dự án + Cột phải nền ấm Sand chứa Kỹ năng & Học vấn). Phù hợp công nghệ, IT, thiết kế.
+   - Dáng 3: Dynamic Red / Compact (Header tối với vạch nhấn màu đỏ nhiệt huyết, cấu trúc thẻ tối giản). Phù hợp dịch vụ, kinh doanh, marketing.
+
+4. Token hóa bảng màu (Design Tokens & Theming):
+   - Hỗ trợ đổi Accent Color linh hoạt: Cho phép người dùng chọn bảng màu yêu thích (Emerald Teal, Sunset Orange, Crimson Red, Royal Blue, Violet).
+   - Đồng bộ Dark Mode & Light Mode trên toàn bộ nền tảng.
+
+5. KIẾN TRÚC PHÂN TẦNG VÀ CẤU TRÚC THƯ MỤC DỰ ÁN (SYSTEM ARCHITECTURE)
+--------------------------------------------------------------------------------
+Hệ thống được thiết kế theo mô hình kiến trúc phân tầng 4 lớp (4-Layer Clean Architecture) nhằm đảm bảo tính độc lập, dễ bảo trì, dễ mở rộng và không bị phụ thuộc chéo:
+
+                +-----------------------------------------------+
+                |        1. PRESENTATION LAYER (GIAO DIỆN)      |
+                | Pages, App Shell, UI Components, Modals       |
+                +-----------------------------------------------+
+                                        |
+                                        v
+                +-----------------------------------------------+
+                |     2. TEMPLATE ENGINE & REGISTRY LAYER       |
+                | Template 1, Template 2,... Theme Injector     |
+                +-----------------------------------------------+
+                                        |
+                                        v
+                +-----------------------------------------------+
+                |     3. STATE & BUSINESS LOGIC LAYER           |
+                | CV Store (Zustand), Auto-save, PDF Service    |
+                +-----------------------------------------------+
+                                        |
+                                        v
+                +-----------------------------------------------+
+                |     4. DATA ACCESS & PERSISTENCE LAYER        |
+                | Firebase Auth, Cloud Firestore, LocalStorage  |
+                +-----------------------------------------------+
+
+Chi tiết vai trò từng tầng:
+1. Tầng Presentation (UI & Routing):
+   - Đảm nhận việc hiển thị giao diện, điều hướng trang (React Router), responsive và dark mode.
+   - Không chứa logic nghiệp vụ phức tạp, chỉ hiển thị dữ liệu và nhận tương tác từ người dùng.
+2. Tầng Template Engine (Cốt lõi mở rộng):
+   - Tách biệt hoàn toàn phần "Dữ liệu CV" khỏi phần "Giao diện Template".
+   - Áp dụng mẫu thiết kế Registry Pattern: Mọi template đều triển khai chung một interface `CVTemplateProps { data: CVData; theme: ThemeConfig; isPrintMode?: boolean }`.
+   - Khi cần bổ sung thêm Template 3, 4, 5: Lập trình viên chỉ cần tạo 1 file component template mới và đăng ký vào danh sách `templatesRegistry.ts` mà không làm xáo trộn bất kỳ phần nào của Editor hay Backend.
+3. Tầng State & Business Logic:
+   - Sử dụng **Zustand** (siêu nhẹ, không boilerplate) để quản lý:
+     * `useCVStore`: Quản lý state của CV đang chỉnh sửa, cơ chế Undo/Redo, tự động lưu sau 800ms debounce.
+     * `useAuthStore`: Quản lý phiên đăng nhập của người dùng.
+     * `useThemeStore`: Quản lý Dark/Light mode toàn app.
+   - Dịch vụ xuất PDF (`pdfService.ts`): Xử lý tiền chuẩn bị A4, tối ưu ngắt trang trước khi gọi hàm in/tải.
+4. Tầng Data Access & Persistence:
+   - Giao tiếp với Firebase SDK (Firestore, Auth, Storage) hoặc REST API.
+   - Cơ chế Fallback/Offline-first: Khi chưa đăng nhập hoặc mạng yếu, dữ liệu tự động lưu vào `localStorage` của trình duyệt để người dùng không bao giờ bị mất bài viết dở.
+
+Cấu trúc thư mục tối ưu của dự án (Folder Structure):
+```
+Website/
+├── .agents/                        # Cấu hình tự động cho trợ lý AI Antigravity
+│   └── rules/
+│       └── session-protocol.md     # Quy tắc đọc/cập nhật tiến độ dự án
+├── public/                         # Tài nguyên tĩnh (Favicon, Logo, Fonts)
+├── src/
+│   ├── assets/                     # Hình ảnh, icons, vector assets
+│   ├── components/                 # Các component dùng chung
+│   │   ├── common/                 # Nút bấm, Input, Modal, Badge, Dropdown, ThemeToggle
+│   │   ├── layout/                 # Navbar, Footer, Sidebar, Container
+│   │   └── feedback/               # Toast thông báo, Loading Spinner, Alert
+│   ├── features/                   # Tính năng chia theo module chức năng
+│   │   ├── auth/                   # Đăng nhập, Đăng ký, Quên mật khẩu, useAuth
+│   │   ├── cv-explore/             # Danh sách hồ sơ cá nhân, tìm kiếm, lọc tags
+│   │   ├── cv-editor/              # Trình chỉnh sửa CV động
+│   │   │   ├── components/         # FormPersonalInfo, FormExperience, FormEducation,...
+│   │   │   ├── hooks/              # useAutoSave, useCVEditorState
+│   │   │   └── controls/           # FontSelector, ColorPicker, AddSectionButton
+│   │   └── cv-templates/           # HỆ THỐNG MẪU CV (Template Engine)
+│   │       ├── TemplateRegistry.ts # Danh sách và metadata các mẫu CV
+│   │       ├── template-1/         # Mẫu số 1: Modern Classic Teal (Default)
+│   │       ├── template-2/         # Mẫu số 2: Warm Bold Ink & Tangerine
+│   │       └── shared/             # SectionTitle, SkillBadge, ContactItem dùng chung
+│   ├── services/                   # Giao tiếp ngoại vi & Dịch vụ độc lập
+│   │   ├── firebase.ts             # Khởi tạo Firebase Auth & Firestore
+│   │   ├── cvService.ts            # Các hàm CRUD lưu/đọc CV từ Database
+│   │   ├── storageService.ts       # Tải ảnh avatar lên Firebase Storage
+│   │   └── exportPdfService.ts     # Xử lý xuất file PDF chuẩn A4
+│   ├── stores/                     # Global State Management (Zustand)
+│   │   ├── cvStore.ts              # Trạng thái CV hiện tại, lịch sử sửa đổi
+│   │   ├── authStore.ts            # Thông tin tài khoản đăng nhập
+│   │   └── themeStore.ts           # Trạng thái Dark / Light mode
+│   ├── types/                      # Toàn bộ định nghĩa TypeScript
+│   │   ├── cv.ts                   # Schema dữ liệu CV
+│   │   ├── user.ts                 # Schema thông tin người dùng
+│   │   └── template.ts             # Định nghĩa cấu trúc Template & Theme
+│   ├── data/                       # Dữ liệu tĩnh & Dữ liệu mẫu
+│   │   └── mockCVData.ts           # Dữ liệu CV mẫu hoàn chỉnh, thực tế
+│   ├── styles/                     # Cấu hình CSS
+│   │   ├── index.css               # Base CSS, font imports, Tailwind directives
+│   │   └── print.css               # Quy chuẩn in ấn khổ A4 tuyệt đối
+│   ├── utils/                      # Hàm tiện ích (format ngày tháng, generate id, slug)
+│   ├── App.tsx                     # Routing chính của ứng dụng
+│   └── main.tsx                    # Điểm khởi động React App
+├── .env.example                    # Mẫu biến môi trường
+├── .gitignore                      # Danh sách file loại trừ khỏi Git
+├── package.json                    # Khai báo thư viện & scripts
+├── tailwind.config.js              # Cấu hình Tailwind, bảng màu tokens, fonts
+├── tsconfig.json                   # Cấu hình TypeScript
+├── vite.config.ts                  # Cấu hình Vite build tool
+├── vercel.json                     # Cấu hình routing deploy Vercel
+├── PROJECT_STATUS.md               # Bảng theo dõi tiến độ & Nhật ký sửa lỗi
+└── y_tuong.txt                     # Tài liệu đặc tả dự án chuẩn
+```
+
+6. CÔNG NGHỆ DỰ KIẾN (TECH STACK)
+--------------------------------------------------------------------------------
+- Frontend Core:
+  + Vite + React 18+ với TypeScript (Type-safe, tốc độ build và Hot Module Replacement tức thì).
+  + Tailwind CSS (Hệ thống utility class mạnh mẽ, dễ dàng cấu hình Theme tokens và Dark Mode).
+  + Zustand (Quản lý trạng thái nhẹ hơn Redux 10 lần, dễ bảo trì, hiệu năng cao).
+  + Lucide React (Thư viện icon hiện đại, sắc nét, đồng bộ phong cách).
+  + React Router DOM v6 (Điều hướng SPA mượt mà).
+- Backend & Lưu trữ:
+  + Firebase (Firebase Auth, Cloud Firestore, Firebase Storage) - Hoạt động Serverless không cần duy trì máy chủ, tiết kiệm chi phí và cực kỳ bảo mật.
+  + Hỗ trợ mở rộng API Node.js / Express nếu có nhu cầu tích hợp thanh toán hoặc xử lý logic riêng biệt trên Render.
+- Xuất bản in & PDF:
+  + Chuẩn CSS `@media print` kết hợp thư viện `html2pdf.js` / `react-to-print` đảm bảo file PDF xuất ra có thể tìm kiếm chữ (searchable text) và chất lượng vector cao.
+
+7. CHIẾN LƯỢC QUẢN LÝ PHIÊN BẢN (GIT & GITHUB) VÀ DEPLOYMENT
+--------------------------------------------------------------------------------
+1. Quản lý phiên bản bằng Git & GitHub:
+   - Khởi tạo kho chứa Git (`git init`) với file `.gitignore` chuẩn (bỏ qua `node_modules`, `.env`, `dist`, `.vercel`, v.v.).
+   - Quy tắc nhánh (Branching Strategy):
+     * `main`: Nhánh production ổn định cao nhất, liên kết trực tiếp với Vercel / Render để auto-deploy.
+     * `develop`: Nhánh tích hợp và kiểm thử các tính năng trước khi đưa lên production.
+     * `feature/<tên-tính-năng>`: Nhánh phát triển cho từng module cụ thể (ví dụ: `feature/cv-template-1`, `feature/cv-editor`).
+   - Quy chuẩn commit (Conventional Commits):
+     * `feat:` thêm tính năng mới
+     * `fix:` sửa lỗi
+     * `style:` chỉnh sửa giao diện, CSS, font
+     * `docs:` cập nhật tài liệu (`PROJECT_STATUS.md`, `y_tuong.txt`)
+     * `refactor:` cấu trúc lại code không thay đổi logic
+
+2. Triển khai sản phẩm (Deployment Strategy):
+   - Frontend Deployment: **Vercel**
+     * Kết nối trực tiếp với GitHub Repository.
+     * Mỗi khi push code lên `main` -> Vercel tự động build và deploy lên global CDN siêu nhanh.
+     * Hỗ trợ tự động tạo Preview URL cho mỗi Pull Request để test trước khi merge.
+     * Cấu hình file `vercel.json` để hỗ trợ SPA routing (tránh lỗi 404 khi người dùng F5 tại các trang con).
+   - Backend & Database Deployment: **Render** / **Firebase Hosting & Cloud Functions**
+     * Render: Dùng cho Node.js REST API service, kết nối GitHub tự động build và khởi chạy.
+     * Firebase: Sử dụng Cloud Firestore & Firebase Auth hoàn toàn serverless, không cần quản trị server.
+   - Quản lý biến môi trường (Environment Variables):
+     * Tạo file `.env.example` chứa danh sách key mẫu (API URL, Firebase public keys).
+     * Thiết lập biến môi trường an toàn trên Dashboard của Vercel & Render, không bao giờ commit file `.env` lên GitHub.
+
+8. LỘ TRÌNH TRIỂN KHAI TỔNG THỂ (ROADMAP)
+--------------------------------------------------------------------------------
+- Bước 1: Chuẩn bị kiến trúc, khởi tạo Git/GitHub setup, khởi tạo Frontend (React + TS + Tailwind), thiết lập dữ liệu mẫu và xây dựng Mẫu CV số 1 (Default Template).
+- Bước 2: Trình người dùng duyệt mẫu CV số 1 để lấy phản hồi và tinh chỉnh dáng/style.
+- Bước 3: Xây dựng Trang chủ (Menu & Danh sách Profile) và Trang CV chi tiết (Public View).
+- Bước 4: Xây dựng Trình chỉnh sửa CV (CV Editor với nút + thêm mục động, đổi font, đổi theme, chỉnh sửa nội dung).
+- Bước 5: Tích hợp Backend & Authentication (Đăng nhập, Đăng ký, Phân quyền bảo mật chỉ cho phép chủ sở hữu sửa).
+- Bước 6: Hoàn thiện tính năng Xuất PDF, kiểm thử responsive trên mọi thiết bị và triển khai CI/CD lên Vercel/Render.
+
+9. CƠ CHẾ BÀN GIAO & THEO DÕI TIẾN ĐỘ CHO TRỢ LÝ ANTIGRAVITY (DEV LOG SYSTEM)
+--------------------------------------------------------------------------------
+1. File trung tâm: `PROJECT_STATUS.md` (đặt tại thư mục gốc)
+   - Lưu trữ mục tiêu hiện tại, bảng tiến độ tính năng, nhật ký sửa lỗi và các bước tiếp theo.
+2. File quy chuẩn: `.agents/rules/session-protocol.md`
+   - Bắt buộc trợ lý đọc `PROJECT_STATUS.md` khi bắt đầu và cập nhật lại khi kết thúc phiên.
+3. File đặc tả dự án: `y_tuong.txt`
+   - Nguồn chân lý duy nhất (Single Source of Truth) cho toàn bộ kiến trúc dự án.
+================================================================================

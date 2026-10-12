@@ -1,0 +1,205 @@
+import React, { useState, useEffect } from 'react';
+import { mockCVData } from './data/mockCVData';
+import { getTemplateComponent } from './features/cv-templates/TemplateRegistry';
+import { ColorPreset, ThemeConfig } from './types/cv';
+import {
+  Moon,
+  Sun,
+  Printer,
+  Sparkles,
+  Palette,
+  Type,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Download,
+  Check,
+} from 'lucide-react';
+
+export const App: React.FC = () => {
+  const [cvData] = useState(mockCVData);
+  const [theme, setTheme] = useState<ThemeConfig>(mockCVData.themeConfig);
+  const [zoomLevel, setZoomLevel] = useState<number>(100);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  // Sync dark mode class on document element
+  useEffect(() => {
+    if (theme.darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme.darkMode]);
+
+  const toggleDarkMode = () => {
+    setTheme((prev) => ({ ...prev, darkMode: !prev.darkMode }));
+  };
+
+  const handleColorChange = (preset: ColorPreset) => {
+    setTheme((prev) => ({
+      ...prev,
+      primaryColorPreset: preset,
+    }));
+  };
+
+  const handleFontChange = (font: 'Outfit' | 'Be Vietnam Pro' | 'Playfair Display' | 'Montserrat') => {
+    setTheme((prev) => ({
+      ...prev,
+      fontHeading: font,
+    }));
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const colorPresets: { id: ColorPreset; label: string; bgClass: string }[] = [
+    { id: 'teal', label: 'Teal Xanh Biển', bgClass: 'bg-[#0E7C6B]' },
+    { id: 'orange', label: 'Tangerine Cam Ấm', bgClass: 'bg-orange-600' },
+    { id: 'red', label: 'Crimson Đỏ Nhiệt', bgClass: 'bg-red-700' },
+    { id: 'blue', label: 'Royal Blue Xanh Dương', bgClass: 'bg-blue-700' },
+    { id: 'purple', label: 'Violet Tím', bgClass: 'bg-purple-700' },
+    { id: 'emerald', label: 'Emerald Xanh Ngọc', bgClass: 'bg-emerald-700' },
+  ];
+
+  const fonts: ('Outfit' | 'Be Vietnam Pro' | 'Playfair Display' | 'Montserrat')[] = [
+    'Outfit',
+    'Be Vietnam Pro',
+    'Playfair Display',
+    'Montserrat',
+  ];
+
+  const TemplateComponent = getTemplateComponent(theme.templateId);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200">
+      {/* ================= TOP NAVIGATION / CONTROL BAR ================= */}
+      <header className="no-print sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm px-4 sm:px-6 py-3">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+          {/* Logo & Status Badge */}
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-md">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-lg tracking-tight font-display bg-gradient-to-r from-teal-700 to-emerald-600 dark:from-teal-400 dark:to-emerald-400 bg-clip-text text-transparent">
+                  CV Studio
+                </span>
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+                  Mẫu số 1 (Default)
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
+                Xem trước giao diện chuẩn in A4 & Chế độ đổi màu / font chữ
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Customization Controls */}
+          <div className="flex items-center flex-wrap gap-2.5">
+            {/* Color Presets */}
+            <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+              <Palette className="w-3.5 h-3.5 text-slate-400 ml-1 mr-0.5" />
+              {colorPresets.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => handleColorChange(c.id)}
+                  title={c.label}
+                  className={`w-5 h-5 rounded-full ${c.bgClass} transition-transform ${
+                    theme.primaryColorPreset === c.id
+                      ? 'ring-2 ring-offset-2 ring-slate-800 dark:ring-white scale-110'
+                      : 'hover:scale-105 opacity-80 hover:opacity-100'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Font Picker */}
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
+              <Type className="w-3.5 h-3.5 text-slate-400" />
+              <select
+                value={theme.fontHeading}
+                onChange={(e) => handleFontChange(e.target.value as any)}
+                className="bg-transparent font-medium focus:outline-none cursor-pointer text-slate-700 dark:text-slate-200 text-xs"
+              >
+                {fonts.map((f) => (
+                  <option key={f} value={f} className="dark:bg-slate-900 text-slate-900 dark:text-white">
+                    {f}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Dark/Light Mode Switch */}
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors text-slate-700 dark:text-slate-200"
+              title={theme.darkMode ? 'Chuyển sang Giao diện Sáng' : 'Chuyển sang Giao diện Tối'}
+            >
+              {theme.darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+            </button>
+
+            {/* Zoom Controls */}
+            <div className="hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300">
+              <button
+                onClick={() => setZoomLevel((z) => Math.max(z - 10, 70))}
+                className="p-0.5 hover:text-black dark:hover:text-white"
+                title="Thu nhỏ"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+              <span className="font-semibold text-[11px] w-9 text-center">{zoomLevel}%</span>
+              <button
+                onClick={() => setZoomLevel((z) => Math.min(z + 10, 130))}
+                className="p-0.5 hover:text-black dark:hover:text-white"
+                title="Phóng to"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setZoomLevel(100)}
+                className="p-0.5 hover:text-black dark:hover:text-white ml-0.5 text-slate-400"
+                title="Mặc định 100%"
+              >
+                <RotateCcw className="w-3 h-3" />
+              </button>
+            </div>
+
+            {/* Print / Download PDF */}
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-semibold text-xs shadow-md transition-all"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>In / Tải PDF A4</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ================= WORKSPACE BODY / PREVIEW CONTAINER ================= */}
+      <main className="flex-1 py-8 px-4 overflow-x-auto flex justify-center items-start print:p-0 print:m-0 print:overflow-visible">
+        <div
+          className="transition-transform duration-200 origin-top print:transform-none"
+          style={{ transform: `scale(${zoomLevel / 100})` }}
+        >
+          <TemplateComponent data={cvData} theme={theme} />
+        </div>
+      </main>
+
+      {/* ================= BOTTOM HELPER BAR ================= */}
+      <footer className="no-print bg-white/80 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-800 py-3 px-4 text-center text-xs text-slate-500 dark:text-slate-400">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>
+            Khổ giấy: <strong>210mm × 297mm (Chuẩn A4)</strong> • Hỗ trợ Dark Mode & Đổi màu Accent thời gian thực
+          </span>
+          <span className="text-[11px] text-teal-600 dark:text-teal-400 font-medium">
+            Giai đoạn 1: Duyệt Mẫu số 1 → Giai đoạn 2: Trình Editor động
+          </span>
+        </div>
+      </footer>
+    </div>
+  );
+};
+export default App;
