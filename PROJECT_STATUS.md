@@ -8,30 +8,31 @@
 - **Tài liệu đặc tả**: [y_tuong.txt](file:///c:/Users/junde/OneDrive/Desktop/TranKhoi/Website/y_tuong.txt)
 - **Kiến trúc hệ thống**: 4-Layer Clean Architecture
 - **Môi trường cục bộ**: Đang chạy tại `http://localhost:3000/` (Vite dev server)
-- **Giai đoạn hiện tại**: Kế hoạch Tinh chỉnh Mẫu CV số 1 & Chuẩn hóa Hệ thống (Refinement & Enhancement Plan)
+- **Git Commit**: `ee28790` (fix: resolve font glitch with local fonts, fix icon alignment, declutter layout, add hover effects, and organize folder structure)
+- **Giai đoạn hiện tại**: Giai đoạn 2 — Duyệt Mẫu CV số 1 đã tinh chỉnh & Chuẩn bị xây dựng các phân hệ tiếp theo
 
 ---
 
-## 2. KẾ HOẠCH NÂNG CẤP & SỬA LỖI THEO PHẢN HỒI (REFINEMENT ACTION PLAN)
+## 2. KẾT QUẢ TINH CHỈNH THEO PHẢN HỒI (REFINEMENT RESULTS)
 
-| STT | Vấn đề / Yêu cầu | Nguyên nhân & Nghiên cứu | Giải pháp & Kế hoạch thực hiện | Trạng thái |
-|:---:|:---|:---|:---|:---:|
-| **R.1** | **Cây thư mục lộn xộn** | Các file mẫu HTML/PDF nằm tràn lan tại thư mục gốc gây rối mắt. | Đã gom toàn bộ các file mẫu vào `references/sample-cvs/`. Quy hoạch thư mục gọn gàng, chuẩn cấu trúc sản phẩm. |  Đã dọn dẹp |
-| **R.2** | **Lỗi font tiếng Việt** | Font `Outfit` từ Google Fonts thiếu ký tự hoa tiếng Việt (`Ễ`, `Ê` trong `NGUYỄN LÊ THANH TRÚC`), dẫn đến vỡ font chữ to nhỏ không đều. | Đã trích xuất các bộ font việt hóa từ máy tính của người dùng (`iCielBCCubano`, `SVN-Optima`, `Gilroy`, `Montserrat`) vào `public/fonts/`. Khai báo `@font-face` chuẩn. |  Đang tiến hành |
-| **R.3** | **Icon SVG bị lệch** | Nút link bên cạnh tiêu đề dự án bị lệch dòng do thuộc tính flex/inline và line-height không đồng bộ. | Đồng bộ hóa `inline-flex items-center`, canh giữa tuyệt đối, bổ sung kích thước cố định `w-3.5 h-3.5 shrink-0`. |  Đang tiến hành |
-| **R.4** | **Thông tin quá nhiều làm CV bị rối** | Cột trái quá hẹp (210px) làm email bị gãy 2 dòng; nội dung chữ quá dày đặc thiếu khoảng thở. | Tăng chiều rộng cột trái lên 245px; tinh gọn bullet points kinh nghiệm (2 điểm nổi bật nhất); tối ưu khoảng trắng (`leading-relaxed`, padding thoáng đãng). |  Đang tiến hành |
-| **R.5** | **Thiếu hiệu ứng hover & sinh động** | Giao diện còn tĩnh như trang giấy in, chưa mang lại trải nghiệm web portfolio hiện đại. | Bổ sung micro-interactions: hover card nổi nhẹ (`hover:-translate-y-0.5`), glow viền theo màu chủ đạo, tag kỹ năng phóng nhẹ (`hover:scale-105`), click chép email với tooltip tức thì. |  Đang tiến hành |
+| STT | Hạng mục tinh chỉnh | Chi tiết đã thực hiện | Trạng thái |
+|:---:|:---|:---|:---:|
+| **1** | **Quy hoạch cây thư mục** | Đã gom toàn bộ các file mẫu HTML/PDF tham khảo vào thư mục riêng `references/sample-cvs/`. Thư mục gốc sạch sẽ và chuẩn mực. |  Đã hoàn thành |
+| **2** | **Tích hợp phông chữ từ máy tính** | Đã sao chép các bộ font việt hóa từ máy tính (`iCiel Cubano`, `SVN-Optima`, `Gilroy`, `Montserrat`) vào `public/fonts/` và khai báo `@font-face`. Sửa dứt điểm lỗi nhảy font tiếng Việt ở họ tên. |  Đã hoàn thành |
+| **3** | **Căn chỉnh Icon SVG bị lệch** | Khắc phục hoàn toàn lỗi lệch icon `ExternalLink` bằng `inline-flex items-center gap-1.5`. Canh đều icon liên hệ và mốc timeline. |  Đã hoàn thành |
+| **4** | **Tinh gọn thông tin & bố cục thoáng** | Mở rộng cột trái lên 245px (email `thanhtruc.dev@gmail.com` vừa vặn trên 1 dòng). Rút gọn tóm tắt và bullet points kinh nghiệm sắc bén, tăng khoảng thở giữa các khối. |  Đã hoàn thành |
+| **5** | **Hiệu ứng Hover & Tương tác sống động** | Bổ sung hiệu ứng hover nâng thẻ dự án (`hover:-translate-y-0.5 hover:shadow-md`), viền sáng màu accent, hover thẻ kỹ năng, click sao chép email kèm thông báo tức thì, avatar zoom nhẹ. |  Đã hoàn thành |
 
 ---
 
 ## 3. BẢNG TIẾN ĐỘ TỔNG THỂ (OVERALL ROADMAP)
 
 | STT | Giai đoạn / Tính năng | Trạng thái | Ghi chú |
-|:---:|:---|:---|:---|
+|:---:|:---|:---:|:---|
 | 1 | Khảo sát ý tưởng & Chuẩn hóa tài liệu (`y_tuong.txt`) |  Hoàn thành | 9 phần đặc tả hoàn chỉnh |
 | 2 | Hệ thống Dev-Log & Handover cho Antigravity |  Hoàn thành | `PROJECT_STATUS.md` và `.agents/rules/session-protocol.md` |
-| 3 | Thực hiện Bước 1: Git setup + Frontend phân tầng + Mẫu CV số 1 |  Hoàn thành | Đã khởi chạy tại localhost:3000 |
-| 4 | Kế hoạch Tinh chỉnh Mẫu số 1 (Font máy tính, Hover, Layout thoáng, Icon chuẩn) | ⏳ Đang triển khai | Theo checklist chi tiết ở Mục 2 |
+| 3 | Thực hiện Bước 1: Git setup + Frontend + Mẫu CV số 1 |  Hoàn thành | Đã hoàn thành 100% |
+| 4 | Tinh chỉnh Mẫu CV số 1 (Font máy, Icon, Layout, Hover) |  Hoàn thành | Đã kiểm thử qua Browser Subagent tại localhost:3000 |
 | 5 | Xây dựng Mẫu CV số 2 (Warm Bold Ink & Tangerine) |  Chờ thực hiện | Mở rộng theo thiết kế CV v2 đã khảo sát |
 | 6 | Xây dựng Trang chủ (Menu & Danh sách Profile) |  Chờ thực hiện | Grid card profile, thanh tìm kiếm, filter theo ngành |
 | 7 | Xây dựng Trang CV cá nhân chi tiết (Public View) |  Chờ thực hiện | Chế độ chỉ xem, export PDF, liên hệ nhanh, share link |
@@ -41,9 +42,9 @@
 
 ---
 
-## 4. BƯỚC TIẾP THEO NGAY LẬP TỨC (NEXT IMMEDIATE STEPS)
-1. Cấu hình `@font-face` trong `src/styles/index.css` cho các font máy tính: `iCiel Cubano`, `SVN-Optima`, `Gilroy`, `Montserrat`.
-2. Cập nhật `tailwind.config.js` với các font families mới.
-3. Tinh chỉnh `src/features/cv-templates/template-1/CVTemplateClassicTeal.tsx` (sửa icon lệch, mở rộng sidebar 245px, bổ sung hover effects).
-4. Tinh chỉnh dữ liệu mẫu `src/data/mockCVData.ts` thoáng đãng, sang trọng, không bị rối.
-5. Kiểm tra trực tiếp trên trình duyệt `http://localhost:3000/`.
+## 4. BƯỚC TIẾP THEO (NEXT STEPS)
+1. Bạn mở lại trình duyệt tại `http://localhost:3000/` để thưởng thức diện mạo mới của Mẫu số 1 (font `iCiel Cubano` hiển thị tiếng Việt, thử đổi sang `SVN-Optima`, rê chuột vào dự án/email để xem tương tác).
+2. Quyết định bước tiếp theo:
+   - Làm tiếp Mẫu CV số 2 (Warm Bold v2), HOẶC
+   - Bắt đầu xây dựng Trang chủ (Menu khám phá profiles), HOẶC
+   - Bắt đầu xây dựng Trình chỉnh sửa CV động (Editor có nút + thêm mục).

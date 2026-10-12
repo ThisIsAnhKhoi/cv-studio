@@ -3,86 +3,71 @@
 @tailwind utilities;
 
 /* ==========================================================================
-   LOCAL FONTS (Trích xuất trực tiếp từ máy tính của bạn)
+   LOCAL FONTS BUNDLE (Tích hợp sẵn trong public/fonts để deploy Vercel/Render)
    ========================================================================== */
 
-/* 1. iCiel Cubano (Font Display việt hóa đầy đặn, phong cách ấn tượng) */
+/* 1. iCiel Cubano - Font Display việt hóa đậm chất Retro & Hiện đại */
 @font-face {
   font-family: 'iCiel Cubano';
   src: url('/fonts/iCielBCCubano-Normal.otf') format('opentype');
-  font-weight: normal;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
-/* 2. SVN-Optima (Font serif việt hóa thanh lịch, chuẩn mực, sang trọng) */
-@font-face {
-  font-family: 'SVN-Optima';
-  src: url('/fonts/SVN-Optima Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SVN-Optima';
-  src: url('/fonts/SVN-Optima DemiBold.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
+/* 2. SVN-Optima - Font Serif việt hóa cao cấp, sang trọng */
 @font-face {
   font-family: 'SVN-Optima';
   src: url('/fonts/SVN-Optima Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* 3. Gilroy (Font Sans-serif hình khối hiện đại) */
-@font-face {
-  font-family: 'Gilroy';
-  src: url('/fonts/Gilroy-Regular1.otf') format('opentype');
-  font-weight: 400;
+  font-weight: 600 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Gilroy';
-  src: url('/fonts/Gilroy-Medium1.otf') format('opentype');
-  font-weight: 500;
+  font-family: 'SVN-Optima';
+  src: url('/fonts/SVN-Optima Regular.otf') format('opentype');
+  font-weight: 100 500;
   font-style: normal;
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Gilroy';
-  src: url('/fonts/Gilroy-Semibold1.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
+/* 3. Gilroy - Font Sans-serif hình khối hiện đại chuẩn quốc tế */
 @font-face {
   font-family: 'Gilroy';
   src: url('/fonts/Gilroy-Bold1.otf') format('opentype');
-  font-weight: 700;
+  font-weight: 600 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Gilroy';
-  src: url('/fonts/Gilroy-Black1.otf') format('opentype');
-  font-weight: 900;
+  src: url('/fonts/Gilroy-Regular1.otf') format('opentype');
+  font-weight: 100 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 4. Montserrat */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Bold.otf') format('opentype');
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Regular.otf') format('opentype');
+  font-weight: 100 500;
   font-style: normal;
   font-display: swap;
 }
 
 /* ==========================================================================
-   THEME VARIABLES & BASE STYLES
+   BASE & THEME VARIABLES
    ========================================================================== */
 :root {
   --color-primary: #0E7C6B;
@@ -127,7 +112,7 @@
 }
 
 /* ==========================================================================
-   PRINT RULES (Xuất PDF chuẩn A4, loại bỏ hiệu ứng web khi in)
+   PRINT RULES (Chuẩn in ấn A4 quốc tế)
    ========================================================================== */
 @media print {
   @page {

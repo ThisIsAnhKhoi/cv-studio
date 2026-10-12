@@ -7,9 +7,9 @@ export const mockCVData: CVData = {
   isPublic: true,
   personalInfo: {
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    fullName: 'Nguyễn Lê Thanh Trúc',
+    fullName: 'Trần Anh Khôi',
     title: 'Giảng Viên Lập Trình & Full-stack Developer',
-    email: 'thanhtruc.dev@gmail.com',
+    email: 'thisisanhkhoi@gmail.com',
     phone: '0912 345 678',
     location: 'Quận 1, TP. Hồ Chí Minh',
     birthday: '15/08/2002',

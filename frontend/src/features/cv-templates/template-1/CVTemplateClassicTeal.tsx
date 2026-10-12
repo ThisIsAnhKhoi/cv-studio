@@ -92,22 +92,8 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
 
   const colors = getColorClasses(theme.primaryColorPreset || 'teal');
 
-  // Dynamic font class for headings
-  const getHeadingFontClass = () => {
-    switch (theme.fontHeading) {
-      case 'iCiel Cubano':
-        return 'font-cubano tracking-wide';
-      case 'SVN-Optima':
-        return 'font-optima tracking-normal font-bold';
-      case 'Gilroy':
-        return 'font-gilroy tracking-tight font-extrabold';
-      case 'Montserrat':
-        return 'font-montserrat tracking-tight font-extrabold';
-      case 'Be Vietnam Pro':
-      default:
-        return 'font-vietnam tracking-normal font-extrabold';
-    }
-  };
+  // Direct CSS inline style ensures 100% reliable font application across all headings
+  const headingFontFamily = `'${theme.fontHeading}', 'Be Vietnam Pro', sans-serif`;
 
   return (
     <div
@@ -121,7 +107,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
         {/* Accent Stripe at bottom */}
         <div className={`absolute bottom-0 left-0 right-0 h-1.5 ${colors.accentBorder}`} />
 
-        {/* Avatar with subtle hover zoom */}
+        {/* Avatar with hover effect */}
         <div className="relative shrink-0 group">
           <img
             src={personalInfo.avatarUrl}
@@ -134,12 +120,16 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
         {/* Name & Title */}
         <div className="flex-1 min-w-0">
           <h1
-            className={`text-2xl sm:text-3xl font-extrabold uppercase leading-tight text-white drop-shadow-sm ${getHeadingFontClass()}`}
+            className="text-2xl sm:text-3xl font-extrabold uppercase leading-tight text-white drop-shadow-sm tracking-wide"
+            style={{ fontFamily: headingFontFamily }}
           >
             {personalInfo.fullName}
           </h1>
 
-          <p className="text-sm sm:text-base text-white/95 font-medium tracking-wide mt-1.5 flex items-center gap-2">
+          <p
+            className="text-sm sm:text-base text-white/95 font-medium tracking-wide mt-1.5 flex items-center gap-2"
+            style={{ fontFamily: headingFontFamily }}
+          >
             <span>{personalInfo.title}</span>
           </p>
 
@@ -168,7 +158,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
         >
           {/* Contact Details with Interactive Click-to-Copy */}
           <section className="space-y-3">
-            <h2 className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}>
+            <h2
+              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}
+              style={{ fontFamily: headingFontFamily }}
+            >
               <Mail className="w-3.5 h-3.5 shrink-0" />
               <span>Thông Tin Liên Hệ</span>
             </h2>
@@ -254,7 +247,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
 
           {/* Education */}
           <section className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
-            <h2 className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}>
+            <h2
+              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}
+              style={{ fontFamily: headingFontFamily }}
+            >
               <GraduationCap className="w-4 h-4 shrink-0" />
               <span>Học Vấn</span>
             </h2>
@@ -262,7 +258,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
             <div className="space-y-3">
               {educations.map((edu) => (
                 <div key={edu.id} className="space-y-1 group hover:translate-x-1 transition-transform">
-                  <div className="font-bold text-[12px] text-slate-900 dark:text-white leading-tight">
+                  <div
+                    className="font-bold text-[12px] text-slate-900 dark:text-white leading-tight"
+                    style={{ fontFamily: headingFontFamily }}
+                  >
                     {edu.school}
                   </div>
                   <div className="text-[11.5px] font-medium text-slate-700 dark:text-slate-300">
@@ -283,7 +282,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
 
           {/* Skills Breakdown */}
           <section className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
-            <h2 className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}>
+            <h2
+              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}
+              style={{ fontFamily: headingFontFamily }}
+            >
               <Code2 className="w-4 h-4 shrink-0" />
               <span>Kỹ Năng</span>
             </h2>
@@ -291,7 +293,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
             <div className="space-y-3.5">
               {skillCategories.map((cat) => (
                 <div key={cat.id} className="space-y-1.5">
-                  <div className="font-semibold text-[11px] text-slate-800 dark:text-slate-200">
+                  <div
+                    className="font-semibold text-[11px] text-slate-800 dark:text-slate-200"
+                    style={{ fontFamily: headingFontFamily }}
+                  >
                     {cat.categoryName}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -312,7 +317,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
           {/* Certifications */}
           {certificates && certificates.length > 0 && (
             <section className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
-              <h2 className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}>
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}
+                style={{ fontFamily: headingFontFamily }}
+              >
                 <Award className="w-3.5 h-3.5 shrink-0" />
                 <span>Chứng Chỉ</span>
               </h2>
@@ -338,7 +346,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
         <main className="flex-1 px-8 py-6 space-y-6">
           {/* Summary / About Me */}
           <section className="space-y-2">
-            <h2 className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}>
+            <h2
+              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}
+              style={{ fontFamily: headingFontFamily }}
+            >
               <Sparkles className="w-3.5 h-3.5 shrink-0" />
               <span>Giới Thiệu Bản Thân</span>
             </h2>
@@ -349,7 +360,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
 
           {/* Work Experience */}
           <section className="space-y-3">
-            <h2 className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}>
+            <h2
+              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}
+              style={{ fontFamily: headingFontFamily }}
+            >
               <Briefcase className="w-4 h-4 shrink-0" />
               <span>Kinh Nghiệm Làm Việc</span>
             </h2>
@@ -366,7 +380,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                   />
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                    <h3 className="font-bold text-[13px] text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
+                    <h3
+                      className="font-bold text-[13px] text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors"
+                      style={{ fontFamily: headingFontFamily }}
+                    >
                       {exp.position}
                     </h3>
                     <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 shrink-0">
@@ -391,7 +408,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
 
           {/* Featured Projects with Perfectly Aligned Icon & Card Hover */}
           <section className="space-y-3">
-            <h2 className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}>
+            <h2
+              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}
+              style={{ fontFamily: headingFontFamily }}
+            >
               <Code2 className="w-4 h-4 shrink-0" />
               <span>Dự Án Tiêu Biểu</span>
             </h2>
@@ -409,7 +429,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                   <div className="flex items-center justify-between gap-2">
                     {/* Aligned Title with perfectly inline Icon */}
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <h3 className="font-bold text-[13px] text-slate-900 dark:text-white truncate">
+                      <h3
+                        className="font-bold text-[13px] text-slate-900 dark:text-white truncate"
+                        style={{ fontFamily: headingFontFamily }}
+                      >
                         {proj.name}
                       </h3>
                       {proj.link && (
@@ -454,7 +477,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
           {/* Achievements & Awards */}
           {achievements && achievements.length > 0 && (
             <section className="space-y-2.5">
-              <h2 className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}>
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}
+                style={{ fontFamily: headingFontFamily }}
+              >
                 <Award className="w-4 h-4 shrink-0" />
                 <span>Thành Tựu Nổi Bật</span>
               </h2>
