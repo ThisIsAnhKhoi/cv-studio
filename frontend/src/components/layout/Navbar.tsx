@@ -79,12 +79,12 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
             {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
           </button>
 
-          {/* Primary CTA */}
+          {/* Primary CTA: Go to Editor */}
           <Link
-            to="/cv/cv-thanhtruc-01"
+            to="/editor"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 active:scale-95 text-white font-semibold text-xs sm:text-sm shadow-md shadow-teal-700/20 hover:shadow-teal-700/30 transition-all duration-150 cursor-pointer"
           >
-            <span>Xem CV Mẫu</span>
+            <span>Tạo CV Của Bạn</span>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>

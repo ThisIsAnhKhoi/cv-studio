@@ -32,19 +32,20 @@
 | 1 | Khảo sát ý tưởng & Chuẩn hóa tài liệu (`docs/y_tuong.txt`) |  Hoàn thành | 9 phần đặc tả hoàn chỉnh |
 | 2 | Hệ thống Dev-Log & Handover cho Antigravity |  Hoàn thành | `docs/PROJECT_STATUS.md` và `.agents/rules/session-protocol.md` |
 | 3 | Khởi tạo cấu trúc Monorepo (`frontend/`, `backend/`, `docs/`) |  Hoàn thành | Đã tách bạch hoàn toàn front và back |
-| 4 | Xây dựng & Tinh chỉnh Mẫu CV số 1, 2, 3 |  Hoàn thành | Cả 3 mẫu hoàn thiện, Mẫu 1 đã duyệt |
-| 5 | Tích hợp Xuất PDF 1-Click & In ấn chuẩn A4 |  Hoàn thành | Đã tích hợp cả 2 phương thức |
-| 6 | **Giai đoạn 1: Routing & Trang chủ Khám phá (Home / Explore)** |  HOÀN THÀNH | Navbar, Hero, Search & Filter, Grid Profile Cards, Public CV view |
-| 7 | **Giai đoạn 2: Trình chỉnh sửa CV trực quan (CV Editor Dashboard)** | ⏳ Sẵn sàng | Nút (+) thêm mục động, Live Preview thời gian thực, Accordion form |
+| 4 | Xây dựng Mẫu CV nền tảng (V1) & Xuất PDF chuẩn A4 |  Hoàn thành | Bản nền tảng hỗ trợ in ấn & xuất PDF |
+| 5 | **Giai đoạn 1: Routing & Trang chủ Khám phá (Home / Explore)** |  HOÀN THÀNH | Navbar, Hero, Search & Filter, Grid Profile Cards, Public CV view |
+| 6 | **Giai đoạn 2: Trình chỉnh sửa CV trực quan (Interactive CV Editor)** |  HOÀN THÀNH & ĐÃ KIỂM CHỨNG | Bố cục 2 cột, form Accordion, Live Sync Real-time, (+) Thêm mục động, Auto-save LocalStorage |
+| 7 | **Kế hoạch Nâng cấp: Thiết kế Đột phá Thẩm mỹ các Mẫu CV (V2 Redesign)** | 📋 Sẵn sàng thực hiện | Thiết kế lại toàn bộ visual các mẫu CV theo chuẩn Editorial/Modern Quốc tế, viền mảnh hairline, nâng cấp typography |
 | 8 | **Giai đoạn 3: Backend API & Firebase Authentication** | ⏳ Chờ thực hiện | Đăng nhập/Đăng ký, bảo mật phân quyền chỉ chủ CV mới được sửa |
 | 9 | **Giai đoạn 4: Triển khai CI/CD lên Vercel & Render** | ⏳ Chờ thực hiện | Tự động deploy khi push lên nhánh main |
 
 ---
 
-## 4. BƯỚC TIẾP THEO (NEXT STEPS)
-1. Người dùng trải nghiệm Trang chủ Khám phá tại `http://localhost:3000/`:
-   - Thử thanh tìm kiếm theo tên hoặc kỹ năng.
-   - Thử các nút lọc theo ngành nghề (Lập trình, Thiết kế UI/UX, AI/Dữ liệu, Marketing, Nhân sự).
-   - Nhấp vào nút "Xem CV" để chuyển sang trang xem CV cá nhân độc lập và quay lại.
-2. Sẵn sàng khởi động **Giai đoạn 2: Trình tạo & Chỉnh sửa CV trực quan (Interactive CV Editor Dashboard)** với các form nhập liệu, nút (+) thêm mục kinh nghiệm/học vấn động và Live Preview tức thì theo từng phím gõ.
+## 4. CHI TIẾT KẾ HOẠCH BƯỚC TIẾP THEO (NEXT MILESTONES)
+
+### 🎯 Hạng mục kế tiếp sẵn sàng triển khai:
+1. **Lựa chọn 1**: Bắt tay vào **Kế hoạch Nâng Cấp Thẩm Mỹ Bộ Mẫu CV (Visual Redesign Sprint)** — Đại tu thiết kế cho Mẫu 1, Mẫu 2, Mẫu 3 để đạt đẳng cấp thiết kế quốc tế (Editorial, Minimalist Swiss, Modern Tech), loại bỏ nét thô sơ ban đầu.
+2. **Lựa chọn 2**: Tiếp tục sang **Giai đoạn 3: Backend API, Xác thực tài khoản & Cloud Database** — Đăng nhập/Đăng ký tài khoản và lưu CV lên đám mây (Cloud Firestore / Node.js).
+
+
 

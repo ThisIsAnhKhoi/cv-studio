@@ -1,0 +1,140 @@
+import React from 'react';
+import { ThemeConfig, ColorPreset, HeadingFontOption } from '../../../../types/cv';
+import { TEMPLATES_REGISTRY } from '../../../cv-templates/TemplateRegistry';
+import { Layout, Palette, Type, Check } from 'lucide-react';
+
+interface ThemeCustomizerSectionProps {
+  themeConfig: ThemeConfig;
+  onUpdateTheme: (updates: Partial<ThemeConfig>) => void;
+}
+
+export const ThemeCustomizerSection: React.FC<ThemeCustomizerSectionProps> = ({
+  themeConfig,
+  onUpdateTheme,
+}) => {
+  const colorPresets: { id: ColorPreset; label: string; bgClass: string; hex: string }[] = [
+    { id: 'teal', label: 'Teal Xanh Biển', bgClass: 'bg-[#0E7C6B]', hex: '#0E7C6B' },
+    { id: 'orange', label: 'Tangerine Cam Ấm', bgClass: 'bg-orange-600', hex: '#EA580C' },
+    { id: 'red', label: 'Crimson Đỏ Nhiệt', bgClass: 'bg-red-700', hex: '#B91C1C' },
+    { id: 'blue', label: 'Royal Blue Xanh Dương', bgClass: 'bg-blue-700', hex: '#1D4ED8' },
+    { id: 'purple', label: 'Violet Tím', bgClass: 'bg-purple-700', hex: '#7E22CE' },
+    { id: 'emerald', label: 'Emerald Xanh Ngọc', bgClass: 'bg-emerald-700', hex: '#047857' },
+  ];
+
+  const localFonts: { id: HeadingFontOption; label: string }[] = [
+    { id: 'Gilroy', label: 'Gilroy (Font máy hiện đại)' },
+    { id: 'iCiel Cubano', label: 'iCiel Cubano (Font máy đậm nét)' },
+    { id: 'SVN-Optima', label: 'SVN-Optima (Font máy thanh thoát)' },
+    { id: 'Be Vietnam Pro', label: 'Be Vietnam Pro (Chuẩn tiếng Việt)' },
+    { id: 'Montserrat', label: 'Montserrat (Font máy hình khối)' },
+  ];
+
+  return (
+    <div className="space-y-5">
+      {/* 1. Chọn Mẫu Template */}
+      <div>
+        <label className="block text-xs font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+          <Layout className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+          <span>Lựa Chọn Mẫu CV Tuyển Dụng</span>
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          {Object.values(TEMPLATES_REGISTRY).map((tmpl) => {
+            const isSelected = themeConfig.templateId === tmpl.id;
+            return (
+              <button
+                key={tmpl.id}
+                type="button"
+                onClick={() => {
+                  let defaultColor: ColorPreset = 'teal';
+                  if (tmpl.id === 'template-warm-bold') defaultColor = 'orange';
+                  if (tmpl.id === 'template-modern-minimal') defaultColor = 'red';
+                  onUpdateTheme({
+                    templateId: tmpl.id,
+                    primaryColorPreset: defaultColor,
+                  });
+                }}
+                className={`p-3 rounded-xl border text-left transition-all relative ${
+                  isSelected
+                    ? 'border-teal-500 bg-teal-50/80 dark:bg-teal-950/60 ring-2 ring-teal-500/30'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-300'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-bold text-xs text-slate-900 dark:text-white">
+                    {tmpl.name.split(':')[0]}
+                  </span>
+                  {isSelected && (
+                    <div className="w-4 h-4 rounded-full bg-teal-600 text-white flex items-center justify-center">
+                      <Check className="w-2.5 h-2.5" />
+                    </div>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
+                  {tmpl.description}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 2. Chọn Bảng Màu (Color Preset) */}
+      <div>
+        <label className="block text-xs font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+          <Palette className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+          <span>Bảng Màu Điểm Nhấn (Accent Color)</span>
+        </label>
+        <div className="flex flex-wrap items-center gap-3">
+          {colorPresets.map((c) => {
+            const isSelected = themeConfig.primaryColorPreset === c.id;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() =>
+                  onUpdateTheme({
+                    primaryColorPreset: c.id,
+                    primaryColor: c.hex,
+                  })
+                }
+                title={c.label}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                  isSelected
+                    ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-800 shadow-sm'
+                    : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-850'
+                }`}
+              >
+                <span className={`w-3.5 h-3.5 rounded-full ${c.bgClass} shrink-0`} />
+                <span className="text-slate-800 dark:text-slate-200">{c.label.split(' ')[0]}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. Chọn Font Chữ Tiêu Đề */}
+      <div>
+        <label className="block text-xs font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+          <Type className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+          <span>Font Chữ Tiêu Đề & Họ Tên</span>
+        </label>
+        <select
+          value={themeConfig.fontHeading}
+          onChange={(e) =>
+            onUpdateTheme({
+              fontHeading: e.target.value as HeadingFontOption,
+            })
+          }
+          className="w-full p-2.5 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-1 focus:ring-teal-500"
+        >
+          {localFonts.map((f) => (
+            <option key={f.id} value={f.id} className="dark:bg-slate-900 text-slate-900 dark:text-white">
+              {f.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+};
+export default ThemeCustomizerSection;

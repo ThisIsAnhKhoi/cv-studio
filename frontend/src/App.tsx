@@ -4,6 +4,7 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { HomePage } from './pages/HomePage';
 import { CVViewPage } from './pages/CVViewPage';
+import { CVEditorPage } from './pages/CVEditorPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export const App: React.FC = () => {
@@ -42,19 +43,23 @@ export const App: React.FC = () => {
             {/* Route 1: Home / Explore Directory */}
             <Route path="/" element={<HomePage />} />
 
-            {/* Route 2: Public CV View by id or slug */}
+            {/* Route 2: Interactive CV Editor Dashboard */}
+            <Route path="/editor" element={<CVEditorPage />} />
+            <Route path="/editor/:id" element={<CVEditorPage />} />
+
+            {/* Route 3: Public CV View by id or slug */}
             <Route
               path="/cv/:id"
               element={<CVViewPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
             />
 
-            {/* Route 2b: Alias /u/:id */}
+            {/* Route 3b: Alias /u/:id */}
             <Route
               path="/u/:id"
               element={<CVViewPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
             />
 
-            {/* Route 3: 404 Fallback */}
+            {/* Route 4: 404 Fallback */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>

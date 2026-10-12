@@ -20,6 +20,7 @@ import {
   Layout,
   Globe,
   ExternalLink,
+  Edit3,
 } from 'lucide-react';
 
 interface CVViewPageProps {
@@ -228,6 +229,16 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
                 <RotateCcw className="w-3 h-3" />
               </button>
             </div>
+
+            {/* Edit in Editor Button */}
+            <Link
+              to={`/editor/${id || cvData.id}`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-300 font-semibold text-xs border border-teal-200 dark:border-teal-800 transition-colors"
+              title="Mở trình chỉnh sửa CV này"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Chỉnh Sửa CV</span>
+            </Link>
 
             {/* Share Link Button */}
             <button
