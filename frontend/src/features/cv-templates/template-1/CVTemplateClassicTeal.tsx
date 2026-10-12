@@ -20,7 +20,7 @@ import {
 
 export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }) => {
   const { personalInfo, summary, experiences, educations, skillCategories, projects, achievements, certificates } = data;
-  const isDark = theme.darkMode;
+  const isDark = Boolean(theme.darkMode);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, label: string) => {
@@ -29,68 +29,97 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
     setTimeout(() => setCopiedItem(null), 2000);
   };
 
-  // Preset color definitions
-  const getColorClasses = (preset: string) => {
+  // Preset color definitions strictly controlled by CV theme's isDark (immune to website html.dark cascade)
+  const getColorClasses = (preset: string, dark: boolean) => {
     switch (preset) {
       case 'orange':
         return {
           headerBg: 'bg-gradient-to-r from-orange-600 to-amber-600',
           accentBorder: 'bg-amber-400',
-          sectionAccent: 'text-orange-600 dark:text-orange-400',
-          badgeBg: 'bg-orange-50 text-orange-800 dark:bg-orange-950/60 dark:text-orange-200 border-orange-200 dark:border-orange-800 hover:border-orange-400',
-          dotBg: 'bg-orange-600 dark:bg-orange-400',
-          hoverCardBorder: 'hover:border-orange-400 dark:hover:border-orange-600',
+          sectionAccent: dark ? 'text-orange-400' : 'text-orange-600',
+          badgeBg: dark
+            ? 'bg-orange-950/60 text-orange-200 border-orange-800 hover:border-orange-400'
+            : 'bg-orange-50 text-orange-800 border-orange-200 hover:border-orange-400',
+          dotBg: dark ? 'bg-orange-400' : 'bg-orange-600',
+          hoverCardBorder: dark ? 'hover:border-orange-500' : 'hover:border-orange-400',
         };
       case 'red':
         return {
           headerBg: 'bg-gradient-to-r from-red-700 to-rose-600',
           accentBorder: 'bg-rose-400',
-          sectionAccent: 'text-red-700 dark:text-red-400',
-          badgeBg: 'bg-red-50 text-red-800 dark:bg-red-950/60 dark:text-red-200 border-red-200 dark:border-red-800 hover:border-red-400',
-          dotBg: 'bg-red-700 dark:bg-red-400',
-          hoverCardBorder: 'hover:border-red-400 dark:hover:border-red-600',
+          sectionAccent: dark ? 'text-red-400' : 'text-red-700',
+          badgeBg: dark
+            ? 'bg-red-950/60 text-red-200 border-red-800 hover:border-red-400'
+            : 'bg-red-50 text-red-800 border-red-200 hover:border-red-400',
+          dotBg: dark ? 'bg-red-400' : 'bg-red-700',
+          hoverCardBorder: dark ? 'hover:border-red-500' : 'hover:border-red-400',
         };
       case 'blue':
         return {
           headerBg: 'bg-gradient-to-r from-blue-700 to-indigo-600',
           accentBorder: 'bg-sky-400',
-          sectionAccent: 'text-blue-700 dark:text-blue-400',
-          badgeBg: 'bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-200 border-blue-200 dark:border-blue-800 hover:border-blue-400',
-          dotBg: 'bg-blue-700 dark:bg-blue-400',
-          hoverCardBorder: 'hover:border-blue-400 dark:hover:border-blue-600',
+          sectionAccent: dark ? 'text-blue-400' : 'text-blue-700',
+          badgeBg: dark
+            ? 'bg-blue-950/60 text-blue-200 border-blue-800 hover:border-blue-400'
+            : 'bg-blue-50 text-blue-800 border-blue-200 hover:border-blue-400',
+          dotBg: dark ? 'bg-blue-400' : 'bg-blue-700',
+          hoverCardBorder: dark ? 'hover:border-blue-500' : 'hover:border-blue-400',
         };
       case 'purple':
         return {
           headerBg: 'bg-gradient-to-r from-purple-700 to-violet-600',
           accentBorder: 'bg-fuchsia-400',
-          sectionAccent: 'text-purple-700 dark:text-purple-400',
-          badgeBg: 'bg-purple-50 text-purple-800 dark:bg-purple-950/60 dark:text-purple-200 border-purple-200 dark:border-purple-800 hover:border-purple-400',
-          dotBg: 'bg-purple-700 dark:bg-purple-400',
-          hoverCardBorder: 'hover:border-purple-400 dark:hover:border-purple-600',
+          sectionAccent: dark ? 'text-purple-400' : 'text-purple-700',
+          badgeBg: dark
+            ? 'bg-purple-950/60 text-purple-200 border-purple-800 hover:border-purple-400'
+            : 'bg-purple-50 text-purple-800 border-purple-200 hover:border-purple-400',
+          dotBg: dark ? 'bg-purple-400' : 'bg-purple-700',
+          hoverCardBorder: dark ? 'hover:border-purple-500' : 'hover:border-purple-400',
         };
       case 'emerald':
         return {
           headerBg: 'bg-gradient-to-r from-emerald-700 to-teal-600',
           accentBorder: 'bg-emerald-300',
-          sectionAccent: 'text-emerald-700 dark:text-emerald-400',
-          badgeBg: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800 hover:border-emerald-400',
-          dotBg: 'bg-emerald-700 dark:bg-emerald-400',
-          hoverCardBorder: 'hover:border-emerald-400 dark:hover:border-emerald-600',
+          sectionAccent: dark ? 'text-emerald-400' : 'text-emerald-700',
+          badgeBg: dark
+            ? 'bg-emerald-950/60 text-emerald-200 border-emerald-800 hover:border-emerald-400'
+            : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:border-emerald-400',
+          dotBg: dark ? 'bg-emerald-400' : 'bg-emerald-700',
+          hoverCardBorder: dark ? 'hover:border-emerald-500' : 'hover:border-emerald-400',
         };
       case 'teal':
       default:
         return {
           headerBg: 'bg-gradient-to-r from-[#0E7C6B] to-[#0A6456]',
           accentBorder: 'bg-[#E86C50]',
-          sectionAccent: 'text-[#0E7C6B] dark:text-teal-400',
-          badgeBg: 'bg-teal-50 text-teal-900 dark:bg-teal-950/60 dark:text-teal-200 border-teal-200 dark:border-teal-800 hover:border-teal-400',
-          dotBg: 'bg-[#0E7C6B] dark:bg-teal-400',
-          hoverCardBorder: 'hover:border-teal-400 dark:hover:border-teal-600',
+          sectionAccent: dark ? 'text-teal-400' : 'text-[#0E7C6B]',
+          badgeBg: dark
+            ? 'bg-teal-950/60 text-teal-200 border-teal-800 hover:border-teal-400'
+            : 'bg-teal-50 text-teal-900 border-teal-200 hover:border-teal-400',
+          dotBg: dark ? 'bg-teal-400' : 'bg-[#0E7C6B]',
+          hoverCardBorder: dark ? 'hover:border-teal-500' : 'hover:border-teal-400',
         };
     }
   };
 
-  const colors = getColorClasses(theme.primaryColorPreset || 'teal');
+  const colors = getColorClasses(theme.primaryColorPreset || 'teal', isDark);
+
+  // Surface and typography tokens strictly bound to isDark
+  const tc = {
+    title: isDark ? 'text-white' : 'text-slate-900',
+    subtitle: isDark ? 'text-slate-200' : 'text-slate-800',
+    body: isDark ? 'text-slate-300' : 'text-slate-700',
+    bodyMuted: isDark ? 'text-slate-400' : 'text-slate-600',
+    meta: isDark ? 'text-slate-400' : 'text-slate-500',
+    border: isDark ? 'border-slate-800' : 'border-slate-200',
+    borderTimeline: isDark ? 'border-slate-700' : 'border-slate-200',
+    sidebarBg: isDark ? 'bg-slate-950/70 border-slate-800 text-slate-300' : 'bg-slate-50/90 border-slate-200 text-slate-600',
+    hoverRow: isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50/80',
+    hoverLink: isDark ? 'hover:bg-slate-800/60' : 'hover:bg-slate-200/60',
+    cardBg: isDark ? 'bg-slate-800/40 border-slate-700/80 hover:border-slate-600' : 'bg-slate-50/70 border-slate-200 hover:border-slate-300',
+    tagBg: isDark ? 'bg-slate-700/70 text-slate-300' : 'bg-slate-200/80 text-slate-700',
+    gpaColor: isDark ? 'text-teal-400' : 'text-teal-700',
+  };
 
   // Direct CSS inline style ensures 100% reliable font application across all headings
   const headingFontFamily = `'${theme.fontHeading}', 'Be Vietnam Pro', sans-serif`;
@@ -152,9 +181,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
       <div className="flex flex-col md:flex-row print:flex-row min-h-[calc(297mm-125px)]">
         {/* ================= LEFT SIDEBAR (Width 245px) ================= */}
         <aside
-          className={`w-full md:w-[245px] print:w-[235px] shrink-0 px-6 py-6 space-y-6 text-xs border-r ${
-            isDark ? 'bg-slate-950/70 border-slate-800 text-slate-300' : 'bg-slate-50/90 border-slate-200 text-slate-600'
-          }`}
+          className={`w-full md:w-[245px] print:w-[235px] shrink-0 px-6 py-6 space-y-6 text-xs border-r ${tc.sidebarBg}`}
         >
           {/* Contact Details with Interactive Click-to-Copy */}
           <section className="space-y-3">
@@ -170,14 +197,14 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               {/* Email */}
               <div
                 onClick={() => copyToClipboard(personalInfo.email, 'email')}
-                className="group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
+                className={`group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg ${tc.hoverLink} transition-colors cursor-pointer`}
                 title="Nhấn để sao chép email"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <Mail className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
                   <span className="truncate">{personalInfo.email}</span>
                 </div>
-                <span className="shrink-0 text-[10px] text-teal-600 dark:text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity ml-1">
+                <span className={`shrink-0 text-[10px] ${colors.sectionAccent} opacity-0 group-hover:opacity-100 transition-opacity ml-1`}>
                   {copiedItem === 'email' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                 </span>
               </div>
@@ -185,7 +212,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               {/* Phone */}
               <a
                 href={`tel:${personalInfo.phone}`}
-                className="group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors"
+                className={`group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg ${tc.hoverLink} transition-colors`}
                 title="Gọi điện thoại"
               >
                 <div className="flex items-center gap-2 min-w-0">
@@ -200,7 +227,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                   href={personalInfo.website}
                   target="_blank"
                   rel="noreferrer"
-                  className="group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors"
+                  className={`group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg ${tc.hoverLink} transition-colors`}
                   title="Mở website"
                 >
                   <div className="flex items-center gap-2 min-w-0">
@@ -217,7 +244,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                   href={`https://${personalInfo.github}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors"
+                  className={`group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg ${tc.hoverLink} transition-colors`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Github className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
@@ -233,7 +260,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                   href={`https://${personalInfo.linkedin}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors"
+                  className={`group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg ${tc.hoverLink} transition-colors`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Linkedin className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
@@ -246,7 +273,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
           </section>
 
           {/* Education */}
-          <section className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+          <section className={`space-y-3 pt-3 border-t ${tc.border}`}>
             <h2
               className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}
               style={{ fontFamily: headingFontFamily }}
@@ -259,19 +286,19 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               {educations.map((edu) => (
                 <div key={edu.id} className="space-y-1 group hover:translate-x-1 transition-transform">
                   <div
-                    className="font-bold text-[12px] text-slate-900 dark:text-white leading-tight"
+                    className={`font-bold text-[12px] ${tc.title} leading-tight`}
                     style={{ fontFamily: headingFontFamily }}
                   >
                     {edu.school}
                   </div>
-                  <div className="text-[11.5px] font-medium text-slate-700 dark:text-slate-300">
+                  <div className={`text-[11.5px] font-medium ${tc.body}`}>
                     {edu.degree}
                   </div>
-                  <div className="text-[10.5px] text-slate-500 dark:text-slate-400 flex justify-between">
+                  <div className={`text-[10.5px] ${tc.meta} flex justify-between`}>
                     <span>{edu.startDate} – {edu.endDate}</span>
                   </div>
                   {edu.gpa && (
-                    <div className="text-[10.5px] font-semibold text-teal-700 dark:text-teal-400">
+                    <div className={`text-[10.5px] font-semibold ${tc.gpaColor}`}>
                       GPA: {edu.gpa}
                     </div>
                   )}
@@ -281,7 +308,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
           </section>
 
           {/* Skills Breakdown */}
-          <section className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+          <section className={`space-y-3 pt-3 border-t ${tc.border}`}>
             <h2
               className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}
               style={{ fontFamily: headingFontFamily }}
@@ -294,7 +321,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               {skillCategories.map((cat) => (
                 <div key={cat.id} className="space-y-1.5">
                   <div
-                    className="font-semibold text-[11px] text-slate-800 dark:text-slate-200"
+                    className={`font-semibold text-[11px] ${tc.subtitle}`}
                     style={{ fontFamily: headingFontFamily }}
                   >
                     {cat.categoryName}
@@ -316,7 +343,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
 
           {/* Certifications */}
           {certificates && certificates.length > 0 && (
-            <section className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <section className={`space-y-3 pt-3 border-t ${tc.border}`}>
               <h2
                 className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-1.5`}
                 style={{ fontFamily: headingFontFamily }}
@@ -328,10 +355,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               <div className="space-y-2 text-[11px]">
                 {certificates.map((cert) => (
                   <div key={cert.id} className="space-y-0.5 group hover:translate-x-1 transition-transform">
-                    <div className="font-semibold text-slate-800 dark:text-slate-200 leading-snug">
+                    <div className={`font-semibold ${tc.subtitle} leading-snug`}>
                       {cert.name}
                     </div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 flex justify-between">
+                    <div className={`text-[10px] ${tc.meta} flex justify-between`}>
                       <span>{cert.issuer}</span>
                       <span>{cert.issueDate}</span>
                     </div>
@@ -347,13 +374,13 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
           {/* Summary / About Me */}
           <section className="space-y-2">
             <h2
-              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}
+              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b ${tc.border}`}
               style={{ fontFamily: headingFontFamily }}
             >
               <Sparkles className="w-3.5 h-3.5 shrink-0" />
               <span>Giới Thiệu Bản Thân</span>
             </h2>
-            <p className="text-[12.5px] leading-relaxed text-slate-700 dark:text-slate-300 text-justify">
+            <p className={`text-[12.5px] leading-relaxed ${tc.body} text-justify`}>
               {summary}
             </p>
           </section>
@@ -361,7 +388,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
           {/* Work Experience */}
           <section className="space-y-3">
             <h2
-              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}
+              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b ${tc.border}`}
               style={{ fontFamily: headingFontFamily }}
             >
               <Briefcase className="w-4 h-4 shrink-0" />
@@ -372,7 +399,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               {experiences.map((exp) => (
                 <div
                   key={exp.id}
-                  className="relative pl-4 border-l-2 border-slate-200 dark:border-slate-700 space-y-1.5 group p-2 -ml-2 rounded-lg hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-all duration-200 cursor-default"
+                  className={`relative pl-4 border-l-2 ${tc.borderTimeline} space-y-1.5 group p-2 -ml-2 rounded-lg ${tc.hoverRow} transition-all duration-200 cursor-default`}
                 >
                   {/* Timeline dot */}
                   <div
@@ -381,22 +408,22 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <h3
-                      className="font-bold text-[13px] text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors"
+                      className={`font-bold text-[13px] ${tc.title} transition-colors`}
                       style={{ fontFamily: headingFontFamily }}
                     >
                       {exp.position}
                     </h3>
-                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 shrink-0">
+                    <span className={`text-[11px] font-semibold ${tc.meta} shrink-0`}>
                       {exp.startDate} – {exp.endDate}
                     </span>
                   </div>
 
-                  <div className="text-[12px] font-semibold text-slate-700 dark:text-slate-300">
+                  <div className={`text-[12px] font-semibold ${tc.body}`}>
                     {exp.company}
-                    {exp.location && <span className="text-slate-400 font-normal"> • {exp.location}</span>}
+                    {exp.location && <span className={`${tc.meta} font-normal`}> • {exp.location}</span>}
                   </div>
 
-                  <ul className="space-y-1 text-[12px] text-slate-600 dark:text-slate-300 list-disc list-outside pl-4 leading-relaxed">
+                  <ul className={`space-y-1 text-[12px] ${tc.bodyMuted} list-disc list-outside pl-4 leading-relaxed`}>
                     {exp.descriptions.map((desc, idx) => (
                       <li key={idx}>{desc}</li>
                     ))}
@@ -409,7 +436,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
           {/* Featured Projects with Perfectly Aligned Icon & Card Hover */}
           <section className="space-y-3">
             <h2
-              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}
+              className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b ${tc.border}`}
               style={{ fontFamily: headingFontFamily }}
             >
               <Code2 className="w-4 h-4 shrink-0" />
@@ -420,17 +447,13 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               {projects.map((proj) => (
                 <div
                   key={proj.id}
-                  className={`p-3.5 rounded-xl border transition-all duration-200 space-y-2 group hover:-translate-y-0.5 hover:shadow-md ${
-                    isDark
-                      ? 'bg-slate-800/40 border-slate-700/80 hover:border-slate-600'
-                      : 'bg-slate-50/70 border-slate-200 hover:border-slate-300'
-                  } ${colors.hoverCardBorder}`}
+                  className={`p-3.5 rounded-xl border transition-all duration-200 space-y-2 group hover:-translate-y-0.5 hover:shadow-md ${tc.cardBg} ${colors.hoverCardBorder}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     {/* Aligned Title with perfectly inline Icon */}
                     <div className="flex items-center gap-1.5 min-w-0">
                       <h3
-                        className="font-bold text-[13px] text-slate-900 dark:text-white truncate"
+                        className={`font-bold text-[13px] ${tc.title} truncate`}
                         style={{ fontFamily: headingFontFamily }}
                       >
                         {proj.name}
@@ -440,7 +463,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                           href={proj.link}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center justify-center p-1 rounded hover:bg-slate-200/80 dark:hover:bg-slate-700 text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors shrink-0"
+                          className={`inline-flex items-center justify-center p-1 rounded ${tc.hoverLink} text-slate-400 hover:${colors.sectionAccent} transition-colors shrink-0`}
                           title="Xem dự án trực tuyến"
                         >
                           <ExternalLink className="w-3.5 h-3.5 shrink-0" />
@@ -448,12 +471,12 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                       )}
                     </div>
 
-                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 italic shrink-0">
+                    <span className={`text-[11px] font-medium ${tc.meta} italic shrink-0`}>
                       {proj.role}
                     </span>
                   </div>
 
-                  <p className="text-[11.5px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className={`text-[11.5px] ${tc.bodyMuted} leading-relaxed`}>
                     {proj.description}
                   </p>
 
@@ -461,9 +484,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                     {proj.techStack.map((tech, idx) => (
                       <span
                         key={idx}
-                        className={`text-[10px] px-2 py-0.5 font-medium rounded-md transition-colors ${
-                          isDark ? 'bg-slate-700/70 text-slate-300' : 'bg-slate-200/80 text-slate-700'
-                        }`}
+                        className={`text-[10px] px-2 py-0.5 font-medium rounded-md transition-colors ${tc.tagBg}`}
                       >
                         {tech}
                       </span>
@@ -478,7 +499,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
           {achievements && achievements.length > 0 && (
             <section className="space-y-2.5">
               <h2
-                className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b border-slate-200 dark:border-slate-800`}
+                className={`text-xs font-bold uppercase tracking-wider ${colors.sectionAccent} flex items-center gap-2 pb-1 border-b ${tc.border}`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 <Award className="w-4 h-4 shrink-0" />
@@ -490,10 +511,10 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                   <div key={ach.id} className="flex items-start gap-2.5 text-[11.5px] group hover:translate-x-1 transition-transform">
                     <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${colors.dotBg}`} />
                     <div>
-                      <span className="font-bold text-slate-900 dark:text-white">{ach.title}</span>
-                      <span className="text-slate-500 dark:text-slate-400"> ({ach.issuer}, {ach.year})</span>
+                      <span className={`font-bold ${tc.title}`}>{ach.title}</span>
+                      <span className={tc.meta}> ({ach.issuer}, {ach.year})</span>
                       {ach.description && (
-                        <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">{ach.description}</p>
+                        <p className={`text-[11px] ${tc.bodyMuted} mt-0.5`}>{ach.description}</p>
                       )}
                     </div>
                   </div>

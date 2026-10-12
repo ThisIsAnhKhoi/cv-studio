@@ -15,13 +15,12 @@ import {
   ExternalLink,
   Copy,
   Check,
-  User,
   Star,
 } from 'lucide-react';
 
 export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme }) => {
   const { personalInfo, summary, experiences, educations, skillCategories, projects, achievements, certificates } = data;
-  const isDark = theme.darkMode;
+  const isDark = Boolean(theme.darkMode);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, label: string) => {
@@ -30,74 +29,102 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
     setTimeout(() => setCopiedItem(null), 2000);
   };
 
-  // Color preset mapping for Modern Minimal style
-  const getThemeColors = (preset: string) => {
+  // Color preset mapping strictly conditioned on isDark
+  const getThemeColors = (preset: string, dark: boolean) => {
     switch (preset) {
       case 'orange':
         return {
-          primary: 'text-orange-600 dark:text-orange-400',
+          primary: dark ? 'text-orange-400' : 'text-orange-600',
           bgAccent: 'bg-orange-600',
           borderAccent: 'border-orange-500',
-          lightBadge: 'bg-orange-50 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300 border-orange-200 dark:border-orange-800',
-          hoverBorder: 'hover:border-orange-400 dark:hover:border-orange-600',
-          tagBg: 'bg-orange-100/70 text-orange-900 dark:bg-orange-900/40 dark:text-orange-200',
-          iconBg: 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300',
+          lightBadge: dark
+            ? 'bg-orange-950/60 text-orange-200 border-orange-800'
+            : 'bg-orange-50 text-orange-800 border-orange-200',
+          hoverBorder: dark ? 'hover:border-orange-500' : 'hover:border-orange-400',
+          tagBg: dark ? 'bg-orange-900/40 text-orange-200' : 'bg-orange-100/70 text-orange-900',
+          iconBg: dark ? 'bg-orange-950 text-orange-300' : 'bg-orange-100 text-orange-700',
         };
       case 'teal':
         return {
-          primary: 'text-teal-600 dark:text-teal-400',
+          primary: dark ? 'text-teal-400' : 'text-teal-600',
           bgAccent: 'bg-teal-600',
           borderAccent: 'border-teal-500',
-          lightBadge: 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800',
-          hoverBorder: 'hover:border-teal-400 dark:hover:border-teal-600',
-          tagBg: 'bg-teal-100/70 text-teal-900 dark:bg-teal-900/40 dark:text-teal-200',
-          iconBg: 'bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300',
+          lightBadge: dark
+            ? 'bg-teal-950/60 text-teal-200 border-teal-800'
+            : 'bg-teal-50 text-teal-800 border-teal-200',
+          hoverBorder: dark ? 'hover:border-teal-500' : 'hover:border-teal-400',
+          tagBg: dark ? 'bg-teal-900/40 text-teal-200' : 'bg-teal-100/70 text-teal-900',
+          iconBg: dark ? 'bg-teal-950 text-teal-300' : 'bg-teal-100 text-teal-700',
         };
       case 'blue':
         return {
-          primary: 'text-blue-600 dark:text-blue-400',
+          primary: dark ? 'text-blue-400' : 'text-blue-600',
           bgAccent: 'bg-blue-600',
           borderAccent: 'border-blue-500',
-          lightBadge: 'bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-          hoverBorder: 'hover:border-blue-400 dark:hover:border-blue-600',
-          tagBg: 'bg-blue-100/70 text-blue-900 dark:bg-blue-900/40 dark:text-blue-200',
-          iconBg: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+          lightBadge: dark
+            ? 'bg-blue-950/60 text-blue-200 border-blue-800'
+            : 'bg-blue-50 text-blue-800 border-blue-200',
+          hoverBorder: dark ? 'hover:border-blue-500' : 'hover:border-blue-400',
+          tagBg: dark ? 'bg-blue-900/40 text-blue-200' : 'bg-blue-100/70 text-blue-900',
+          iconBg: dark ? 'bg-blue-950 text-blue-300' : 'bg-blue-100 text-blue-700',
         };
       case 'purple':
         return {
-          primary: 'text-purple-600 dark:text-purple-400',
+          primary: dark ? 'text-purple-400' : 'text-purple-600',
           bgAccent: 'bg-purple-600',
           borderAccent: 'border-purple-500',
-          lightBadge: 'bg-purple-50 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800',
-          hoverBorder: 'hover:border-purple-400 dark:hover:border-purple-600',
-          tagBg: 'bg-purple-100/70 text-purple-900 dark:bg-purple-900/40 dark:text-purple-200',
-          iconBg: 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
+          lightBadge: dark
+            ? 'bg-purple-950/60 text-purple-200 border-purple-800'
+            : 'bg-purple-50 text-purple-800 border-purple-200',
+          hoverBorder: dark ? 'hover:border-purple-500' : 'hover:border-purple-400',
+          tagBg: dark ? 'bg-purple-900/40 text-purple-200' : 'bg-purple-100/70 text-purple-900',
+          iconBg: dark ? 'bg-purple-950 text-purple-300' : 'bg-purple-100 text-purple-700',
         };
       case 'emerald':
         return {
-          primary: 'text-emerald-600 dark:text-emerald-400',
+          primary: dark ? 'text-emerald-400' : 'text-emerald-600',
           bgAccent: 'bg-emerald-600',
           borderAccent: 'border-emerald-500',
-          lightBadge: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
-          hoverBorder: 'hover:border-emerald-400 dark:hover:border-emerald-600',
-          tagBg: 'bg-emerald-100/70 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-200',
-          iconBg: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+          lightBadge: dark
+            ? 'bg-emerald-950/60 text-emerald-200 border-emerald-800'
+            : 'bg-emerald-50 text-emerald-800 border-emerald-200',
+          hoverBorder: dark ? 'hover:border-emerald-500' : 'hover:border-emerald-400',
+          tagBg: dark ? 'bg-emerald-900/40 text-emerald-200' : 'bg-emerald-100/70 text-emerald-900',
+          iconBg: dark ? 'bg-emerald-950 text-emerald-300' : 'bg-emerald-100 text-emerald-700',
         };
       case 'red':
       default:
         return {
-          primary: 'text-[#D92D20] dark:text-rose-400',
+          primary: dark ? 'text-rose-400' : 'text-[#D92D20]',
           bgAccent: 'bg-[#D92D20]',
           borderAccent: 'border-[#D92D20]',
-          lightBadge: 'bg-red-50 text-red-800 dark:bg-red-950/60 dark:text-red-300 border-red-200 dark:border-red-800',
-          hoverBorder: 'hover:border-rose-400 dark:hover:border-rose-600',
-          tagBg: 'bg-red-100/70 text-red-900 dark:bg-red-900/40 dark:text-red-200',
-          iconBg: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+          lightBadge: dark
+            ? 'bg-red-950/60 text-red-200 border-red-800'
+            : 'bg-red-50 text-red-800 border-red-200',
+          hoverBorder: dark ? 'hover:border-rose-500' : 'hover:border-rose-400',
+          tagBg: dark ? 'bg-red-900/40 text-red-200' : 'bg-red-100/70 text-red-900',
+          iconBg: dark ? 'bg-red-950 text-red-300' : 'bg-red-100 text-red-700',
         };
     }
   };
 
-  const colors = getThemeColors(theme.primaryColorPreset || 'red');
+  const colors = getThemeColors(theme.primaryColorPreset || 'red', isDark);
+
+  // Surface and typography tokens strictly bound to isDark
+  const tc = {
+    title: isDark ? 'text-white' : 'text-slate-900',
+    subtitle: isDark ? 'text-slate-200' : 'text-slate-800',
+    body: isDark ? 'text-slate-300' : 'text-slate-700',
+    bodyMuted: isDark ? 'text-slate-400' : 'text-slate-600',
+    meta: isDark ? 'text-slate-400' : 'text-slate-500',
+    border: isDark ? 'border-slate-800' : 'border-slate-200/90',
+    borderStrong: isDark ? 'border-white' : 'border-slate-900',
+    hoverRow: isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50',
+    cardBorder: isDark ? 'border-slate-800' : 'border-slate-200',
+    tagPill: isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600',
+    gpaColor: isDark ? 'text-rose-400' : 'text-red-600',
+  };
+
   const headingFontFamily = `'${theme.fontHeading}', 'Be Vietnam Pro', sans-serif`;
 
   return (
@@ -108,7 +135,7 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
       style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
     >
       {/* ================= TOP MODERN HEADER ================= */}
-      <header className="p-8 pb-6 border-b border-slate-200/90 dark:border-slate-800 relative">
+      <header className={`p-8 pb-6 border-b ${tc.border} relative`}>
         {/* Subtle Top Accent Line */}
         <div className={`absolute top-0 left-0 right-0 h-1.5 ${colors.bgAccent}`} />
 
@@ -130,7 +157,7 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
             {/* Name, Title, Bio Tagline */}
             <div>
               <h1
-                className="text-2xl sm:text-3xl font-extrabold uppercase leading-tight text-slate-900 dark:text-white tracking-wide"
+                className={`text-2xl sm:text-3xl font-extrabold uppercase leading-tight ${tc.title} tracking-wide`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 {personalInfo.fullName}
@@ -143,14 +170,14 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
                 >
                   {personalInfo.title}
                 </span>
-                <span className="text-slate-300 dark:text-slate-700">•</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                <span className={tc.meta}>•</span>
+                <span className={`text-xs ${tc.meta} font-medium`}>
                   {personalInfo.location}
                 </span>
               </div>
 
               {/* Bio summary crisp */}
-              <p className="text-[12px] text-slate-600 dark:text-slate-300 mt-2 max-w-xl leading-relaxed">
+              <p className={`text-[12px] ${tc.bodyMuted} mt-2 max-w-xl leading-relaxed`}>
                 {summary}
               </p>
             </div>
@@ -158,16 +185,16 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
         </div>
 
         {/* Contact Strip Banner */}
-        <div className="mt-5 pt-4 border-t border-dashed border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className={`mt-5 pt-4 border-t border-dashed ${tc.border} flex flex-wrap items-center justify-between gap-3 text-xs`}>
           <div
             onClick={() => copyToClipboard(personalInfo.email, 'min-email')}
-            className="flex items-center gap-2 group cursor-pointer hover:text-red-600 transition-colors"
+            className={`flex items-center gap-2 group cursor-pointer hover:${colors.primary} transition-colors`}
             title="Nhấn để sao chép email"
           >
             <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
               <Mail className="w-3 h-3 shrink-0" />
             </div>
-            <span className="font-medium text-[11.5px] text-slate-700 dark:text-slate-300">{personalInfo.email}</span>
+            <span className={`font-medium text-[11.5px] ${tc.body}`}>{personalInfo.email}</span>
             {copiedItem === 'min-email' ? (
               <Check className="w-3 h-3 text-emerald-500" />
             ) : (
@@ -177,12 +204,12 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
 
           <a
             href={`tel:${personalInfo.phone}`}
-            className="flex items-center gap-2 hover:text-red-600 transition-colors"
+            className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
           >
             <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
               <Phone className="w-3 h-3 shrink-0" />
             </div>
-            <span className="font-medium text-[11.5px] text-slate-700 dark:text-slate-300">{personalInfo.phone}</span>
+            <span className={`font-medium text-[11.5px] ${tc.body}`}>{personalInfo.phone}</span>
           </a>
 
           {personalInfo.website && (
@@ -190,12 +217,12 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
               href={personalInfo.website}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 hover:text-red-600 transition-colors"
+              className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
             >
               <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
                 <Globe className="w-3 h-3 shrink-0" />
               </div>
-              <span className="font-medium text-[11.5px] text-slate-700 dark:text-slate-300">{personalInfo.website.replace('https://', '')}</span>
+              <span className={`font-medium text-[11.5px] ${tc.body}`}>{personalInfo.website.replace('https://', '')}</span>
             </a>
           )}
 
@@ -204,12 +231,12 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
               href={`https://${personalInfo.github}`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 hover:text-red-600 transition-colors"
+              className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
             >
               <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
                 <Github className="w-3 h-3 shrink-0" />
               </div>
-              <span className="font-medium text-[11.5px] text-slate-700 dark:text-slate-300">{personalInfo.github}</span>
+              <span className={`font-medium text-[11.5px] ${tc.body}`}>{personalInfo.github}</span>
             </a>
           )}
         </div>
@@ -221,10 +248,10 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
         <div className="space-y-6">
           {/* Work Experience */}
           <section className="space-y-3.5">
-            <div className="flex items-center gap-2 pb-1.5 border-b-2 border-slate-900 dark:border-white">
+            <div className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}>
               <Briefcase className={`w-4 h-4 shrink-0 ${colors.primary}`} />
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white"
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 Kinh Nghiệm Làm Việc
@@ -235,26 +262,26 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
               {experiences.map((exp) => (
                 <div
                   key={exp.id}
-                  className="space-y-1.5 p-2 -mx-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+                  className={`space-y-1.5 p-2 -mx-2 rounded-xl ${tc.hoverRow} transition-colors`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
                     <h3
-                      className="font-bold text-[13px] text-slate-900 dark:text-white"
+                      className={`font-bold text-[13px] ${tc.title}`}
                       style={{ fontFamily: headingFontFamily }}
                     >
                       {exp.position}
                     </h3>
-                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0">
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${tc.tagPill} shrink-0`}>
                       {exp.startDate} – {exp.endDate}
                     </span>
                   </div>
 
-                  <div className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                  <div className={`text-[12px] font-semibold ${tc.body} flex items-center gap-2`}>
                     <span>{exp.company}</span>
-                    {exp.location && <span className="text-slate-400 font-normal">• {exp.location}</span>}
+                    {exp.location && <span className={`${tc.meta} font-normal`}>• {exp.location}</span>}
                   </div>
 
-                  <ul className="space-y-1 text-[11.5px] text-slate-600 dark:text-slate-300 list-disc list-outside pl-4 leading-relaxed">
+                  <ul className={`space-y-1 text-[11.5px] ${tc.bodyMuted} list-disc list-outside pl-4 leading-relaxed`}>
                     {exp.descriptions.map((desc, idx) => (
                       <li key={idx}>{desc}</li>
                     ))}
@@ -266,10 +293,10 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
 
           {/* Featured Projects */}
           <section className="space-y-3.5">
-            <div className="flex items-center gap-2 pb-1.5 border-b-2 border-slate-900 dark:border-white">
+            <div className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}>
               <Code2 className={`w-4 h-4 shrink-0 ${colors.primary}`} />
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white"
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 Dự Án Nổi Bật
@@ -280,12 +307,12 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
               {projects.map((proj) => (
                 <div
                   key={proj.id}
-                  className={`p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-sm transition-all space-y-1.5 ${colors.hoverBorder}`}
+                  className={`p-3 rounded-xl border ${tc.cardBorder} hover:shadow-sm transition-all space-y-1.5 ${colors.hoverBorder}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <h3
-                        className="font-bold text-[12.5px] text-slate-900 dark:text-white truncate"
+                        className={`font-bold text-[12.5px] ${tc.title} truncate`}
                         style={{ fontFamily: headingFontFamily }}
                       >
                         {proj.name}
@@ -295,18 +322,18 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
                           href={proj.link}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center text-slate-400 hover:text-red-600 transition-colors"
+                          className={`inline-flex items-center text-slate-400 hover:${colors.primary} transition-colors`}
                         >
                           <ExternalLink className="w-3 h-3 shrink-0" />
                         </a>
                       )}
                     </div>
-                    <span className="text-[10.5px] font-medium text-slate-500 dark:text-slate-400 italic shrink-0">
+                    <span className={`text-[10.5px] font-medium ${tc.meta} italic shrink-0`}>
                       {proj.role}
                     </span>
                   </div>
 
-                  <p className="text-[11.5px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className={`text-[11.5px] ${tc.bodyMuted} leading-relaxed`}>
                     {proj.description}
                   </p>
 
@@ -330,10 +357,10 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
         <div className="space-y-6">
           {/* Skills Breakdown */}
           <section className="space-y-3.5">
-            <div className="flex items-center gap-2 pb-1.5 border-b-2 border-slate-900 dark:border-white">
+            <div className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}>
               <Code2 className={`w-4 h-4 shrink-0 ${colors.primary}`} />
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white"
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 Kỹ Năng Chuyên Môn
@@ -344,7 +371,7 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
               {skillCategories.map((cat) => (
                 <div key={cat.id} className="space-y-1.5">
                   <div
-                    className="font-semibold text-[11px] text-slate-800 dark:text-slate-200"
+                    className={`font-semibold text-[11px] ${tc.subtitle}`}
                     style={{ fontFamily: headingFontFamily }}
                   >
                     {cat.categoryName}
@@ -366,10 +393,10 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
 
           {/* Education */}
           <section className="space-y-3.5">
-            <div className="flex items-center gap-2 pb-1.5 border-b-2 border-slate-900 dark:border-white">
+            <div className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}>
               <GraduationCap className={`w-4 h-4 shrink-0 ${colors.primary}`} />
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white"
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 Học Vấn & Bằng Cấp
@@ -378,19 +405,19 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
 
             <div className="space-y-3">
               {educations.map((edu) => (
-                <div key={edu.id} className="space-y-1 p-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                <div key={edu.id} className={`space-y-1 p-2 -mx-2 rounded-lg ${tc.hoverRow} transition-colors`}>
                   <div
-                    className="font-bold text-[12.5px] text-slate-900 dark:text-white leading-tight"
+                    className={`font-bold text-[12.5px] ${tc.title} leading-tight`}
                     style={{ fontFamily: headingFontFamily }}
                   >
                     {edu.school}
                   </div>
-                  <div className="text-[11.5px] font-medium text-slate-700 dark:text-slate-300">
+                  <div className={`text-[11.5px] font-medium ${tc.body}`}>
                     {edu.degree}
                   </div>
-                  <div className="text-[10.5px] text-slate-500 dark:text-slate-400 flex justify-between">
+                  <div className={`text-[10.5px] ${tc.meta} flex justify-between`}>
                     <span>{edu.startDate} – {edu.endDate}</span>
-                    {edu.gpa && <span className="font-semibold text-red-600 dark:text-rose-400">GPA: {edu.gpa}</span>}
+                    {edu.gpa && <span className={`font-semibold ${tc.gpaColor}`}>GPA: {edu.gpa}</span>}
                   </div>
                 </div>
               ))}
@@ -399,10 +426,10 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
 
           {/* Awards & Certifications */}
           <section className="space-y-3.5">
-            <div className="flex items-center gap-2 pb-1.5 border-b-2 border-slate-900 dark:border-white">
+            <div className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}>
               <Award className={`w-4 h-4 shrink-0 ${colors.primary}`} />
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white"
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 Thành Tựu & Chứng Chỉ
@@ -412,11 +439,11 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
             <div className="space-y-2 text-[11px]">
               {achievements &&
                 achievements.map((ach) => (
-                  <div key={ach.id} className="flex items-start gap-2 p-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                  <div key={ach.id} className={`flex items-start gap-2 p-1.5 rounded-lg ${tc.hoverRow} transition-colors`}>
                     <Star className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${colors.primary}`} />
                     <div>
-                      <div className="font-bold text-slate-900 dark:text-white">{ach.title}</div>
-                      <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                      <div className={`font-bold ${tc.title}`}>{ach.title}</div>
+                      <div className={`text-[10px] ${tc.meta}`}>
                         {ach.issuer} ({ach.year})
                       </div>
                     </div>
@@ -425,11 +452,11 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
 
               {certificates &&
                 certificates.map((cert) => (
-                  <div key={cert.id} className="flex items-start gap-2 p-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                  <div key={cert.id} className={`flex items-start gap-2 p-1.5 rounded-lg ${tc.hoverRow} transition-colors`}>
                     <Award className="w-3.5 h-3.5 mt-0.5 shrink-0 text-slate-400" />
                     <div>
-                      <div className="font-semibold text-slate-800 dark:text-slate-200">{cert.name}</div>
-                      <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                      <div className={`font-semibold ${tc.subtitle}`}>{cert.name}</div>
+                      <div className={`text-[10px] ${tc.meta}`}>
                         {cert.issuer} ({cert.issueDate})
                       </div>
                     </div>

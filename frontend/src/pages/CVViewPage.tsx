@@ -131,7 +131,7 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
           <div className="flex items-center flex-wrap gap-2.5">
             <Link
               to="/"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-semibold transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Quay Lại Danh Sách</span>
@@ -156,10 +156,10 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
                 <button
                   key={tmpl.id}
                   onClick={() => handleTemplateChange(tmpl.id)}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                     theme.templateId === tmpl.id
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white'
+                      ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-700/60'
                   }`}
                   title={tmpl.description}
                 >
@@ -179,7 +179,7 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
                   key={c.id}
                   onClick={() => handleColorChange(c.id)}
                   title={c.label}
-                  className={`w-5 h-5 rounded-full ${c.bgClass} transition-transform ${
+                  className={`w-5 h-5 rounded-full ${c.bgClass} transition-transform cursor-pointer ${
                     theme.primaryColorPreset === c.id
                       ? 'ring-2 ring-offset-2 ring-slate-800 dark:ring-white scale-110 shadow-sm'
                       : 'hover:scale-105 opacity-80 hover:opacity-100'
@@ -208,22 +208,22 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
             <div className="hidden xl:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300">
               <button
                 onClick={() => setZoomLevel((z) => Math.max(z - 10, 70))}
-                className="p-0.5 hover:text-black dark:hover:text-white"
+                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                 title="Thu nhỏ"
               >
                 <ZoomOut className="w-3.5 h-3.5" />
               </button>
-              <span className="font-semibold text-[11px] w-9 text-center">{zoomLevel}%</span>
+              <span className="font-semibold text-[11px] w-9 text-center text-slate-800 dark:text-slate-200">{zoomLevel}%</span>
               <button
                 onClick={() => setZoomLevel((z) => Math.min(z + 10, 130))}
-                className="p-0.5 hover:text-black dark:hover:text-white"
+                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                 title="Phóng to"
               >
                 <ZoomIn className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setZoomLevel(100)}
-                className="p-0.5 hover:text-black dark:hover:text-white ml-0.5 text-slate-400"
+                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white ml-0.5 text-slate-400 transition-colors cursor-pointer"
                 title="Mặc định 100%"
               >
                 <RotateCcw className="w-3 h-3" />
@@ -233,7 +233,7 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
             {/* Edit in Editor Button */}
             <Link
               to={`/editor/${id || cvData.id}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-300 font-semibold text-xs border border-teal-200 dark:border-teal-800 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 font-semibold text-xs border border-teal-200 dark:border-teal-800 transition-colors cursor-pointer"
               title="Mở trình chỉnh sửa CV này"
             >
               <Edit3 className="w-3.5 h-3.5" />
@@ -243,7 +243,7 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
             {/* Share Link Button */}
             <button
               onClick={handleCopyShareLink}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-700 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white font-semibold text-xs border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
               title="Sao chép đường dẫn CV để chia sẻ"
             >
               {copiedLink ? (
@@ -287,7 +287,7 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
             {/* Print / Ctrl + P */}
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 active:scale-95 text-white font-semibold text-xs shadow-sm transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 active:scale-95 text-white font-semibold text-xs shadow-sm transition-all cursor-pointer"
               title="Mở hộp thoại in ấn trình duyệt (Ctrl + P)"
             >
               <Printer className="w-3.5 h-3.5" />

@@ -21,7 +21,7 @@ import {
 
 export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) => {
   const { personalInfo, summary, experiences, educations, skillCategories, projects, achievements, certificates } = data;
-  const isDark = theme.darkMode;
+  const isDark = Boolean(theme.darkMode);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, label: string) => {
@@ -30,86 +30,115 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
     setTimeout(() => setCopiedItem(null), 2000);
   };
 
-  // Color preset mapping for Warm Bold style
-  const getThemeColors = (preset: string) => {
+  // Color preset mapping strictly conditioned on isDark
+  const getThemeColors = (preset: string, dark: boolean) => {
     switch (preset) {
       case 'teal':
         return {
-          accent: 'text-teal-600 dark:text-teal-400',
+          accent: dark ? 'text-teal-400' : 'text-teal-600',
           accentBg: 'bg-teal-500',
-          accentLight: 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-200 border-teal-200 dark:border-teal-800',
+          accentLight: dark
+            ? 'bg-teal-950/60 text-teal-200 border-teal-800'
+            : 'bg-teal-50 text-teal-800 border-teal-200',
           borderAccent: 'border-teal-500',
           gradientStripe: 'from-teal-500 via-emerald-400 to-teal-400',
-          sidebarBg: isDark ? 'bg-slate-950/70' : 'bg-[#F2FBF9]',
-          cardHover: 'hover:border-teal-400 dark:hover:border-teal-600',
-          dot: 'bg-teal-600 dark:bg-teal-400',
+          sidebarBg: dark ? 'bg-slate-950/70' : 'bg-[#F2FBF9]',
+          cardHover: dark ? 'hover:border-teal-500' : 'hover:border-teal-400',
+          dot: dark ? 'bg-teal-400' : 'bg-teal-600',
           subRole: 'text-teal-300',
         };
       case 'red':
         return {
-          accent: 'text-rose-600 dark:text-rose-400',
+          accent: dark ? 'text-rose-400' : 'text-rose-600',
           accentBg: 'bg-rose-600',
-          accentLight: 'bg-rose-50 text-rose-800 dark:bg-rose-950/60 dark:text-rose-200 border-rose-200 dark:border-rose-800',
+          accentLight: dark
+            ? 'bg-rose-950/60 text-rose-200 border-rose-800'
+            : 'bg-rose-50 text-rose-800 border-rose-200',
           borderAccent: 'border-rose-600',
           gradientStripe: 'from-rose-600 via-red-500 to-amber-500',
-          sidebarBg: isDark ? 'bg-slate-950/70' : 'bg-[#FFF8F7]',
-          cardHover: 'hover:border-rose-400 dark:hover:border-rose-600',
-          dot: 'bg-rose-600 dark:bg-rose-400',
+          sidebarBg: dark ? 'bg-slate-950/70' : 'bg-[#FFF8F7]',
+          cardHover: dark ? 'hover:border-rose-500' : 'hover:border-rose-400',
+          dot: dark ? 'bg-rose-400' : 'bg-rose-600',
           subRole: 'text-rose-300',
         };
       case 'blue':
         return {
-          accent: 'text-blue-600 dark:text-blue-400',
+          accent: dark ? 'text-blue-400' : 'text-blue-600',
           accentBg: 'bg-blue-600',
-          accentLight: 'bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-200 border-blue-200 dark:border-blue-800',
+          accentLight: dark
+            ? 'bg-blue-950/60 text-blue-200 border-blue-800'
+            : 'bg-blue-50 text-blue-800 border-blue-200',
           borderAccent: 'border-blue-600',
           gradientStripe: 'from-blue-600 via-sky-400 to-indigo-500',
-          sidebarBg: isDark ? 'bg-slate-950/70' : 'bg-[#F4F8FD]',
-          cardHover: 'hover:border-blue-400 dark:hover:border-blue-600',
-          dot: 'bg-blue-600 dark:bg-blue-400',
+          sidebarBg: dark ? 'bg-slate-950/70' : 'bg-[#F4F8FD]',
+          cardHover: dark ? 'hover:border-blue-500' : 'hover:border-blue-400',
+          dot: dark ? 'bg-blue-400' : 'bg-blue-600',
           subRole: 'text-blue-300',
         };
       case 'purple':
         return {
-          accent: 'text-purple-600 dark:text-purple-400',
+          accent: dark ? 'text-purple-400' : 'text-purple-600',
           accentBg: 'bg-purple-600',
-          accentLight: 'bg-purple-50 text-purple-800 dark:bg-purple-950/60 dark:text-purple-200 border-purple-200 dark:border-purple-800',
+          accentLight: dark
+            ? 'bg-purple-950/60 text-purple-200 border-purple-800'
+            : 'bg-purple-50 text-purple-800 border-purple-200',
           borderAccent: 'border-purple-600',
           gradientStripe: 'from-purple-600 via-fuchsia-500 to-pink-500',
-          sidebarBg: isDark ? 'bg-slate-950/70' : 'bg-[#FAF6FD]',
-          cardHover: 'hover:border-purple-400 dark:hover:border-purple-600',
-          dot: 'bg-purple-600 dark:bg-purple-400',
+          sidebarBg: dark ? 'bg-slate-950/70' : 'bg-[#FAF6FD]',
+          cardHover: dark ? 'hover:border-purple-500' : 'hover:border-purple-400',
+          dot: dark ? 'bg-purple-400' : 'bg-purple-600',
           subRole: 'text-purple-300',
         };
       case 'emerald':
         return {
-          accent: 'text-emerald-600 dark:text-emerald-400',
+          accent: dark ? 'text-emerald-400' : 'text-emerald-600',
           accentBg: 'bg-emerald-600',
-          accentLight: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800',
+          accentLight: dark
+            ? 'bg-emerald-950/60 text-emerald-200 border-emerald-800'
+            : 'bg-emerald-50 text-emerald-800 border-emerald-200',
           borderAccent: 'border-emerald-600',
           gradientStripe: 'from-emerald-600 via-teal-400 to-lime-400',
-          sidebarBg: isDark ? 'bg-slate-950/70' : 'bg-[#F2FAF6]',
-          cardHover: 'hover:border-emerald-400 dark:hover:border-emerald-600',
-          dot: 'bg-emerald-600 dark:bg-emerald-400',
+          sidebarBg: dark ? 'bg-slate-950/70' : 'bg-[#F2FAF6]',
+          cardHover: dark ? 'hover:border-emerald-500' : 'hover:border-emerald-400',
+          dot: dark ? 'bg-emerald-400' : 'bg-emerald-600',
           subRole: 'text-emerald-300',
         };
       case 'orange':
       default:
         return {
-          accent: 'text-orange-600 dark:text-orange-400',
+          accent: dark ? 'text-orange-400' : 'text-orange-600',
           accentBg: 'bg-orange-500',
-          accentLight: 'bg-orange-50 text-orange-900 dark:bg-orange-950/60 dark:text-orange-200 border-orange-200 dark:border-orange-800',
+          accentLight: dark
+            ? 'bg-orange-950/60 text-orange-200 border-orange-800'
+            : 'bg-orange-50 text-orange-900 border-orange-200',
           borderAccent: 'border-orange-500',
           gradientStripe: 'from-orange-500 via-amber-500 to-orange-400',
-          sidebarBg: isDark ? 'bg-slate-950/70' : 'bg-[#FDF8F3]', // Warm Sand
-          cardHover: 'hover:border-orange-400 dark:hover:border-orange-600',
-          dot: 'bg-orange-500 dark:bg-orange-400',
+          sidebarBg: dark ? 'bg-slate-950/70' : 'bg-[#FDF8F3]', // Warm Sand
+          cardHover: dark ? 'hover:border-orange-500' : 'hover:border-orange-400',
+          dot: dark ? 'bg-orange-400' : 'bg-orange-500',
           subRole: 'text-orange-300',
         };
     }
   };
 
-  const colors = getThemeColors(theme.primaryColorPreset || 'orange');
+  const colors = getThemeColors(theme.primaryColorPreset || 'orange', isDark);
+
+  // Surface and typography tokens strictly bound to isDark
+  const tc = {
+    title: isDark ? 'text-white' : 'text-slate-900',
+    subtitle: isDark ? 'text-slate-200' : 'text-slate-800',
+    body: isDark ? 'text-slate-300' : 'text-slate-700',
+    bodyMuted: isDark ? 'text-slate-400' : 'text-slate-600',
+    meta: isDark ? 'text-slate-400' : 'text-slate-500',
+    border: isDark ? 'border-slate-800' : 'border-slate-200/90',
+    borderTimeline: isDark ? 'border-slate-700' : 'border-slate-200',
+    hoverRow: isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50',
+    hoverLink: isDark ? 'hover:bg-slate-800/80' : 'hover:bg-white/80',
+    cardBg: isDark ? 'bg-slate-800/40 border-slate-700/80 hover:border-slate-600' : 'bg-white border-slate-200 hover:border-slate-300',
+    tagBg: isDark ? 'bg-slate-700/60 text-slate-300' : 'bg-slate-100 text-slate-700',
+    gpaColor: isDark ? 'text-orange-400' : 'text-orange-700',
+  };
+
   const headingFontFamily = `'${theme.fontHeading}', 'Be Vietnam Pro', sans-serif`;
 
   return (
@@ -203,26 +232,26 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
         <main className="flex-1 px-8 py-6 space-y-6">
           {/* Summary / Profile */}
           <section className="space-y-2">
-            <div className="flex items-center gap-2 pb-1.5 border-b border-slate-200 dark:border-slate-800">
+            <div className={`flex items-center gap-2 pb-1.5 border-b ${tc.border}`}>
               <Sparkles className={`w-4 h-4 shrink-0 ${colors.accent}`} />
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white"
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 Giới Thiệu Bản Thân
               </h2>
             </div>
-            <p className="text-[12.5px] leading-relaxed text-slate-700 dark:text-slate-300 text-justify">
+            <p className={`text-[12.5px] leading-relaxed ${tc.body} text-justify`}>
               {summary}
             </p>
           </section>
 
           {/* Work Experience */}
           <section className="space-y-3">
-            <div className="flex items-center gap-2 pb-1.5 border-b border-slate-200 dark:border-slate-800">
+            <div className={`flex items-center gap-2 pb-1.5 border-b ${tc.border}`}>
               <Briefcase className={`w-4 h-4 shrink-0 ${colors.accent}`} />
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white"
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 Kinh Nghiệm Làm Việc
@@ -233,7 +262,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
               {experiences.map((exp) => (
                 <div
                   key={exp.id}
-                  className="relative pl-4 border-l-2 border-slate-200 dark:border-slate-700 space-y-1.5 group p-2 -ml-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-all duration-200 cursor-default"
+                  className={`relative pl-4 border-l-2 ${tc.borderTimeline} space-y-1.5 group p-2 -ml-2 rounded-xl ${tc.hoverRow} transition-all duration-200 cursor-default`}
                 >
                   {/* Timeline dot */}
                   <div
@@ -242,22 +271,22 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <h3
-                      className={`font-bold text-[13px] text-slate-900 dark:text-white group-hover:${colors.accent} transition-colors`}
+                      className={`font-bold text-[13px] ${tc.title} transition-colors`}
                       style={{ fontFamily: headingFontFamily }}
                     >
                       {exp.position}
                     </h3>
-                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 shrink-0">
+                    <span className={`text-[11px] font-semibold ${tc.meta} shrink-0`}>
                       {exp.startDate} – {exp.endDate}
                     </span>
                   </div>
 
-                  <div className="text-[12px] font-semibold text-slate-700 dark:text-slate-300">
+                  <div className={`text-[12px] font-semibold ${tc.body}`}>
                     {exp.company}
-                    {exp.location && <span className="text-slate-400 font-normal"> • {exp.location}</span>}
+                    {exp.location && <span className={`${tc.meta} font-normal`}> • {exp.location}</span>}
                   </div>
 
-                  <ul className="space-y-1 text-[12px] text-slate-600 dark:text-slate-300 list-disc list-outside pl-4 leading-relaxed">
+                  <ul className={`space-y-1 text-[12px] ${tc.bodyMuted} list-disc list-outside pl-4 leading-relaxed`}>
                     {exp.descriptions.map((desc, idx) => (
                       <li key={idx}>{desc}</li>
                     ))}
@@ -269,10 +298,10 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
 
           {/* Featured Projects with warm cards */}
           <section className="space-y-3">
-            <div className="flex items-center gap-2 pb-1.5 border-b border-slate-200 dark:border-slate-800">
+            <div className={`flex items-center gap-2 pb-1.5 border-b ${tc.border}`}>
               <Code2 className={`w-4 h-4 shrink-0 ${colors.accent}`} />
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white"
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 Dự Án Tiêu Biểu
@@ -283,16 +312,12 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
               {projects.map((proj) => (
                 <div
                   key={proj.id}
-                  className={`p-3.5 rounded-xl border transition-all duration-200 space-y-2 group hover:-translate-y-0.5 hover:shadow-md ${
-                    isDark
-                      ? 'bg-slate-800/40 border-slate-700/80 hover:border-slate-600'
-                      : 'bg-white border-slate-200 hover:border-slate-300'
-                  } ${colors.cardHover}`}
+                  className={`p-3.5 rounded-xl border transition-all duration-200 space-y-2 group hover:-translate-y-0.5 hover:shadow-md ${tc.cardBg} ${colors.cardHover}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <h3
-                        className="font-bold text-[13px] text-slate-900 dark:text-white truncate"
+                        className={`font-bold text-[13px] ${tc.title} truncate`}
                         style={{ fontFamily: headingFontFamily }}
                       >
                         {proj.name}
@@ -302,19 +327,19 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                           href={proj.link}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-orange-500 transition-colors shrink-0"
+                          className={`inline-flex items-center p-1 rounded ${tc.hoverLink} text-slate-400 hover:${colors.accent} transition-colors shrink-0`}
                           title="Xem dự án"
                         >
                           <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                         </a>
                       )}
                     </div>
-                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 italic shrink-0">
+                    <span className={`text-[11px] font-medium ${tc.meta} italic shrink-0`}>
                       {proj.role}
                     </span>
                   </div>
 
-                  <p className="text-[11.5px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className={`text-[11.5px] ${tc.bodyMuted} leading-relaxed`}>
                     {proj.description}
                   </p>
 
@@ -322,9 +347,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                     {proj.techStack.map((tech, idx) => (
                       <span
                         key={idx}
-                        className={`text-[10px] px-2 py-0.5 font-medium rounded-md ${
-                          isDark ? 'bg-slate-700/60 text-slate-300' : 'bg-slate-100 text-slate-700'
-                        }`}
+                        className={`text-[10px] px-2 py-0.5 font-medium rounded-md ${tc.tagBg}`}
                       >
                         {tech}
                       </span>
@@ -358,7 +381,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                   href={personalInfo.website}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between p-1.5 rounded-lg hover:bg-white/80 dark:hover:bg-slate-800/80 transition-colors group"
+                  className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Globe className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
@@ -373,7 +396,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                   href={`https://${personalInfo.github}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between p-1.5 rounded-lg hover:bg-white/80 dark:hover:bg-slate-800/80 transition-colors group"
+                  className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Github className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
@@ -388,7 +411,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                   href={`https://${personalInfo.linkedin}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between p-1.5 rounded-lg hover:bg-white/80 dark:hover:bg-slate-800/80 transition-colors group"
+                  className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Linkedin className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
@@ -401,7 +424,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
           </section>
 
           {/* Education */}
-          <section className="space-y-3 pt-3 border-t border-slate-200/80 dark:border-slate-800">
+          <section className={`space-y-3 pt-3 border-t ${tc.border}`}>
             <h2
               className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
               style={{ fontFamily: headingFontFamily }}
@@ -414,19 +437,19 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
               {educations.map((edu) => (
                 <div key={edu.id} className="space-y-1 group hover:translate-x-1 transition-transform">
                   <div
-                    className="font-bold text-[12px] text-slate-900 dark:text-white leading-tight"
+                    className={`font-bold text-[12px] ${tc.title} leading-tight`}
                     style={{ fontFamily: headingFontFamily }}
                   >
                     {edu.school}
                   </div>
-                  <div className="text-[11.5px] font-medium text-slate-700 dark:text-slate-300">
+                  <div className={`text-[11.5px] font-medium ${tc.body}`}>
                     {edu.degree}
                   </div>
-                  <div className="text-[10.5px] text-slate-500 dark:text-slate-400 flex justify-between">
+                  <div className={`text-[10.5px] ${tc.meta} flex justify-between`}>
                     <span>{edu.startDate} – {edu.endDate}</span>
                   </div>
                   {edu.gpa && (
-                    <div className="text-[10.5px] font-semibold text-orange-700 dark:text-orange-400">
+                    <div className={`text-[10.5px] font-semibold ${tc.gpaColor}`}>
                       GPA: {edu.gpa}
                     </div>
                   )}
@@ -436,7 +459,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
           </section>
 
           {/* Skills Breakdown */}
-          <section className="space-y-3 pt-3 border-t border-slate-200/80 dark:border-slate-800">
+          <section className={`space-y-3 pt-3 border-t ${tc.border}`}>
             <h2
               className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
               style={{ fontFamily: headingFontFamily }}
@@ -449,7 +472,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
               {skillCategories.map((cat) => (
                 <div key={cat.id} className="space-y-1.5">
                   <div
-                    className="font-semibold text-[11px] text-slate-800 dark:text-slate-200"
+                    className={`font-semibold text-[11px] ${tc.subtitle}`}
                     style={{ fontFamily: headingFontFamily }}
                   >
                     {cat.categoryName}
@@ -471,7 +494,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
 
           {/* Certifications & Achievements */}
           {certificates && certificates.length > 0 && (
-            <section className="space-y-3 pt-3 border-t border-slate-200/80 dark:border-slate-800">
+            <section className={`space-y-3 pt-3 border-t ${tc.border}`}>
               <h2
                 className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
                 style={{ fontFamily: headingFontFamily }}
@@ -483,10 +506,10 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
               <div className="space-y-2.5 text-[11px]">
                 {certificates.map((cert) => (
                   <div key={cert.id} className="space-y-0.5 group hover:translate-x-1 transition-transform">
-                    <div className="font-semibold text-slate-800 dark:text-slate-200 leading-snug">
+                    <div className={`font-semibold ${tc.subtitle} leading-snug`}>
                       {cert.name}
                     </div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 flex justify-between">
+                    <div className={`text-[10px] ${tc.meta} flex justify-between`}>
                       <span>{cert.issuer}</span>
                       <span>{cert.issueDate}</span>
                     </div>
@@ -494,10 +517,10 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                 ))}
 
                 {achievements && achievements.length > 0 && (
-                  <div className="pt-2 border-t border-dashed border-slate-200 dark:border-slate-800 space-y-1.5">
+                  <div className={`pt-2 border-t border-dashed ${tc.border} space-y-1.5`}>
                     {achievements.map((ach) => (
                       <div key={ach.id} className="text-[10.5px]">
-                        <span className="font-bold text-slate-900 dark:text-white">★ {ach.title}</span>
+                        <span className={`font-bold ${tc.title}`}>★ {ach.title}</span>
                       </div>
                     ))}
                   </div>
