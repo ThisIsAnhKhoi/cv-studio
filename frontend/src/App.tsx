@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { mockCVData } from './data/mockCVData';
 import { getTemplateComponent } from './features/cv-templates/TemplateRegistry';
 import { ColorPreset, HeadingFontOption, ThemeConfig } from './types/cv';
+import { exportCVToPDF } from './services/exportPdfService';
 import {
   Moon,
   Sun,
@@ -12,6 +13,8 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCcw,
+  Download,
+  Loader2,
   Check,
 } from 'lucide-react';
 
@@ -19,6 +22,8 @@ export const App: React.FC = () => {
   const [cvData] = useState(mockCVData);
   const [theme, setTheme] = useState<ThemeConfig>(mockCVData.themeConfig);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [exportSuccess, setExportSuccess] = useState<boolean>(false);
 
   // Sync dark mode class on document element
   useEffect(() => {
@@ -47,6 +52,19 @@ export const App: React.FC = () => {
     }));
   };
 
+  // 1-Click Direct PDF Download (Sử dụng html2pdf.js)
+  const handleDownloadPDF = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    const success = await exportCVToPDF('cv-printable-area', cvData.personalInfo.fullName);
+    setIsExporting(false);
+    if (success) {
+      setExportSuccess(true);
+      setTimeout(() => setExportSuccess(false), 3000);
+    }
+  };
+
+  // Browser Print Dialog (Ctrl + P)
   const handlePrint = () => {
     window.print();
   };
@@ -74,8 +92,8 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200">
       {/* ================= TOP NAVIGATION / CONTROL BAR ================= */}
-      <header className="no-print sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm px-4 sm:px-6 py-3">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <header className="no-print sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm px-4 sm:px-6 py-2.5">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           {/* Logo & Status Badge */}
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-md">
@@ -87,17 +105,17 @@ export const App: React.FC = () => {
                   CV Studio
                 </span>
                 <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
-                  Mẫu 1 (Classic Teal)
+                  Mẫu 1 (Đã duyệt)
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
-                Font từ máy tính • Hover tương tác • Căn lề chuẩn A4
+                Xuất file PDF trực tiếp • Khổ in A4 không tràn viền • Đổi font thời gian thực
               </p>
             </div>
           </div>
 
           {/* Quick Customization Controls */}
-          <div className="flex items-center flex-wrap gap-2.5">
+          <div className="flex items-center flex-wrap gap-2">
             {/* Color Presets */}
             <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
               <Palette className="w-3.5 h-3.5 text-slate-400 ml-1 mr-0.5" />
@@ -166,13 +184,39 @@ export const App: React.FC = () => {
               </button>
             </div>
 
-            {/* Print / Download PDF */}
+            {/* ACTION 1: 1-Click Direct Download PDF */}
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isExporting}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 active:scale-95 text-white font-semibold text-xs shadow-md transition-all disabled:opacity-60 cursor-pointer"
+              title="Xuất trực tiếp file .pdf chuẩn A4 tải về máy tính"
+            >
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Đang xuất...</span>
+                </>
+              ) : exportSuccess ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-200" />
+                  <span>Đã tải PDF!</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Tải file PDF</span>
+                </>
+              )}
+            </button>
+
+            {/* ACTION 2: Print / Ctrl + P Dialog */}
             <button
               onClick={handlePrint}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-semibold text-xs shadow-md transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 active:scale-95 text-white font-semibold text-xs shadow-sm transition-all"
+              title="Mở hộp thoại in ấn trình duyệt (Ctrl + P)"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>In / Tải PDF A4</span>
+              <span>In (Ctrl+P)</span>
             </button>
           </div>
         </div>
@@ -181,21 +225,24 @@ export const App: React.FC = () => {
       {/* ================= WORKSPACE BODY / PREVIEW CONTAINER ================= */}
       <main className="flex-1 py-8 px-4 overflow-x-auto flex justify-center items-start print:p-0 print:m-0 print:overflow-visible">
         <div
-          className="transition-transform duration-200 origin-top print:transform-none"
+          className="cv-zoom-wrapper transition-transform duration-200 origin-top print:transform-none"
           style={{ transform: `scale(${zoomLevel / 100})` }}
         >
-          <TemplateComponent data={cvData} theme={theme} />
+          {/* Printable Element with ID */}
+          <div id="cv-printable-area">
+            <TemplateComponent data={cvData} theme={theme} />
+          </div>
         </div>
       </main>
 
       {/* ================= BOTTOM HELPER BAR ================= */}
-      <footer className="no-print bg-white/80 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-800 py-3 px-4 text-center text-xs text-slate-500 dark:text-slate-400">
+      <footer className="no-print bg-white/85 dark:bg-slate-900/85 border-t border-slate-200 dark:border-slate-800 py-2.5 px-4 text-center text-xs text-slate-500 dark:text-slate-400">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>
-            Khổ giấy: <strong>210mm × 297mm (Chuẩn A4)</strong> • Tương tác: Nhấp vào Email để copy, rê chuột vào Thẻ dự án / Kỹ năng để xem hiệu ứng
+            Khổ giấy: <strong>210mm × 297mm (A4 Chuẩn)</strong> • Khi in Ctrl+P: chọn <strong>Lề: Không có lề (None)</strong> để vừa khít 100%
           </span>
           <span className="text-[11px] text-teal-600 dark:text-teal-400 font-medium">
-            Font tiêu đề đang dùng: <strong>{theme.fontHeading}</strong>
+            Nút <strong>"Tải file PDF"</strong> tự động xuất file chuẩn A4 không cần chỉnh lề
           </span>
         </div>
       </footer>
