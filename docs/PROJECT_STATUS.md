@@ -5,23 +5,23 @@
 
 ## 1. THÔNG TIN CHUNG
 - **Dự án**: Website Nền tảng Tạo & Quản lý CV Cá nhân (CV Portfolio Platform)
-- **Tài liệu đặc tả**: [y_tuong.txt](file:///c:/Users/junde/OneDrive/Desktop/TranKhoi/Website/y_tuong.txt)
-- **Kiến trúc hệ thống**: 4-Layer Clean Architecture
+- **Tài liệu đặc tả**: [docs/y_tuong.txt](file:///c:/Users/junde/OneDrive/Desktop/TranKhoi/Website/docs/y_tuong.txt)
+- **Hướng dẫn deploy font**: [docs/DEPLOYMENT_FONTS_GUIDE.md](file:///c:/Users/junde/OneDrive/Desktop/TranKhoi/Website/docs/DEPLOYMENT_FONTS_GUIDE.md)
+- **Kiến trúc hệ thống**: Enterprise Monorepo (`frontend/`, `backend/`, `docs/`, `references/`)
 - **Môi trường cục bộ**: Đang chạy tại `http://localhost:3000/` (Vite dev server)
-- **Git Commit**: `ee28790` (fix: resolve font glitch with local fonts, fix icon alignment, declutter layout, add hover effects, and organize folder structure)
-- **Giai đoạn hiện tại**: Giai đoạn 2 — Duyệt Mẫu CV số 1 đã tinh chỉnh & Chuẩn bị xây dựng các phân hệ tiếp theo
+- **Trạng thái Mẫu số 1**:  **ĐÃ DUYỆT (Approved by User)**
+- **Giai đoạn tiếp theo**: Giai đoạn 3 — Xây dựng Mẫu CV số 2 (Warm Bold) HOẶC Xây dựng Trình chỉnh sửa CV động (Editor Dashboard)
 
 ---
 
-## 2. KẾT QUẢ TINH CHỈNH THEO PHẢN HỒI (REFINEMENT RESULTS)
+## 2. KẾT QUẢ TRIỂN KHAI MỚI NHẤT (LATEST DELIVERABLES)
 
-| STT | Hạng mục tinh chỉnh | Chi tiết đã thực hiện | Trạng thái |
+| STT | Hạng mục | Chi tiết đã thực hiện | Trạng thái |
 |:---:|:---|:---|:---:|
-| **1** | **Quy hoạch cây thư mục** | Đã gom toàn bộ các file mẫu HTML/PDF tham khảo vào thư mục riêng `references/sample-cvs/`. Thư mục gốc sạch sẽ và chuẩn mực. |  Đã hoàn thành |
-| **2** | **Tích hợp phông chữ từ máy tính** | Đã sao chép các bộ font việt hóa từ máy tính (`iCiel Cubano`, `SVN-Optima`, `Gilroy`, `Montserrat`) vào `public/fonts/` và khai báo `@font-face`. Sửa dứt điểm lỗi nhảy font tiếng Việt ở họ tên. |  Đã hoàn thành |
-| **3** | **Căn chỉnh Icon SVG bị lệch** | Khắc phục hoàn toàn lỗi lệch icon `ExternalLink` bằng `inline-flex items-center gap-1.5`. Canh đều icon liên hệ và mốc timeline. |  Đã hoàn thành |
-| **4** | **Tinh gọn thông tin & bố cục thoáng** | Mở rộng cột trái lên 245px (email `thanhtruc.dev@gmail.com` vừa vặn trên 1 dòng). Rút gọn tóm tắt và bullet points kinh nghiệm sắc bén, tăng khoảng thở giữa các khối. |  Đã hoàn thành |
-| **5** | **Hiệu ứng Hover & Tương tác sống động** | Bổ sung hiệu ứng hover nâng thẻ dự án (`hover:-translate-y-0.5 hover:shadow-md`), viền sáng màu accent, hover thẻ kỹ năng, click sao chép email kèm thông báo tức thì, avatar zoom nhẹ. |  Đã hoàn thành |
+| **1** | **Xác nhận không lỗi font khi Deploy** | Tích hợp cơ chế Self-Hosted Web Fonts trong `frontend/public/fonts/`. Đóng gói thẳng vào `dist/fonts/` và phân phối qua Vercel CDN -> 100% hiển thị chuẩn trên mọi thiết bị. |  Đã xác nhận & kiểm chứng |
+| **2** | **Nút 1-Click Tải file PDF trực tiếp** | Tích hợp dịch vụ `exportCVToPDF` sử dụng `html2pdf.js` với độ phân giải cao 2x. Bấm nút là tự động xuất và tải file `CV_Nguyen_Le_Thanh_Truc.pdf` chuẩn A4 về máy, không cần qua hộp thoại trình duyệt. |  Đã hoàn thành |
+| **3** | **Khắc phục triệt để In ấn (Ctrl + P) tràn viền** | Cấu hình CSS `@media print` chuẩn A4 tuyệt đối (`210mm × 297mm`, margin 0, `overflow: hidden`, khử zoom). Hướng dẫn chọn Lề "None" trong hộp thoại in. |  Đã hoàn thành |
+| **4** | **Phê duyệt Mẫu CV số 1** | Người dùng đã duyệt hoàn toàn Mẫu số 1 (Classic Teal) sau khi tinh chỉnh font máy tính, layout thoáng đãng, icon thẳng hàng và hiệu ứng hover. |  ĐÃ DUYỆT |
 
 ---
 
@@ -29,22 +29,22 @@
 
 | STT | Giai đoạn / Tính năng | Trạng thái | Ghi chú |
 |:---:|:---|:---:|:---|
-| 1 | Khảo sát ý tưởng & Chuẩn hóa tài liệu (`y_tuong.txt`) |  Hoàn thành | 9 phần đặc tả hoàn chỉnh |
-| 2 | Hệ thống Dev-Log & Handover cho Antigravity |  Hoàn thành | `PROJECT_STATUS.md` và `.agents/rules/session-protocol.md` |
-| 3 | Thực hiện Bước 1: Git setup + Frontend + Mẫu CV số 1 |  Hoàn thành | Đã hoàn thành 100% |
-| 4 | Tinh chỉnh Mẫu CV số 1 (Font máy, Icon, Layout, Hover) |  Hoàn thành | Đã kiểm thử qua Browser Subagent tại localhost:3000 |
-| 5 | Xây dựng Mẫu CV số 2 (Warm Bold Ink & Tangerine) |  Chờ thực hiện | Mở rộng theo thiết kế CV v2 đã khảo sát |
-| 6 | Xây dựng Trang chủ (Menu & Danh sách Profile) |  Chờ thực hiện | Grid card profile, thanh tìm kiếm, filter theo ngành |
-| 7 | Xây dựng Trang CV cá nhân chi tiết (Public View) |  Chờ thực hiện | Chế độ chỉ xem, export PDF, liên hệ nhanh, share link |
-| 8 | Xây dựng Trình chỉnh sửa CV (CV Editor Dashboard) |  Chờ thực hiện | Nút (+) thêm mục động, live preview, đổi theme & font |
-| 9 | Tích hợp Xác thực (Auth) & Phân quyền bảo mật |  Chờ thực hiện | Firebase Auth / Node.js; chỉ chủ tài khoản mới được sửa CV |
+| 1 | Khảo sát ý tưởng & Chuẩn hóa tài liệu (`docs/y_tuong.txt`) |  Hoàn thành | 9 phần đặc tả hoàn chỉnh |
+| 2 | Hệ thống Dev-Log & Handover cho Antigravity |  Hoàn thành | `docs/PROJECT_STATUS.md` và `.agents/rules/session-protocol.md` |
+| 3 | Khởi tạo cấu trúc Monorepo (`frontend/`, `backend/`, `docs/`) |  Hoàn thành | Đã tách bạch hoàn toàn front và back |
+| 4 | Xây dựng & Tinh chỉnh Mẫu CV số 1 |  ĐÃ DUYỆT | Hoàn thành xuất sắc |
+| 5 | Tích hợp Xuất PDF 1-Click & In ấn chuẩn A4 |  Hoàn thành | Đã tích hợp cả 2 phương thức |
+| 6 | Xây dựng Mẫu CV số 2 (Warm Bold Ink & Tangerine) | ⏳ Sẵn sàng | Theo file mẫu `CV_MindX_ThanhTruc_v2.html` |
+| 7 | Xây dựng Trang chủ (Menu & Danh sách Profile) | ⏳ Sẵn sàng | Grid card profile, thanh tìm kiếm, filter theo ngành |
+| 8 | Xây dựng Trình chỉnh sửa CV (CV Editor Dashboard) | ⏳ Sẵn sàng | Nút (+) thêm mục động, live preview, đổi theme & font |
+| 9 | Tích hợp Backend API & Firebase Authentication |  Chờ thực hiện | Bảo mật phân quyền chỉ chủ CV mới được sửa |
 | 10 | Triển khai CI/CD lên Vercel & Render |  Chờ thực hiện | Tự động deploy khi push lên nhánh main |
 
 ---
 
 ## 4. BƯỚC TIẾP THEO (NEXT STEPS)
-1. Bạn mở lại trình duyệt tại `http://localhost:3000/` để thưởng thức diện mạo mới của Mẫu số 1 (font `iCiel Cubano` hiển thị tiếng Việt, thử đổi sang `SVN-Optima`, rê chuột vào dự án/email để xem tương tác).
-2. Quyết định bước tiếp theo:
-   - Làm tiếp Mẫu CV số 2 (Warm Bold v2), HOẶC
-   - Bắt đầu xây dựng Trang chủ (Menu khám phá profiles), HOẶC
-   - Bắt đầu xây dựng Trình chỉnh sửa CV động (Editor có nút + thêm mục).
+1. Thử nghiệm nút **"Tải file PDF"** trên giao diện `http://localhost:3000/` để thấy file PDF tự động tải về máy.
+2. Lựa chọn bước phát triển kế tiếp:
+   - **Tùy chọn A**: Xây dựng **Mẫu CV số 2 (Warm Bold Ink & Tangerine)** — giao diện hiện đại với vạch cam chéo và cột cát ấm.
+   - **Tùy chọn B**: Xây dựng **Trình chỉnh sửa CV động (Editor Dashboard)** — bảng điều khiển có các form nhập liệu, nút (+) thêm mục kinh nghiệm/học vấn động và xem trước thời gian thực.
+   - **Tùy chọn C**: Xây dựng **Trang chủ / Menu khám phá** — danh sách các profile thành viên và thanh tìm kiếm.
