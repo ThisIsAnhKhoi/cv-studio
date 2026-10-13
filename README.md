@@ -113,7 +113,7 @@
 
 ### 1. Clone repository
 ```bash
-git clone https://github.com/username/cv-studio.git
+git clone https://github.com/JunWinpro/cv-studio.git
 cd cv-studio
 ```
 
