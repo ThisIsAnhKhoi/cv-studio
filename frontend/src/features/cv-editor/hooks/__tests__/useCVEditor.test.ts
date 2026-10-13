@@ -110,4 +110,149 @@ describe('useCVEditor hook', () => {
     });
     expect(result.current.cvData.certificates?.length).toBe(initialCertCount);
   });
+
+  it('test_editor_update_personal_info_and_summary: should update personal info fields and summary', () => {
+    const { result } = renderHook(() => useCVEditor());
+
+    act(() => {
+      result.current.updatePersonalInfo('fullName', 'Trần Khôi');
+      result.current.updatePersonalInfo('title', 'Senior Architect');
+      result.current.updateSummary('Tóm tắt nghề nghiệp mới với đầy đủ dấu tiếng Việt: Cần mẫn, sáng tạo.');
+    });
+
+    expect(result.current.cvData.personalInfo.fullName).toBe('Trần Khôi');
+    expect(result.current.cvData.personalInfo.title).toBe('Senior Architect');
+    expect(result.current.cvData.summary).toBe('Tóm tắt nghề nghiệp mới với đầy đủ dấu tiếng Việt: Cần mẫn, sáng tạo.');
+  });
+
+  it('test_editor_education_and_projects: should add, update and remove education and projects', () => {
+    const { result } = renderHook(() => useCVEditor());
+
+    // Education
+    const initEduCount = result.current.cvData.educations.length;
+    act(() => {
+      result.current.addEducation();
+    });
+    expect(result.current.cvData.educations.length).toBe(initEduCount + 1);
+    const newEduId = result.current.cvData.educations[0].id;
+
+    act(() => {
+      result.current.updateEducation(newEduId, 'school', 'Đại Học Bách Khoa');
+    });
+    expect(result.current.cvData.educations.find((e) => e.id === newEduId)?.school).toBe('Đại Học Bách Khoa');
+
+    act(() => {
+      result.current.removeEducation(newEduId);
+    });
+    expect(result.current.cvData.educations.length).toBe(initEduCount);
+
+    // Projects
+    const initProjCount = result.current.cvData.projects.length;
+    act(() => {
+      result.current.addProject();
+    });
+    expect(result.current.cvData.projects.length).toBe(initProjCount + 1);
+    const newProjId = result.current.cvData.projects[0].id;
+
+    act(() => {
+      result.current.updateProject(newProjId, 'name', 'CV Studio SaaS');
+    });
+    expect(result.current.cvData.projects.find((p) => p.id === newProjId)?.name).toBe('CV Studio SaaS');
+
+    act(() => {
+      result.current.removeProject(newProjId);
+    });
+    expect(result.current.cvData.projects.length).toBe(initProjCount);
+  });
+
+  it('test_editor_theme_customization: should update theme config properties', () => {
+    const { result } = renderHook(() => useCVEditor());
+
+    act(() => {
+      result.current.updateTheme({
+        primaryColor: '#0E7C6B',
+        templateId: 'template-warm-bold',
+      });
+    });
+
+    expect(result.current.cvData.themeConfig.primaryColor).toBe('#0E7C6B');
+    expect(result.current.cvData.themeConfig.templateId).toBe('template-warm-bold');
+  });
+
+  it('test_editor_autosave_debounce: should debounce auto-save to localStorage after 600ms + 300ms', () => {
+    vi.useFakeTimers();
+    try {
+      const profile = { ...mockProfilesList[0] };
+      const draftKey = getDraftStorageKey(profile.id);
+
+      const { result } = renderHook(() => useCVEditor(profile));
+      expect(result.current.saveStatus).toBe('saved');
+
+      // Trigger an update
+      act(() => {
+        result.current.updatePersonalInfo('fullName', 'Nguyễn Tự Động Lưu');
+      });
+
+      expect(result.current.saveStatus).toBe('unsaved');
+
+      // Advance by 599ms -> still unsaved
+      act(() => {
+        vi.advanceTimersByTime(599);
+      });
+      expect(result.current.saveStatus).toBe('unsaved');
+
+      // Advance by 1ms -> reaches 600ms debounce -> saving
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
+      expect(result.current.saveStatus).toBe('saving');
+
+      // Verify localStorage was updated
+      const savedInStorage = JSON.parse(localStorage.getItem(draftKey) || '{}');
+      expect(savedInStorage.personalInfo?.fullName).toBe('Nguyễn Tự Động Lưu');
+
+      // Advance by 300ms -> transition to saved
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+      expect(result.current.saveStatus).toBe('saved');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('test_editor_reset_to_default: should restore default/preset and persist to localStorage', () => {
+    vi.useFakeTimers();
+    try {
+      const profile = { ...mockProfilesList[0] };
+      const draftKey = getDraftStorageKey(profile.id);
+
+      const { result } = renderHook(() => useCVEditor(profile));
+
+      // Modify state
+      act(() => {
+        result.current.updatePersonalInfo('fullName', 'Tên Tạm Thời');
+      });
+      expect(result.current.cvData.personalInfo.fullName).toBe('Tên Tạm Thời');
+
+      // Reset to default
+      act(() => {
+        result.current.resetToDefault(profile);
+      });
+
+      expect(result.current.cvData.personalInfo.fullName).toBe(profile.personalInfo.fullName);
+
+      // Advance debounce timer (600ms debounce + 300ms saving)
+      act(() => {
+        vi.advanceTimersByTime(900);
+      });
+      expect(result.current.saveStatus).toBe('saved');
+
+      const stored = JSON.parse(localStorage.getItem(draftKey) || '{}');
+      expect(stored.personalInfo.fullName).toBe(profile.personalInfo.fullName);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
+

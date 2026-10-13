@@ -1,0 +1,86 @@
+{
+  "id": "fixture-legacy-profile-1",
+  "personalInfo": {
+    "fullName": "Nguyễn Văn Di Sản",
+    "title": "Chuyên Viên Phát Triển Frontend",
+    "email": "disan.nguyen@example.com",
+    "phone": "0987 654 321",
+    "address": "Quận 1, TP. Hồ Chí Minh",
+    "website": "https://nguyenvandisan.dev",
+    "linkedin": "https://linkedin.com/in/nguyenvandisan",
+    "github": "https://github.com/nguyenvandisan",
+    "avatar": ""
+  },
+  "summary": "Hơn 5 năm kinh nghiệm lập trình React và TypeScript. Bản nháp này được lưu từ phiên bản Giai đoạn 1 chưa có sectionStyles và chưa có schemaVersion.",
+  "experiences": [
+    {
+      "id": "exp-legacy-1",
+      "company": "Công Ty Cổ Phần Công Nghệ Cũ",
+      "position": "Kỹ Sư Phần Mềm",
+      "startDate": "03/2021",
+      "endDate": "Hiện tại",
+      "isCurrent": true,
+      "location": "TP. HCM",
+      "descriptions": [
+        "Phát triển giao diện web bằng React và Tailwind CSS.",
+        "Tối ưu hiệu năng tải trang và tương thích đa trình duyệt."
+      ]
+    }
+  ],
+  "educations": [
+    {
+      "id": "edu-legacy-1",
+      "school": "Đại Học Bách Khoa TP.HCM",
+      "degree": "Kỹ sư Công nghệ Thông tin",
+      "major": "Kỹ thuật Phần mềm",
+      "startDate": "2016",
+      "endDate": "2021",
+      "gpa": "3.5 / 4.0",
+      "honors": "Tốt nghiệp loại Giỏi"
+    }
+  ],
+  "skillCategories": [
+    {
+      "id": "cat-legacy-1",
+      "categoryName": "Frontend & Core",
+      "skills": [
+        { "name": "React 18", "level": 5 },
+        { "name": "TypeScript", "level": 4 },
+        { "name": "Tailwind CSS", "level": 5 }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-legacy-1",
+      "name": "Hệ Thống Quản Lý Dữ Liệu Cũ",
+      "role": "Frontend Tech Lead",
+      "description": "Dự án mẫu nhằm chứng minh khả năng migrate dữ liệu cũ sang schema mới mà không bị lỗi hoặc mất dữ liệu.",
+      "techStack": ["React", "TypeScript", "Vite"],
+      "link": "https://github.com/legacy/project"
+    }
+  ],
+  "achievements": [
+    {
+      "id": "achieve-legacy-1",
+      "title": "Nhân Viên Xuất Sắc Năm 2023",
+      "issuer": "Tập Đoàn Công Nghệ Cũ",
+      "year": "2023",
+      "description": "Giải thưởng ghi nhận đóng góp trong việc tối ưu hóa bundle sản phẩm."
+    }
+  ],
+  "certificates": [
+    {
+      "id": "cert-legacy-1",
+      "name": "Meta Certified Front-End Developer",
+      "issuer": "Coursera / Meta",
+      "issueDate": "2023",
+      "credentialUrl": "https://coursera.org/verify/legacy-123"
+    }
+  ],
+  "themeConfig": {
+    "primaryColor": "#0E7C6B",
+    "fontFamily": "font-sans",
+    "templateId": "template-classic-teal"
+  }
+}
