@@ -176,3 +176,50 @@
 - ❌ Tích hợp Backend server Express trên Render: Cắt bỏ, dùng Firebase serverless.
 - ❌ Chức năng đa ngôn ngữ (i18n): Đóng băng, chỉ hỗ trợ tiếng Việt.
 - ❌ Nhập CV tự động từ LinkedIn / PDF parse: Đóng băng.
+
+---
+
+## ADR-012: Kiến trúc Quản lý State Toàn cục bằng Zustand v5 & Migration Middleware
+- **Ngữ cảnh**: Stage 1 dùng hook `useCVEditor` với React `useState` cục bộ và `localStorage` trực tiếp. Cần chuyển sang store toàn cục để chuẩn bị cho Auth và Dashboard mà không gây hồi quy dữ liệu hoặc vòng lặp render vô tận.
+- **Quyết định**: **[QUYẾT ĐỊNH] CHUYỂN SANG ZUSTAND V5 VỚI PERSIST MIDDLEWARE, CƠ CHẾ USE-SHALLOW VÀ STRANGLER PATTERN.**
+- **Nguyên tắc kỹ thuật**:
+  1. Store `src/stores/useCVStore.ts` quản lý `cvData`, `saveStatus`, `activeSection`.
+  2. Bắt buộc dùng `useShallow` khi lấy object/array slice để chặn triệt để vòng lặp re-render vô tận của Zustand v5.
+  3. Middleware `persist` cấu hình `version: 2`, có hàm `migrate` tự động nâng cấp dữ liệu draft cũ (v1) từ `legacyDraftFixture.json` sang v2.
+  4. Timer debounce auto-save (600ms) chuyển vào subscription của store, miễn nhiễm với React 18 StrictMode.
+  5. Giữ `useCVEditor` làm wrapper facade tạm thời để bảo toàn 100% component và test suite hiện có.
+
+---
+
+## ADR-013: Tùy biến Chi tiết Màu sắc & Phông chữ theo từng phần qua CSS Custom Properties
+- **Ngữ cảnh**: Người dùng cần tùy biến màu và font cho từng phần (Họ tên, Liên hệ, Tóm tắt, Kinh nghiệm, Học vấn, Kỹ năng, Dự án, Thành tựu, Chứng chỉ) mà không làm vỡ giao diện của 3 mẫu CV hiện tại.
+- **Quyết định**: **[QUYẾT ĐỊNH] LƯU CẤU HÌNH THEO SECTION ID VÀ TRUYỀN QUA CSS CUSTOM PROPERTIES INLINE.**
+- **Nguyên tắc kỹ thuật**:
+  1. `ThemeConfig.sectionStyles: Record<SectionId, SectionStyleConfig>` độc lập với `templateId`, đảm bảo đổi mẫu CV không mất tùy biến.
+  2. Cấm class Tailwind động (`text-[${color}]`); chỉ dùng biến CSS `--sec-heading-color`, `--sec-text-color`, `--sec-accent-color`, `--sec-heading-font`, `--sec-body-font` đặt trên thẻ wrapper của từng phần.
+  3. Tích hợp thuật toán tính tỷ lệ tương phản WCAG 2.1 (ngưỡng 4.5:1 cho text thường, 3.0:1 cho heading) và hiển thị cảnh báo mềm trực quan.
+  4. Xác thực đầu vào khắt khe: chỉ nhận hex chuẩn `#RRGGBB`, khử độc mã CSS injection (`url(`, `;`, `expression`), font chỉ chọn từ `fontRegistry`.
+  5. Kéo chọn màu chỉ cập nhật state cục bộ; ghi store qua `startTransition` hoặc khi thả chuột để tránh re-render 60fps.
+
+---
+
+## ADR-014: Chiến lược Phông chữ Subsetting WOFF2 & Controlled Font Registry
+- **Ngữ cảnh**: 39 file font `.otf` tĩnh (5.4 MB) làm chậm thời gian tải trang ban đầu và tiềm ẩn rủi ro bản quyền thương mại.
+- **Quyết định**: **[QUYẾT ĐỊNH] CHUYỂN ĐỔI SANG GOOGLE FONTS WOFF2 SUBSETTING VỚI FONT REGISTRY TUYỂN CHỌN.**
+- **Nguyên tắc kỹ thuật**:
+  1. Khởi tạo `src/features/cv-editor/utils/fontRegistry.ts` gồm 7 font tiêu chuẩn đã kiểm chứng 100% glyph tiếng Việt: Montserrat, Be Vietnam Pro, Outfit, Inter, Playfair Display, Merriweather, Pacifico.
+  2. Áp dụng dải `unicode-range` tiếng Việt và Latin, nén WOFF2.
+  3. Chỉ tải font mặc định của template khi mở trang (Initial payload < 400 kB); các font khác trong registry được nạp động theo nhu cầu (on-demand) khi người dùng click chọn.
+  4. Sử dụng `font-display: swap` và font fallback tương đồng kích thước để triệt tiêu hiện tượng FOUT/CLS.
+
+---
+
+## ADR-015: Code-Splitting Route & Cách ly Thư viện Nặng
+- **Ngữ cảnh**: Entry chunk JS đang ở mức 1,045 kB do tải tĩnh toàn bộ 4 route, 3 template và `html2pdf.js`/`jspdf`.
+- **Quyết định**: **[QUYẾT ĐỊNH] ÁP DỤNG REACT.LAZY THEO ROUTE VÀ DYNAMIC IMPORT CHO PDF SERVICE.**
+- **Nguyên tắc kỹ thuật**:
+  1. Phân tách tất cả các trang (`HomePage`, `CVViewPage`, `CVEditorPage`, `NotFoundPage`) bằng `React.lazy()` và bọc `<Suspense fallback={<PageSkeleton />}>`.
+  2. Chuyển đổi `exportPdfService.ts` sang `await import('html2pdf.js')` khi người dùng bấm nút xuất PDF, tách toàn bộ ~600 kB ra khỏi chunk ban đầu.
+  3. Cấu hình Rollup `manualChunks` cho `react-vendor` và `lucide-icons` để tối ưu bộ nhớ đệm trình duyệt (browser caching).
+  4. Mục tiêu bắt buộc: Entry chunk JS ban đầu giảm xuống dưới 500 kB (kỳ vọng thực tế < 350 kB thô / < 100 kB gzip).
+
