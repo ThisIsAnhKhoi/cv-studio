@@ -122,3 +122,27 @@
 3. **Chuyển đổi State sang Zustand Store (Task Brief 5)**:
    - Cài đặt Zustand, tạo `cvStore.ts` và `themeStore.ts` chuẩn bị cho tích hợp Firebase Auth ở Giai đoạn 3.
 
+---
+
+## 7. CHUẨN BỊ PHÁT HÀNH GITHUB (RELEASE PREPARATION & AUDIT — 13/10/2026)
+
+### 7.1. Kết quả kiểm toán an toàn (Pre-flight Audit)
+- **Lỗ hổng bí mật (Secret Scanning)**: **0 secret / 0 token**. Đã quét toàn bộ 11 commit trong lịch sử git và working tree; không có API key hay tệp `.env` nào bị commit.
+- **Kích thước tệp lớn (Large Files)**: Không có tệp nào > 1 MB trong git tracking. Thư mục font cục bộ đạt 5.4 MB (39 file .otf).
+- **Phụ thuộc bên thứ ba (npm audit)**: Ghi nhận 2 CVE critical trong `html2pdf.js@0.10.2` & `jspdf@2.5.1` (BUG-005); tính năng xuất PDF đã tạm hoãn và ghi rõ trong `SECURITY.md` và `README.md`.
+- **Rủi ro tài sản (Assets & Fonts)**: Đã đính kèm điều khoản miễn trừ trách nhiệm (Third-Party Assets Disclaimer) trong `LICENSE` và `README.md` đối với các phông chữ cài đặt cục bộ và ảnh mẫu Unsplash.
+- **Kết luận Pre-flight**: **CONDITIONAL GO** (Cho phép phát hành Public với tài liệu trung thực, minh bạch về trạng thái Prototype và các giới hạn đã biết).
+
+### 7.2. Bộ tài liệu phát hành mã nguồn mở đã hoàn thành
+- [README.md](README.md): Bản tiếng Việt hoàn chỉnh (5 giây - 30 giây - 5 phút, ma trận tính năng, quick start, architecture, screenshots).
+- [README.en.md](README.en.md): Bản tiếng Anh chuẩn mực, trung thực và súc tích.
+- [CHANGELOG.md](CHANGELOG.md): Chuẩn Keep a Changelog và SemVer, ghi nhận 11 commit từ `v0.1.0-alpha.1` đến `v0.1.0`.
+- [LICENSE](LICENSE): Giấy phép MIT kèm điều khoản miễn trừ font và dữ liệu mẫu.
+- [SECURITY.md](SECURITY.md): Chính sách báo cáo lỗ hổng có trách nhiệm và bảng hiện trạng bảo mật.
+- [CONTRIBUTING.md](CONTRIBUTING.md): Hướng dẫn đóng góp mã nguồn mở, workflow, code standards.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): Sơ đồ kiến trúc Mermaid, Clean 4-Layer, Template Registry Pattern.
+- [docs/images/](docs/images/): Bộ 3 ảnh chụp màn hình độ phân giải cao thực tế từ sản phẩm (< 350 kB mỗi ảnh).
+- [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md): Ghi chú phát hành chi tiết cho GitHub Release v0.1.0.
+- `.github/`: Mẫu Issue Template (Bug Report, Feature Request) và Pull Request Template.
+
+

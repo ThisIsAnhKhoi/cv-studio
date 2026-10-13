@@ -36,3 +36,13 @@ Thumbs.db
 
 # Vercel & Render
 .vercel
+
+# Test coverage & Vite cache
+coverage/
+*.lcov
+*.log
+.vite/
+
+# Temporary export files
+/*.pdf
+
