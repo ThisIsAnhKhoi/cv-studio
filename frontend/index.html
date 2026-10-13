@@ -1,11 +1,45 @@
 <!DOCTYPE html>
-<html lang="vi" class="light">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>CV Studio — Nền Tảng Tạo & Quản Lý CV Cá Nhân Chuyên Nghiệp</title>
     <meta name="description" content="Tạo hồ sơ năng lực (CV/Portfolio) trực tuyến, tùy biến phong cách, hỗ trợ Dark/Light mode và xuất bản in PDF chuẩn quốc tế A4." />
+
+    <!-- Chặn triệt để hiện tượng Flash trắng (FOUC) khi tải hoặc reload trang: thực thi đồng bộ trước khi vẽ DOM -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('cv_studio_theme');
+          var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'dark' || (!saved && systemDark)) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      html.dark {
+        color-scheme: dark;
+        background-color: #020617;
+      }
+      html.dark body {
+        background-color: #020617;
+      }
+      html.light {
+        color-scheme: light;
+        background-color: #f1f5f9;
+      }
+      html.light body {
+        background-color: #f1f5f9;
+      }
+    </style>
 
     <!-- Google Fonts: Outfit (Headings) + Be Vietnam Pro (Body) + Playfair Display & Pacifico -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,7 +49,7 @@
       rel="stylesheet"
     />
   </head>
-  <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased transition-colors duration-200">
+  <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

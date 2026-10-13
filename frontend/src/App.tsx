@@ -59,8 +59,11 @@ const AppLayout: React.FC<{
 };
 
 export const App: React.FC = () => {
-  // Global Dark Mode state (defaults to system preference or false)
+  // Global Dark Mode state (defaults to current class on documentElement, localStorage or system preference)
   const [darkMode, setDarkMode] = useState<boolean>(() => {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.classList.contains('dark');
+    }
     return (
       localStorage.getItem('cv_studio_theme') === 'dark' ||
       window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -71,9 +74,11 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
       localStorage.setItem('cv_studio_theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
       localStorage.setItem('cv_studio_theme', 'light');
     }
   }, [darkMode]);
