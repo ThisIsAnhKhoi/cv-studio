@@ -6,11 +6,16 @@ import {
   EducationItem,
   SkillCategory,
   ProjectItem,
+  AchievementItem,
+  CertificateItem,
   ThemeConfig,
   ColorPreset,
   HeadingFontOption,
 } from '../../../types/cv';
 import { mockCVData } from '../../../data/mockCVData';
+
+export const getDraftStorageKey = (id?: string) =>
+  id ? `cv_studio_draft_${id}` : 'cv_studio_draft_cv';
 
 export const DRAFT_STORAGE_KEY = 'cv_studio_draft_cv';
 
@@ -23,20 +28,39 @@ export type SaveStatus = 'saved' | 'saving' | 'unsaved';
 export function useCVEditor(initialData?: CVData) {
   // Load draft from localStorage if available, otherwise use initialData or mockCVData
   const [cvData, setCvData] = useState<CVData>(() => {
-    if (initialData) return initialData;
+    const key = getDraftStorageKey(initialData?.id);
     try {
-      const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
+      const savedDraft = localStorage.getItem(key);
       if (savedDraft) {
         return JSON.parse(savedDraft);
       }
     } catch (e) {
       console.warn('Lỗi khi đọc draft từ localStorage:', e);
     }
-    return mockCVData;
+    return initialData || mockCVData;
   });
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const isInitialMount = useRef(true);
+  const currentIdRef = useRef(initialData?.id);
+
+  // Sync state if initialData changes (e.g., navigating between different CVs)
+  useEffect(() => {
+    if (initialData && initialData.id !== currentIdRef.current) {
+      currentIdRef.current = initialData.id;
+      const key = getDraftStorageKey(initialData.id);
+      try {
+        const savedDraft = localStorage.getItem(key);
+        if (savedDraft) {
+          setCvData(JSON.parse(savedDraft));
+          return;
+        }
+      } catch (e) {
+        console.warn('Lỗi khi đọc draft từ localStorage:', e);
+      }
+      setCvData(initialData);
+    }
+  }, [initialData]);
 
   // Auto-save debounce effect (600ms)
   useEffect(() => {
@@ -49,7 +73,8 @@ export function useCVEditor(initialData?: CVData) {
     const timer = setTimeout(() => {
       setSaveStatus('saving');
       try {
-        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(cvData));
+        const key = getDraftStorageKey(cvData.id);
+        localStorage.setItem(key, JSON.stringify(cvData));
         setTimeout(() => setSaveStatus('saved'), 300);
       } catch (err) {
         console.error('Không thể lưu draft vào localStorage:', err);
@@ -267,7 +292,69 @@ export function useCVEditor(initialData?: CVData) {
     }));
   }, []);
 
-  // 7. Theme Customizer Updaters
+  // 7. Achievements Updaters
+  const addAchievement = useCallback(() => {
+    const newItem: AchievementItem = {
+      id: generateId('achieve'),
+      title: 'Tên Giải Thưởng / Thành Tích',
+      issuer: 'Đơn Vị Trao Giải / Tổ Chức',
+      year: new Date().getFullYear().toString(),
+      description: 'Mô tả ngắn gọn về giải thưởng hoặc thành tích đạt được...',
+    };
+    setCvData((prev) => ({
+      ...prev,
+      achievements: [newItem, ...(prev.achievements || [])],
+    }));
+  }, []);
+
+  const updateAchievement = useCallback((id: string, field: keyof AchievementItem, value: any) => {
+    setCvData((prev) => ({
+      ...prev,
+      achievements: (prev.achievements || []).map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      ),
+    }));
+  }, []);
+
+  const removeAchievement = useCallback((id: string) => {
+    setCvData((prev) => ({
+      ...prev,
+      achievements: (prev.achievements || []).filter((item) => item.id !== id),
+    }));
+  }, []);
+
+  // 8. Certificates Updaters
+  const addCertificate = useCallback(() => {
+    const newItem: CertificateItem = {
+      id: generateId('cert'),
+      name: 'Tên Chứng Chỉ Chuyên Ngành',
+      issuer: 'Tổ Chức Cấp (Google, AWS, Coursera,...)',
+      issueDate: '2023',
+      credentialUrl: '',
+    };
+    setCvData((prev) => ({
+      ...prev,
+      certificates: [newItem, ...(prev.certificates || [])],
+    }));
+  }, []);
+
+  const updateCertificate = useCallback((id: string, field: keyof CertificateItem, value: any) => {
+    setCvData((prev) => ({
+      ...prev,
+      certificates: (prev.certificates || []).map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      ),
+    }));
+  }, []);
+
+  const removeCertificate = useCallback((id: string) => {
+    setCvData((prev) => ({
+      ...prev,
+      certificates: (prev.certificates || []).filter((item) => item.id !== id),
+    }));
+  }, []);
+
+  // 9. Theme Customizer Updaters
   const updateTheme = useCallback((updates: Partial<ThemeConfig>) => {
     setCvData((prev) => ({
       ...prev,
@@ -280,11 +367,12 @@ export function useCVEditor(initialData?: CVData) {
 
   // Reset to default sample
   const resetToDefault = useCallback((presetData?: CVData) => {
-    const base = presetData || mockCVData;
+    const base = presetData || initialData || mockCVData;
     setCvData(base);
-    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(base));
+    const key = getDraftStorageKey(base.id);
+    localStorage.setItem(key, JSON.stringify(base));
     setSaveStatus('saved');
-  }, []);
+  }, [initialData]);
 
   return {
     cvData,
@@ -308,6 +396,12 @@ export function useCVEditor(initialData?: CVData) {
     addProject,
     updateProject,
     removeProject,
+    addAchievement,
+    updateAchievement,
+    removeAchievement,
+    addCertificate,
+    updateCertificate,
+    removeCertificate,
     updateTheme,
     resetToDefault,
   };

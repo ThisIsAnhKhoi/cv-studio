@@ -4,6 +4,7 @@ import { getCVByIdOrSlug, mockProfilesList } from '../data/mockProfiles';
 import { TEMPLATES_REGISTRY, getTemplateComponent } from '../features/cv-templates/TemplateRegistry';
 import { ColorPreset, HeadingFontOption, ThemeConfig, CVData } from '../types/cv';
 import { exportCVToPDF } from '../services/exportPdfService';
+import { NotFoundPage } from './NotFoundPage';
 import {
   ArrowLeft,
   Share2,
@@ -32,11 +33,14 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // Find candidate by id or fallback to first candidate
-  const initialData = (id ? getCVByIdOrSlug(id) : undefined) || mockProfilesList[0];
+  // Find candidate by id or fallback to first candidate if no id is specified
+  const candidate = id ? getCVByIdOrSlug(id) : mockProfilesList[0];
+  const isNotFound = Boolean(id && !candidate);
 
-  const [cvData, setCvData] = useState<CVData>(initialData);
-  const [theme, setTheme] = useState<ThemeConfig>(initialData.themeConfig);
+  const [cvData, setCvData] = useState<CVData>(candidate || mockProfilesList[0]);
+  const [theme, setTheme] = useState<ThemeConfig>(
+    (candidate || mockProfilesList[0]).themeConfig
+  );
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportSuccess, setExportSuccess] = useState<boolean>(false);
@@ -52,6 +56,10 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
       }
     }
   }, [id]);
+
+  if (isNotFound) {
+    return <NotFoundPage />;
+  }
 
   const handleTemplateChange = (templateId: string) => {
     let defaultColor: ColorPreset = 'teal';

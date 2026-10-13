@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CVTemplateProps } from '../../../types/template';
+import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import {
   Mail,
   Phone,
@@ -157,7 +158,7 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
             {/* Name, Title, Bio Tagline */}
             <div>
               <h1
-                className={`text-2xl sm:text-3xl font-extrabold uppercase leading-tight ${tc.title} tracking-wide`}
+                className={`text-2xl sm:text-3xl font-extrabold uppercase leading-tight ${tc.title} tracking-wide break-words`}
                 style={{ fontFamily: headingFontFamily }}
               >
                 {personalInfo.fullName}
@@ -214,29 +215,29 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
 
           {personalInfo.website && (
             <a
-              href={personalInfo.website}
+              href={formatSafeUrl(personalInfo.website)}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
             >
               <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
                 <Globe className="w-3 h-3 shrink-0" />
               </div>
-              <span className={`font-medium text-[11.5px] ${tc.body}`}>{personalInfo.website.replace('https://', '')}</span>
+              <span className={`font-medium text-[11.5px] ${tc.body}`}>{cleanDisplayUrl(personalInfo.website)}</span>
             </a>
           )}
 
           {personalInfo.github && (
             <a
-              href={`https://${personalInfo.github}`}
+              href={formatSafeUrl(personalInfo.github)}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
             >
               <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
                 <Github className="w-3 h-3 shrink-0" />
               </div>
-              <span className={`font-medium text-[11.5px] ${tc.body}`}>{personalInfo.github}</span>
+              <span className={`font-medium text-[11.5px] ${tc.body}`}>{cleanDisplayUrl(personalInfo.github)}</span>
             </a>
           )}
         </div>
@@ -319,9 +320,9 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
                       </h3>
                       {proj.link && (
                         <a
-                          href={proj.link}
+                          href={formatSafeUrl(proj.link)}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className={`inline-flex items-center text-slate-400 hover:${colors.primary} transition-colors`}
                         >
                           <ExternalLink className="w-3 h-3 shrink-0" />

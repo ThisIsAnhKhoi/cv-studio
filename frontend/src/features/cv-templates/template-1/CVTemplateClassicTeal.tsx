@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CVTemplateProps } from '../../../types/template';
+import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import {
   Mail,
   Phone,
@@ -149,7 +150,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
         {/* Name & Title */}
         <div className="flex-1 min-w-0">
           <h1
-            className="text-2xl sm:text-3xl font-extrabold uppercase leading-tight text-white drop-shadow-sm tracking-wide"
+            className="text-2xl sm:text-3xl font-extrabold uppercase leading-tight text-white drop-shadow-sm tracking-wide break-words"
             style={{ fontFamily: headingFontFamily }}
           >
             {personalInfo.fullName}
@@ -224,15 +225,15 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               {/* Website */}
               {personalInfo.website && (
                 <a
-                  href={personalInfo.website}
+                  href={formatSafeUrl(personalInfo.website)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className={`group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg ${tc.hoverLink} transition-colors`}
                   title="Mở website"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Globe className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
-                    <span className="truncate">{personalInfo.website.replace('https://', '')}</span>
+                    <span className="truncate">{cleanDisplayUrl(personalInfo.website)}</span>
                   </div>
                   <ExternalLink className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
                 </a>
@@ -241,14 +242,14 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               {/* GitHub */}
               {personalInfo.github && (
                 <a
-                  href={`https://${personalInfo.github}`}
+                  href={formatSafeUrl(personalInfo.github)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className={`group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg ${tc.hoverLink} transition-colors`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Github className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
-                    <span className="truncate">{personalInfo.github}</span>
+                    <span className="truncate">{cleanDisplayUrl(personalInfo.github)}</span>
                   </div>
                   <ExternalLink className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
                 </a>
@@ -257,14 +258,14 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               {/* LinkedIn */}
               {personalInfo.linkedin && (
                 <a
-                  href={`https://${personalInfo.linkedin}`}
+                  href={formatSafeUrl(personalInfo.linkedin)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className={`group flex items-center justify-between p-1.5 -mx-1.5 rounded-lg ${tc.hoverLink} transition-colors`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Linkedin className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
-                    <span className="truncate">{personalInfo.linkedin}</span>
+                    <span className="truncate">{cleanDisplayUrl(personalInfo.linkedin)}</span>
                   </div>
                   <ExternalLink className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
                 </a>
@@ -460,9 +461,9 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
                       </h3>
                       {proj.link && (
                         <a
-                          href={proj.link}
+                          href={formatSafeUrl(proj.link)}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className={`inline-flex items-center justify-center p-1 rounded ${tc.hoverLink} text-slate-400 hover:${colors.sectionAccent} transition-colors shrink-0`}
                           title="Xem dự án trực tuyến"
                         >

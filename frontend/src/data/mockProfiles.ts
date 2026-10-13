@@ -550,3 +550,17 @@ export function getCVByIdOrSlug(identifier: string): CVData | undefined {
     mockProfilesList.find((p) => p.slug.toLowerCase() === cleanId)
   );
 }
+
+export function searchProfiles(keyword: string): CVData[] {
+  const q = keyword.toLowerCase().trim();
+  if (!q) return mockProfilesList;
+  return mockProfilesList.filter((profile) => {
+    const fullName = profile.personalInfo.fullName.toLowerCase();
+    const title = profile.personalInfo.title.toLowerCase();
+    const skills = profile.skillCategories
+      .flatMap((c) => c.skills.map((s) => s.name.toLowerCase()))
+      .join(' ');
+    return fullName.includes(q) || title.includes(q) || skills.includes(q);
+  });
+}
+

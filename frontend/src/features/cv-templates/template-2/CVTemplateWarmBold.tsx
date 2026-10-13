@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CVTemplateProps } from '../../../types/template';
+import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import {
   Mail,
   Phone,
@@ -171,7 +172,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
             {/* Name and Title */}
             <div>
               <h1
-                className="text-2xl sm:text-3xl font-extrabold uppercase leading-tight text-white tracking-wide"
+                className="text-2xl sm:text-3xl font-extrabold uppercase leading-tight text-white tracking-wide break-words"
                 style={{ fontFamily: headingFontFamily }}
               >
                 {personalInfo.fullName}
@@ -324,9 +325,9 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                       </h3>
                       {proj.link && (
                         <a
-                          href={proj.link}
+                          href={formatSafeUrl(proj.link)}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className={`inline-flex items-center p-1 rounded ${tc.hoverLink} text-slate-400 hover:${colors.accent} transition-colors shrink-0`}
                           title="Xem dự án"
                         >
@@ -378,14 +379,14 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
             <div className="space-y-2 text-[11.5px]">
               {personalInfo.website && (
                 <a
-                  href={personalInfo.website}
+                  href={formatSafeUrl(personalInfo.website)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Globe className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
-                    <span className="truncate">{personalInfo.website.replace('https://', '')}</span>
+                    <span className="truncate">{cleanDisplayUrl(personalInfo.website)}</span>
                   </div>
                   <ChevronRight className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
@@ -393,14 +394,14 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
 
               {personalInfo.github && (
                 <a
-                  href={`https://${personalInfo.github}`}
+                  href={formatSafeUrl(personalInfo.github)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Github className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
-                    <span className="truncate">{personalInfo.github}</span>
+                    <span className="truncate">{cleanDisplayUrl(personalInfo.github)}</span>
                   </div>
                   <ChevronRight className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
@@ -408,14 +409,14 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
 
               {personalInfo.linkedin && (
                 <a
-                  href={`https://${personalInfo.linkedin}`}
+                  href={formatSafeUrl(personalInfo.linkedin)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Linkedin className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
-                    <span className="truncate">{personalInfo.linkedin}</span>
+                    <span className="truncate">{cleanDisplayUrl(personalInfo.linkedin)}</span>
                   </div>
                   <ChevronRight className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>

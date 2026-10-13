@@ -134,14 +134,14 @@ Chi tiết vai trò từng tầng:
    - Áp dụng mẫu thiết kế Registry Pattern: Mọi template đều triển khai chung một interface `CVTemplateProps { data: CVData; theme: ThemeConfig; isPrintMode?: boolean }`.
    - Khi cần bổ sung thêm Template 3, 4, 5: Lập trình viên chỉ cần tạo 1 file component template mới và đăng ký vào danh sách `templatesRegistry.ts` mà không làm xáo trộn bất kỳ phần nào của Editor hay Backend.
 3. Tầng State & Business Logic:
-   - Sử dụng **Zustand** (siêu nhẹ, không boilerplate) để quản lý:
-     * `useCVStore`: Quản lý state của CV đang chỉnh sửa, cơ chế Undo/Redo, tự động lưu sau 800ms debounce.
-     * `useAuthStore`: Quản lý phiên đăng nhập của người dùng.
-     * `useThemeStore`: Quản lý Dark/Light mode toàn app.
-   - Dịch vụ xuất PDF (`pdfService.ts`): Xử lý tiền chuẩn bị A4, tối ưu ngắt trang trước khi gọi hàm in/tải.
+   - State Management: Khởi đầu bằng custom hook `useCVEditor` cho Client Prototype; nâng cấp lên **Zustand** (`useCVStore`, `useThemeStore`, `useAuthStore`) ở Giai đoạn 2 trước khi tích hợp Auth (Tham chiếu ADR-003).
+   - Tự động lưu (Auto-save) sau 600ms debounce phân vùng key theo từng ID hồ sơ (`cv_studio_draft_${id}`).
+   - Tính năng Undo/Redo: Tạm đóng băng trong giai đoạn MVP để tập trung chất lượng cốt lõi (Tham chiếu ADR-011).
+   - Dịch vụ in ấn & PDF: Tối ưu hóa bộ quy chuẩn CSS `@media print` chuẩn khổ A4 vector sắc nét, bôi đen copy chữ được trực tiếp từ trình duyệt (Tham chiếu ADR-008).
 4. Tầng Data Access & Persistence:
-   - Giao tiếp với Firebase SDK (Firestore, Auth, Storage) hoặc REST API.
-   - Cơ chế Fallback/Offline-first: Khi chưa đăng nhập hoặc mạng yếu, dữ liệu tự động lưu vào `localStorage` của trình duyệt để người dùng không bao giờ bị mất bài viết dở.
+   - Sử dụng giải pháp **Firebase Serverless** hoàn toàn (Cloud Firestore, Firebase Auth) kết hợp **Cloudinary** để lưu trữ và nén ảnh đại diện tự động căn giữa khuôn mặt (Tham chiếu ADR-001, ADR-002).
+   - Loại bỏ máy chủ Express trên Render cho phạm vi MVP để tối ưu chi phí và loại trừ độ trễ cold start.
+   - Cơ chế Fallback/Offline-first: Tự động lưu bản nháp theo ID vào `localStorage` của trình duyệt.
 
 Cấu trúc thư mục tối ưu của dự án (Folder Structure):
 ```
@@ -200,19 +200,22 @@ Website/
 └── y_tuong.txt                     # Tài liệu đặc tả dự án chuẩn
 ```
 
-6. CÔNG NGHỆ DỰ KIẾN (TECH STACK)
+6. CÔNG NGHỆ CHÍNH THỨC (TECH STACK V2)
 --------------------------------------------------------------------------------
 - Frontend Core:
-  + Vite + React 18+ với TypeScript (Type-safe, tốc độ build và Hot Module Replacement tức thì).
-  + Tailwind CSS (Hệ thống utility class mạnh mẽ, dễ dàng cấu hình Theme tokens và Dark Mode).
-  + Zustand (Quản lý trạng thái nhẹ hơn Redux 10 lần, dễ bảo trì, hiệu năng cao).
-  + Lucide React (Thư viện icon hiện đại, sắc nét, đồng bộ phong cách).
-  + React Router DOM v6 (Điều hướng SPA mượt mà).
-- Backend & Lưu trữ:
-  + Firebase (Firebase Auth, Cloud Firestore, Firebase Storage) - Hoạt động Serverless không cần duy trì máy chủ, tiết kiệm chi phí và cực kỳ bảo mật.
-  + Hỗ trợ mở rộng API Node.js / Express nếu có nhu cầu tích hợp thanh toán hoặc xử lý logic riêng biệt trên Render.
+  + Vite + React 18+ với TypeScript (Type-safe tuyệt đối, HMR tức thì).
+  + Tailwind CSS (Hệ thống utility class, Dark/Light token, print styling).
+  + Zustand (Quản lý trạng thái toàn cục siêu nhẹ cho Tầng 3).
+  + Lucide React (Bộ icon hiện đại, sắc nét).
+  + React Router DOM v7 (Điều hướng SPA mượt mà, hỗ trợ SPA rewrite).
+- Backend & Lưu trữ Đám mây:
+  + Firebase Serverless (Firebase Auth cho Google 1-click & Email; Cloud Firestore lưu trữ CV).
+  + Cloudinary Media Cloud (Lưu ảnh đại diện, tự động crop khuôn mặt 1:1, nén WebP an toàn).
+  + Cắt bỏ máy chủ Express trên Render trong phạm vi MVP (Tham chiếu ADR-001).
 - Xuất bản in & PDF:
-  + Chuẩn CSS `@media print` kết hợp thư viện `html2pdf.js` / `react-to-print` đảm bảo file PDF xuất ra có thể tìm kiếm chữ (searchable text) và chất lượng vector cao.
+  + Chuẩn CSS `@media print` native kết hợp hộp thoại In của trình duyệt (Ctrl + P / Save as PDF).
+  + Đảm bảo file PDF vector sắc nét 100%, chọn và bôi đen copy chữ được, dung lượng siêu nhẹ (< 100 kB).
+  + Gỡ bỏ hoàn toàn `html2pdf.js` và `jspdf` để triệt tiêu các lỗ hổng bảo mật Critical (Tham chiếu ADR-008).
 
 7. CHIẾN LƯỢC QUẢN LÝ PHIÊN BẢN (GIT & GITHUB) VÀ DEPLOYMENT
 --------------------------------------------------------------------------------
@@ -233,30 +236,33 @@ Website/
    - Frontend Deployment: **Vercel**
      * Kết nối trực tiếp với GitHub Repository.
      * Mỗi khi push code lên `main` -> Vercel tự động build và deploy lên global CDN siêu nhanh.
-     * Hỗ trợ tự động tạo Preview URL cho mỗi Pull Request để test trước khi merge.
-     * Cấu hình file `vercel.json` để hỗ trợ SPA routing (tránh lỗi 404 khi người dùng F5 tại các trang con).
-   - Backend & Database Deployment: **Render** / **Firebase Hosting & Cloud Functions**
-     * Render: Dùng cho Node.js REST API service, kết nối GitHub tự động build và khởi chạy.
-     * Firebase: Sử dụng Cloud Firestore & Firebase Auth hoàn toàn serverless, không cần quản trị server.
-   - Quản lý biến môi trường (Environment Variables):
-     * Tạo file `.env.example` chứa danh sách key mẫu (API URL, Firebase public keys).
-     * Thiết lập biến môi trường an toàn trên Dashboard của Vercel & Render, không bao giờ commit file `.env` lên GitHub.
+     * Tệp `vercel.json` định tuyến rewrite toàn bộ request về `/index.html` chống lỗi 404 khi F5.
+   - Backend Deployment: **Firebase Serverless** (Auth & Firestore) không cần duy trì máy chủ.
+   - Quản lý biến môi trường: Thiết lập an toàn trên Dashboard của Vercel & Firebase Console.
 
-8. LỘ TRÌNH TRIỂN KHAI TỔNG THỂ (ROADMAP)
+8. LỘ TRÌNH PHÁT TRIỂN NÂNG CẤP (ROADMAP V2)
 --------------------------------------------------------------------------------
-- Bước 1: Chuẩn bị kiến trúc, khởi tạo Git/GitHub setup, khởi tạo Frontend (React + TS + Tailwind), thiết lập dữ liệu mẫu và xây dựng Mẫu CV số 1 (Default Template).
-- Bước 2: Trình người dùng duyệt mẫu CV số 1 để lấy phản hồi và tinh chỉnh dáng/style.
-- Bước 3: Xây dựng Trang chủ (Menu & Danh sách Profile) và Trang CV chi tiết (Public View).
-- Bước 4: Xây dựng Trình chỉnh sửa CV (CV Editor với nút + thêm mục động, đổi font, đổi theme, chỉnh sửa nội dung).
-- Bước 5: Tích hợp Backend & Authentication (Đăng nhập, Đăng ký, Phân quyền bảo mật chỉ cho phép chủ sở hữu sửa).
-- Bước 6: Hoàn thiện tính năng Xuất PDF, kiểm thử responsive trên mọi thiết bị và triển khai CI/CD lên Vercel/Render.
+- Giai đoạn 1: Ổn định Client Core & Đóng P0/P1 (Vá XSS, sửa lưu Draft theo ID, xử lý 404, đủ 9 khối Editor, cấu hình `vercel.json`, 10 unit tests Vitest).
+- Giai đoạn 2: Tối ưu Phông chữ & Bundle (Dọn font nặng sang WOFF2/Google Fonts < 400 kB, code-splitting, chuyển sang Zustand Store toàn cục).
+- Giai đoạn 3: Xác thực Firebase Auth & Phân quyền (Đăng nhập Google/Email, phân quyền `isOwner` chỉ cho phép chủ CV sửa, trang Dashboard cá nhân).
+- Giai đoạn 4: Lưu trữ Đám mây Firestore & Upload Avatar (CRUD Firestore, Cloudinary avatar crop 1:1, bảo mật Security Rules).
+- Giai đoạn 5: Hoàn thiện In ấn A4 Native & Phát hành MVP (CSS print A4 vector sắc nét, gỡ `html2pdf.js`, phát hành production lên Vercel).
 
 9. CƠ CHẾ BÀN GIAO & THEO DÕI TIẾN ĐỘ CHO TRỢ LÝ ANTIGRAVITY (DEV LOG SYSTEM)
 --------------------------------------------------------------------------------
-1. File trung tâm: `PROJECT_STATUS.md` (đặt tại thư mục gốc)
-   - Lưu trữ mục tiêu hiện tại, bảng tiến độ tính năng, nhật ký sửa lỗi và các bước tiếp theo.
-2. File quy chuẩn: `.agents/rules/session-protocol.md`
-   - Bắt buộc trợ lý đọc `PROJECT_STATUS.md` khi bắt đầu và cập nhật lại khi kết thúc phiên.
-3. File đặc tả dự án: `y_tuong.txt`
-   - Nguồn chân lý duy nhất (Single Source of Truth) cho toàn bộ kiến trúc dự án.
+1. File trung tâm: `PROJECT_STATUS.md` (đặt tại thư mục gốc) - Bắt buộc cập nhật sau mỗi phiên.
+2. File quy chuẩn: `.agents/rules/session-protocol.md` - Đọc trước khi làm, cập nhật khi kết thúc.
+3. File hướng dẫn chi tiết từng phiên: `TASK_BRIEFS.md` (Task Brief 1 đến 5).
+4. File quyết định kiến trúc: `DECISIONS.md` (ADR-001 đến ADR-011).
+
+10. NHẬT KÝ THAY ĐỔI ĐẶC TẢ (SPECIFICATION CHANGELOG)
+--------------------------------------------------------------------------------
+- Ngày 13/10/2026 (Ban hành bởi Tech Lead / Solution Architect):
+  + [ADR-001]: Chốt kiến trúc Backend 100% Firebase Serverless; đóng băng và cắt bỏ máy chủ Express trên Render cho MVP.
+  + [ADR-002]: Chốt giải pháp lưu ảnh đại diện bằng Cloudinary Unsigned Widget (tự crop 1:1 và nén WebP) thay vì lưu ảnh thô trên Firebase Storage.
+  + [ADR-003]: Tạm thời giữ `useCVEditor` để vá lỗi P0; chuyển đổi sang Zustand Store ở Giai đoạn 2 trước khi làm Auth.
+  + [ADR-004]: Chốt bộ 3 template chuẩn: Classic Teal, Warm Bold, Modern Minimal (cập nhật Dáng 3 từ Red Compact thành Modern Minimal theo đúng mã nguồn thực tế).
+  + [ADR-008]: Tạm hoãn xuất PDF qua canvas `html2pdf.js` do có lỗ hổng CVE; chuyển sang giải pháp native `@media print` A4 vector sắc nét ở Giai đoạn 5.
+  + [ADR-011]: Đóng băng phạm vi các tính năng phụ (kéo thả dnd, undo/redo, i18n, express server) để dồn lực hoàn thiện MVP.
+  + Cập nhật Lộ trình từ 6 bước ban đầu thành Lộ trình V2 gồm 5 giai đoạn đo lường được.
 ================================================================================

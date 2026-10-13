@@ -19,6 +19,8 @@ import {
   GraduationCap,
   Code2,
   FolderGit2,
+  Trophy,
+  Award,
   Palette,
   ZoomIn,
   ZoomOut,
@@ -31,7 +33,10 @@ import { ExperienceSection } from '../features/cv-editor/components/sections/Exp
 import { EducationSection } from '../features/cv-editor/components/sections/EducationSection';
 import { SkillsSection } from '../features/cv-editor/components/sections/SkillsSection';
 import { ProjectsSection } from '../features/cv-editor/components/sections/ProjectsSection';
+import { AchievementsSection } from '../features/cv-editor/components/sections/AchievementsSection';
+import { CertificatesSection } from '../features/cv-editor/components/sections/CertificatesSection';
 import { ThemeCustomizerSection } from '../features/cv-editor/components/sections/ThemeCustomizerSection';
+import { NotFoundPage } from './NotFoundPage';
 
 type ActiveTabMobile = 'editor' | 'preview';
 
@@ -43,6 +48,7 @@ interface CVEditorPageProps {
 export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDarkMode }) => {
   const { id } = useParams<{ id: string }>();
   const initialPreset = id ? getCVByIdOrSlug(id) : undefined;
+  const isNotFound = Boolean(id && !initialPreset);
 
   const {
     cvData,
@@ -66,6 +72,12 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
     addProject,
     updateProject,
     removeProject,
+    addAchievement,
+    updateAchievement,
+    removeAchievement,
+    addCertificate,
+    updateCertificate,
+    removeCertificate,
     updateTheme,
     resetToDefault,
   } = useCVEditor(initialPreset);
@@ -78,6 +90,8 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
     education: false,
     skills: false,
     projects: false,
+    achievements: false,
+    certificates: false,
     theme: false,
   });
 
@@ -90,6 +104,10 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportSuccess, setExportSuccess] = useState<boolean>(false);
   const [activeMobileTab, setActiveMobileTab] = useState<ActiveTabMobile>('editor');
+
+  if (isNotFound) {
+    return <NotFoundPage />;
+  }
 
   // Handle PDF Export
   const handleDownloadPDF = async () => {
@@ -449,7 +467,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
           </div>
 
           {/* 7. Projects Accordion */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs mb-8">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
             <button
               type="button"
               onClick={() => toggleSection('projects')}
@@ -474,6 +492,68 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                   onAdd={addProject}
                   onUpdate={updateProject}
                   onRemove={removeProject}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* 8. Achievements Accordion */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+            <button
+              type="button"
+              onClick={() => toggleSection('achievements')}
+              className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors group cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <Trophy className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+                  Thành Tựu & Giải Thưởng ({cvData.achievements?.length || 0})
+                </span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-transform duration-200 ${
+                  openSections.achievements ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+            {openSections.achievements && (
+              <div className="p-5 border-t border-slate-100 dark:border-slate-800">
+                <AchievementsSection
+                  achievements={cvData.achievements || []}
+                  onAdd={addAchievement}
+                  onUpdate={updateAchievement}
+                  onRemove={removeAchievement}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* 9. Certificates Accordion */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs mb-8">
+            <button
+              type="button"
+              onClick={() => toggleSection('certificates')}
+              className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors group cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <Award className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+                  Chứng Chỉ Chuyên Ngành ({cvData.certificates?.length || 0})
+                </span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-transform duration-200 ${
+                  openSections.certificates ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+            {openSections.certificates && (
+              <div className="p-5 border-t border-slate-100 dark:border-slate-800">
+                <CertificatesSection
+                  certificates={cvData.certificates || []}
+                  onAdd={addCertificate}
+                  onUpdate={updateCertificate}
+                  onRemove={removeCertificate}
                 />
               </div>
             )}

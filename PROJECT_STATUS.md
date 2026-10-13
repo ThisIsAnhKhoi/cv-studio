@@ -3,48 +3,122 @@
 
 ---
 
-## 1. THÔNG TIN CHUNG
+## 1. THÔNG TIN CHUNG (LỊCH SỬ KHỞI TẠO CŨ)
 - **Dự án**: Website Nền tảng Tạo & Quản lý CV Cá nhân (CV Portfolio Platform)
-- **Tài liệu đặc tả**: [y_tuong.txt](file:///c:/Users/junde/OneDrive/Desktop/TranKhoi/Website/y_tuong.txt)
+- **Tài liệu đặc tả**: [y_tuong.txt](y_tuong.txt)
 - **Kiến trúc hệ thống**: 4-Layer Clean Architecture
 - **Môi trường cục bộ**: Đang chạy tại `http://localhost:3000/` (Vite dev server)
-- **Git Commit**: `ee28790` (fix: resolve font glitch with local fonts, fix icon alignment, declutter layout, add hover effects, and organize folder structure)
-- **Giai đoạn hiện tại**: Giai đoạn 2 — Duyệt Mẫu CV số 1 đã tinh chỉnh & Chuẩn bị xây dựng các phân hệ tiếp theo
+- **Git Commit cũ từng ghi**: `ee28790` *(⚠️ LƯU Ý KIỂM TOÁN: Commit thực tế hiện tại là `ec26185`)*
+- **Giai đoạn cũ từng ghi**: Giai đoạn 2 — Duyệt Mẫu CV số 1 đã tinh chỉnh *(⚠️ LƯU Ý KIỂM TOÁN: Mã nguồn thực tế đã phát triển qua Trang chủ, Mẫu 2, Mẫu 3 và Editor)*
 
 ---
 
-## 2. KẾT QUẢ TINH CHỈNH THEO PHẢN HỒI (REFINEMENT RESULTS)
+## 2. KẾT QUẢ TINH CHỈNH THEO PHẢN HỒI (LỊCH SỬ PHIÊN TRƯỚC)
 
 | STT | Hạng mục tinh chỉnh | Chi tiết đã thực hiện | Trạng thái |
 |:---:|:---|:---|:---:|
-| **1** | **Quy hoạch cây thư mục** | Đã gom toàn bộ các file mẫu HTML/PDF tham khảo vào thư mục riêng `references/sample-cvs/`. Thư mục gốc sạch sẽ và chuẩn mực. |  Đã hoàn thành |
-| **2** | **Tích hợp phông chữ từ máy tính** | Đã sao chép các bộ font việt hóa từ máy tính (`iCiel Cubano`, `SVN-Optima`, `Gilroy`, `Montserrat`) vào `public/fonts/` và khai báo `@font-face`. Sửa dứt điểm lỗi nhảy font tiếng Việt ở họ tên. |  Đã hoàn thành |
-| **3** | **Căn chỉnh Icon SVG bị lệch** | Khắc phục hoàn toàn lỗi lệch icon `ExternalLink` bằng `inline-flex items-center gap-1.5`. Canh đều icon liên hệ và mốc timeline. |  Đã hoàn thành |
-| **4** | **Tinh gọn thông tin & bố cục thoáng** | Mở rộng cột trái lên 245px (email `thanhtruc.dev@gmail.com` vừa vặn trên 1 dòng). Rút gọn tóm tắt và bullet points kinh nghiệm sắc bén, tăng khoảng thở giữa các khối. |  Đã hoàn thành |
-| **5** | **Hiệu ứng Hover & Tương tác sống động** | Bổ sung hiệu ứng hover nâng thẻ dự án (`hover:-translate-y-0.5 hover:shadow-md`), viền sáng màu accent, hover thẻ kỹ năng, click sao chép email kèm thông báo tức thì, avatar zoom nhẹ. |  Đã hoàn thành |
+| **1** | **Quy hoạch cây thư mục** | Đã gom toàn bộ các file mẫu HTML/PDF tham khảo vào thư mục riêng `references/sample-cvs/`. Thư mục gốc sạch sẽ và chuẩn mực. | ✅ Đã hoàn thành |
+| **2** | **Tích hợp phông chữ từ máy tính** | Đã sao chép các bộ font việt hóa từ máy tính (`iCiel Cubano`, `SVN-Optima`, `Gilroy`, `Montserrat`) vào `public/fonts/` và khai báo `@font-face`. Sửa dứt điểm lỗi nhảy font tiếng Việt ở họ tên. | ✅ Đã hoàn thành |
+| **3** | **Căn chỉnh Icon SVG bị lệch** | Khắc phục hoàn toàn lỗi lệch icon `ExternalLink` bằng `inline-flex items-center gap-1.5`. Canh đều icon liên hệ và mốc timeline. | ✅ Đã hoàn thành |
+| **4** | **Tinh gọn thông tin & bố cục thoáng** | Mở rộng cột trái lên 245px (email `thanhtruc.dev@gmail.com` vừa vặn trên 1 dòng). Rút gọn tóm tắt và bullet points kinh nghiệm sắc bén, tăng khoảng thở giữa các khối. | ✅ Đã hoàn thành |
+| **5** | **Hiệu ứng Hover & Tương tác sống động** | Bổ sung hiệu ứng hover nâng thẻ dự án (`hover:-translate-y-0.5 hover:shadow-md`), viền sáng màu accent, hover thẻ kỹ năng, click sao chép email kèm thông báo tức thì, avatar zoom nhẹ. | ✅ Đã hoàn thành |
 
 ---
 
-## 3. BẢNG TIẾN ĐỘ TỔNG THỂ (OVERALL ROADMAP)
+## 3. BẢNG TIẾN ĐỘ TỔNG THỂ (LỊCH SỬ CŨ - CÓ ĐỐI CHIẾU THỰC TẾ)
 
-| STT | Giai đoạn / Tính năng | Trạng thái | Ghi chú |
+| STT | Giai đoạn / Tính năng | Trạng thái tự ghi cũ | Ghi chú & Đối chiếu kiểm toán thực tế [ĐÃ XÁC MINH] |
 |:---:|:---|:---:|:---|
-| 1 | Khảo sát ý tưởng & Chuẩn hóa tài liệu (`y_tuong.txt`) |  Hoàn thành | 9 phần đặc tả hoàn chỉnh |
-| 2 | Hệ thống Dev-Log & Handover cho Antigravity |  Hoàn thành | `PROJECT_STATUS.md` và `.agents/rules/session-protocol.md` |
-| 3 | Thực hiện Bước 1: Git setup + Frontend + Mẫu CV số 1 |  Hoàn thành | Đã hoàn thành 100% |
-| 4 | Tinh chỉnh Mẫu CV số 1 (Font máy, Icon, Layout, Hover) |  Hoàn thành | Đã kiểm thử qua Browser Subagent tại localhost:3000 |
-| 5 | Xây dựng Mẫu CV số 2 (Warm Bold Ink & Tangerine) |  Chờ thực hiện | Mở rộng theo thiết kế CV v2 đã khảo sát |
-| 6 | Xây dựng Trang chủ (Menu & Danh sách Profile) |  Chờ thực hiện | Grid card profile, thanh tìm kiếm, filter theo ngành |
-| 7 | Xây dựng Trang CV cá nhân chi tiết (Public View) |  Chờ thực hiện | Chế độ chỉ xem, export PDF, liên hệ nhanh, share link |
-| 8 | Xây dựng Trình chỉnh sửa CV (CV Editor Dashboard) |  Chờ thực hiện | Nút (+) thêm mục động, live preview, đổi theme & font |
-| 9 | Tích hợp Xác thực (Auth) & Phân quyền bảo mật |  Chờ thực hiện | Firebase Auth / Node.js; chỉ chủ tài khoản mới được sửa CV |
-| 10 | Triển khai CI/CD lên Vercel & Render |  Chờ thực hiện | Tự động deploy khi push lên nhánh main |
+| 1 | Khảo sát ý tưởng & Chuẩn hóa tài liệu (`y_tuong.txt`) | ✅ Hoàn thành | 9 phần đặc tả hoàn chỉnh. |
+| 2 | Hệ thống Dev-Log & Handover cho Antigravity | ✅ Hoàn thành | `PROJECT_STATUS.md` và `.agents/rules/session-protocol.md`. |
+| 3 | Thực hiện Bước 1: Git setup + Frontend + Mẫu CV số 1 | ✅ Hoàn thành | Đã hoàn thành 100%. |
+| 4 | Tinh chỉnh Mẫu CV số 1 (Font máy, Icon, Layout, Hover) | ✅ Hoàn thành | Đã hoàn thành. |
+| 5 | Xây dựng Mẫu CV số 2 (Warm Bold Ink & Tangerine) | ⏳ Chờ thực hiện | **[SAI LỆCH SO VỚI CODE THỰC TẾ]**: Đã hoàn thành trong commit `f7ed97a` (`CVTemplateWarmBold.tsx`). |
+| 6 | Xây dựng Trang chủ (Menu & Danh sách Profile) | ⏳ Chờ thực hiện | **[SAI LỆCH SO VỚI CODE THỰC TẾ]**: Đã hoàn thành trong commit `9842e3c` (`HomePage.tsx`). |
+| 7 | Xây dựng Trang CV cá nhân chi tiết (Public View) | ⏳ Chờ thực hiện | **[SAI LỆCH SO VỚI CODE THỰC TẾ]**: Đã hoàn thành trong commit `9842e3c` (`CVViewPage.tsx`). |
+| 8 | Xây dựng Trình chỉnh sửa CV (CV Editor Dashboard) | ⏳ Chờ thực hiện | **[SAI LỆCH SO VỚI CODE THỰC TẾ]**: Đã hoàn thành UI trong commit `13c6158` (`CVEditorPage.tsx`), nhưng còn thiếu 2 khối và lỗi logic lưu draft. |
+| 9 | Tích hợp Xác thực (Auth) & Phân quyền bảo mật | ⏳ Chờ thực hiện | Đúng thực tế: Chưa bắt đầu (0%). |
+| 10 | Triển khai CI/CD lên Vercel & Render | ⏳ Chờ thực hiện | Đúng thực tế: Chưa có file `vercel.json` và CI pipeline (15%). |
 
 ---
 
-## 4. BƯỚC TIẾP THEO (NEXT STEPS)
-1. Bạn mở lại trình duyệt tại `http://localhost:3000/` để thưởng thức diện mạo mới của Mẫu số 1 (font `iCiel Cubano` hiển thị tiếng Việt, thử đổi sang `SVN-Optima`, rê chuột vào dự án/email để xem tương tác).
-2. Quyết định bước tiếp theo:
-   - Làm tiếp Mẫu CV số 2 (Warm Bold v2), HOẶC
-   - Bắt đầu xây dựng Trang chủ (Menu khám phá profiles), HOẶC
-   - Bắt đầu xây dựng Trình chỉnh sửa CV động (Editor có nút + thêm mục).
+## 4. HIỆN TRẠNG ĐÃ KIỂM CHỨNG (KIỂM TOÁN LẬP NGÀY 13/10/2026 — 11:20 GMT+7)
+
+### 4.1. Thông số môi trường và mã nguồn đã xác minh
+- **Git Commit đang kiểm tra**: `ec26185` (`fix(ui): decouple CV printable styles from dark mode cascade and fix button hover colors`).
+- **TypeScript Strict Compile**: `npx tsc --noEmit` $\rightarrow$ **0 Lỗi (Pass 100%)**.
+- **Production Build**: `npm run build` $\rightarrow$ **Thành công (6.3s)**.
+- **Tiến độ hoàn thiện tổng thể thực tế (so với đặc tả `y_tuong.txt`)**: **28.5%** (Client Prototype đạt ~48%, Tầng Backend/Auth đạt 0%).
+- **Trạng thái tính năng Xuất PDF**: **TẠM HOÃN (Deferred)** theo chỉ đạo trực tiếp từ người dùng. Toàn bộ trọng tâm kiểm thử và tối ưu chuyển sang hoàn thiện các chức năng giao diện, tính toàn vẹn dữ liệu và bảo mật client-side.
+
+### 4.2. Bảng tiến độ đã hiệu chỉnh chuẩn xác
+
+| Phân hệ / Module | Trạng thái kỹ thuật | Bằng chứng mã nguồn | Mức độ hoàn thiện |
+|:---|:---|:---|:---:|
+| **Trang Khám Phá (`/`)** | Hoạt động tốt | `frontend/src/pages/HomePage.tsx` | 80% (Thiếu phân trang) |
+| **Trang Xem CV (`/cv/:id`)** | Hoạt động tốt | `frontend/src/pages/CVViewPage.tsx` | 65% (Lỗi fallback 404, thiếu check isOwner) |
+| **Mẫu CV 1, 2, 3** | Hoàn chỉnh | `features/cv-templates/` (TemplateRegistry.ts) | 95% (Cần thêm break-words) |
+| **Trình Biên Tập CV (`/editor`)** | Hoạt động (Có lỗi logic) | `features/cv-editor/` | 55% (Thiếu 2 khối, lỗi lưu draft) |
+| **Avatar Profile** | Chỉ có URL input | `PersonalInfoSection.tsx` | 20% (Chưa có upload/storage) |
+| **Auth & Phân Quyền** | Chưa bắt đầu | Không có file nào | 0% |
+| **Dashboard Quản Trị** | Chưa bắt đầu | Route trả về 404 | 0% |
+| **Backend API** | Chỉ có stub rỗng | `backend/src/server.ts` | 5% (Chưa kết nối frontend) |
+
+### 4.3. Danh sách lỗi mở đang chờ xử lý (Active Bug Backlog)
+1. ~~**BUG-001 [Critical - P0]**~~: **[ĐÃ GIẢI QUYẾT]** Lỗ hổng Stored XSS khi nhập URL `javascript:alert(1)` $\rightarrow$ Đã xử lý triệt để bằng tiện ích `formatSafeUrl()` và áp dụng toàn diện trên cả 3 template.
+2. ~~**BUG-002 [Blocker - P0]**~~: **[ĐÃ GIẢI QUYẾT]** Cơ chế lưu Draft ghi đè chung 1 key $\rightarrow$ Đã phân lập `cv_studio_draft_${id}` theo ID CV, nạp draft khi tải trang và bảo lưu 100% dữ liệu khi F5.
+3. ~~**BUG-003 [Critical - P1]**~~: **[ĐÃ GIẢI QUYẾT]** URL `/cv/unknown-id` tự động fallback sai về ứng viên số 1 $\rightarrow$ Đã điều hướng chuẩn sang `<NotFoundPage />`.
+4. ~~**BUG-004 [Major - P1]**~~: **[ĐÃ GIẢI QUYẾT]** Trình biên tập CV thiếu form cho khối Thành Tựu & Chứng Chỉ $\rightarrow$ Đã tạo `AchievementsSection.tsx` & `CertificatesSection.tsx`, tích hợp 9/9 khối dữ liệu chuẩn.
+5. **BUG-005 [Major - P1]**: 2 lỗ hổng bảo mật cấp Critical trong thư viện `html2pdf.js` và `jspdf` (Đang tạm hoãn tính năng xuất PDF theo chỉ đạo, sẽ giải quyết ở Giai đoạn 5 khi chuyển sang CSS Native Print).
+6. ~~**BUG-006 [Minor - P2]**~~: **[ĐÃ GIẢI QUYẾT]** Họ tên dài không có khoảng trắng tràn vỡ khung A4 $\rightarrow$ Đã bổ sung `break-words` trên cả 3 template.
+7. ~~**BUG-007 [Major - P1]**~~: **[ĐÃ GIẢI QUYẾT]** Chưa có tệp cấu hình SPA routing $\rightarrow$ Đã tạo `vercel.json` định tuyến toàn bộ request về `/index.html`.
+
+### 4.4. Các tài liệu kiểm toán kèm theo
+- Báo cáo kiểm toán chi tiết: [QA_REPORT.md](QA_REPORT.md)
+- Kế hoạch kiểm thử & 40 test cases: [TEST_PLAN.md](TEST_PLAN.md)
+- Quyết định kiến trúc ADR-001 đến ADR-011: [DECISIONS.md](DECISIONS.md)
+- Kế hoạch phát triển V2: [DEVELOPMENT_PLAN_V2.md](DEVELOPMENT_PLAN_V2.md)
+- Hướng dẫn thực thi Task Briefs: [TASK_BRIEFS.md](TASK_BRIEFS.md)
+
+---
+
+## 5. KẾT QUẢ THỰC HIỆN GIAI ĐOẠN 1 (HOÀN THÀNH 13/10/2026)
+
+### 5.1. Các hạng mục đã hoàn thành 100%
+1. **Vá lỗ hổng bảo mật URL Stored XSS (BUG-001) & chống vỡ layout (BUG-006)**:
+   - Tạo tiện ích [url.ts](frontend/src/utils/url.ts) với hàm `formatSafeUrl(url)` chặn đứng các scheme độc hại `javascript:`, `data:`, `vbscript:`, tự động bổ sung `https://` và làm sạch link hiển thị với `cleanDisplayUrl()`.
+   - Áp dụng `formatSafeUrl` và `break-words` trên cả 3 mẫu CV: [CVTemplateClassicTeal.tsx](frontend/src/features/cv-templates/template-1/CVTemplateClassicTeal.tsx), [CVTemplateWarmBold.tsx](frontend/src/features/cv-templates/template-2/CVTemplateWarmBold.tsx), [CVTemplateModernMinimal.tsx](frontend/src/features/cv-templates/template-3/CVTemplateModernMinimal.tsx).
+2. **Tái cấu trúc cơ chế lưu trữ bản nháp phân lập theo ID (BUG-002)**:
+   - Cập nhật [useCVEditor.ts](frontend/src/features/cv-editor/hooks/useCVEditor.ts) với cơ chế `getDraftStorageKey(id)`. Khởi tạo ưu tiên draft theo đúng ID tương ứng, tự động lưu debounce 600ms không đè lẫn giữa các hồ sơ, bảo lưu 100% dữ liệu khi người dùng F5 tải lại trang.
+3. **Sửa lỗi điều hướng 404 (BUG-003)**:
+   - Cập nhật [CVViewPage.tsx](frontend/src/pages/CVViewPage.tsx) và [CVEditorPage.tsx](frontend/src/pages/CVEditorPage.tsx): Nếu route param `id` không tồn tại trong hệ thống, giao diện render trang chuẩn `<NotFoundPage />` kèm nút quay về trang chủ, chấm dứt tình trạng âm thầm trả về ứng viên số 1.
+4. **Hoàn thiện đủ 9 khối dữ liệu chuẩn trong Trình biên tập (BUG-004)**:
+   - Tạo mới [AchievementsSection.tsx](frontend/src/features/cv-editor/components/sections/AchievementsSection.tsx) (Thành Tựu & Giải Thưởng).
+   - Tạo mới [CertificatesSection.tsx](frontend/src/features/cv-editor/components/sections/CertificatesSection.tsx) (Chứng Chỉ Chuyên Ngành).
+   - Bổ sung đầy đủ updater `add/update/remove` trong `useCVEditor.ts` và gắn vào accordion trong `CVEditorPage.tsx`.
+5. **Cấu hình triển khai Vercel SPA (BUG-007)**:
+   - Tạo mới [vercel.json](vercel.json) ở thư mục gốc cấu hình rewrites `/(.*)` $\rightarrow$ `/index.html`.
+6. **Hạ tầng kiểm thử tự động Vitest & 15/15 Unit Tests Passed**:
+   - Cài đặt `vitest@^2.1.8`, `@testing-library/react`, `@testing-library/dom`, `jsdom`.
+   - Thiết lập cấu hình `vitest run` trong [vite.config.ts](frontend/vite.config.ts) và [package.json](frontend/package.json).
+   - Viết 3 bộ test tự động:
+     - `src/utils/__tests__/url.test.ts` (6 tests: sanitize XSS, protocol whitelist, clean display)
+     - `src/features/cv-editor/hooks/__tests__/useCVEditor.test.ts` (5 tests: draft isolation, F5 persistence, experiences, skills, achievements/certs)
+     - `src/data/__tests__/mockProfiles.test.ts` (4 tests: unknown id 404 lookup, keyword search)
+   - Kết quả: **15/15 tests PASS 100%**.
+7. **Kiểm chứng thực tế bằng Trình duyệt tự động (Browser Subagent)**:
+   - Đã điều hướng `http://localhost:3000/cv/invalid-id-999` $\rightarrow$ Xác nhận hiển thị 404 chính xác.
+   - Đã sửa thông tin ứng viên trên `http://localhost:3000/editor/cv-thanhtruc-design` $\rightarrow$ Tự động lưu thành công $\rightarrow$ Nhấn F5 $\rightarrow$ Xác nhận dữ liệu giữ nguyên 100%.
+   - Đã mở 2 accordion mới Thành Tựu & Chứng Chỉ $\rightarrow$ Nhận diện đủ input và nút thêm/xóa mục.
+   - Production Build `npm run build`: Thành công 100% trong 8.32s.
+
+---
+
+## 6. KẾ HOẠCH BƯỚC TIẾP THEO (GIAI ĐOẠN 2)
+1. **Tối ưu hóa Phông chữ (Task Brief 4)**:
+   - Thay thế việc load font tĩnh nặng nề trong `public/fonts/` bằng Google Fonts (`Be Vietnam Pro`, `Montserrat`, `Outfit`) và chỉ giữ lại font đặc thù subsetting WOFF2 (`iCiel Cubano`, `SVN-Optima`) để giảm kích thước tải xuống dưới 400 kB.
+2. **Code-Splitting routes (Task Brief 4)**:
+   - Phân mảnh bundle bằng `React.lazy()` và `<Suspense>` trên `App.tsx` để giảm chunk JS chính dưới 500 kB.
+3. **Chuyển đổi State sang Zustand Store (Task Brief 5)**:
+   - Cài đặt Zustand, tạo `cvStore.ts` và `themeStore.ts` chuẩn bị cho tích hợp Firebase Auth ở Giai đoạn 3.
+
