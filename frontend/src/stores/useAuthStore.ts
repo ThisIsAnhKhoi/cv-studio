@@ -71,6 +71,8 @@ export function formatFirebaseAuthError(error: unknown): string {
       return 'Lỗi kết nối mạng. Vui lòng kiểm tra lại đường truyền internet.';
     case 'auth/too-many-requests':
       return 'Bạn đã thử đăng nhập sai quá nhiều lần. Vui lòng chờ vài phút rồi thử lại.';
+    case 'auth/unauthorized-domain':
+      return 'Tên miền trang web này chưa được cấp phép trong Firebase Console. Vui lòng vào Firebase Console > Authentication > Settings > Authorized domains và thêm tên miền này vào.';
     case 'auth/operation-not-allowed':
     case 'auth/configuration-not-found':
       return 'Phương thức đăng nhập này chưa được kích hoạt trên Firebase Console. Vui lòng liên hệ quản trị viên.';
