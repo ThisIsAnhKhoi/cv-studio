@@ -73,6 +73,25 @@ export interface CertificateItem {
 export type ColorPreset = 'teal' | 'orange' | 'red' | 'blue' | 'purple' | 'emerald';
 export type HeadingFontOption = 'Gilroy' | 'iCiel Cubano' | 'SVN-Optima' | 'Be Vietnam Pro' | 'Montserrat';
 
+export type SectionId =
+  | 'header'
+  | 'contact'
+  | 'summary'
+  | 'experience'
+  | 'education'
+  | 'skills'
+  | 'projects'
+  | 'achievements'
+  | 'certificates';
+
+export interface SectionStyleConfig {
+  headingColor?: string;
+  textColor?: string;
+  accentColor?: string;
+  headingFont?: string;
+  bodyFont?: string;
+}
+
 export interface ThemeConfig {
   templateId: string;
   primaryColor: string;
@@ -81,6 +100,8 @@ export interface ThemeConfig {
   fontHeading: HeadingFontOption;
   fontBody: 'Be Vietnam Pro' | 'Gilroy' | 'Montserrat';
   darkMode: boolean;
+  schemaVersion?: number;
+  sectionStyles?: Partial<Record<SectionId, SectionStyleConfig>>;
 }
 
 export interface CVData {
