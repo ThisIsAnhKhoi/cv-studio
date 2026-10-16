@@ -223,3 +223,29 @@
   3. Cấu hình Rollup `manualChunks` cho `react-vendor` và `lucide-icons` để tối ưu bộ nhớ đệm trình duyệt (browser caching).
   4. Mục tiêu bắt buộc: Entry chunk JS ban đầu giảm xuống dưới 500 kB (kỳ vọng thực tế < 350 kB thô / < 100 kB gzip).
 
+---
+
+## ADR-016: Xác thực Tài khoản Firebase Auth, Phân quyền Sở hữu & Quản trị Dashboard
+- **Ngữ cảnh**: Stage 3 theo lộ trình `y_tuong.txt` yêu cầu triển khai xác thực tài khoản (Google 1-click & Email/Password), phân quyền `isOwner` chỉ cho phép chủ sở hữu chỉnh sửa CV của mình, và xây dựng trang Dashboard cá nhân để quản lý nhiều CV.
+- **Quyết định**: **[QUYẾT ĐỊNH] TÍCH HỢP FIREBASE AUTH V13, QUẢN LÝ STATE QUA `useAuthStore`, PHÂN QUYỀN SỞ HỮU QUA `isCVOwner`, VÀ CHIA TÁCH VENDOR CHUNK FIREBASE.**
+- **Nguyên tắc kỹ thuật**:
+  1. **Firebase Modular SDK v13 & Singleton Service**: Khởi tạo tại `frontend/src/services/firebase.ts` với `app`, `auth`, `db`, `googleProvider` duy nhất, tương thích HMR.
+  2. **Tối ưu hóa Bundle (Vendor Splitting)**: Thiết lập Rollup `manualChunks` tách biệt:
+     - `'firebase-auth'`: ~171 kB (34.9 kB gzip)
+     - `'firebase-firestore'`: ~351 kB (98.6 kB gzip)
+     - Entry chunk chính chỉ đạt **33.34 kB** (9.56 kB gzip).
+  3. **Global Auth Store (`useAuthStore`)**:
+     - Lắng nghe `onAuthStateChanged` tự động khôi phục session khi refresh trang.
+     - Hàm dịch mã lỗi Firebase sang tiếng Việt trực quan (`formatFirebaseAuthError`).
+     - Hỗ trợ Google Sign-in popup và Đăng nhập / Đăng ký Email & Password có validation.
+  4. **Giao diện Modal & User Dropdown**:
+     - `AuthModal`: Modal toàn app hỗ trợ tab chuyển đổi Đăng nhập / Đăng ký, toggle xem mật khẩu, banner cảnh báo lỗi.
+     - `UserDropdown`: Hiển thị Avatar ảnh (hoặc chữ cái hoa đầu), menu điều hướng Dashboard (`/dashboard`), Tạo CV mới (`/editor`), và Đăng xuất an toàn.
+  5. **Phân quyền Sở hữu & Cơ chế Clone-to-Edit (`cvStorageService`)**:
+     - Kiểm tra `isCVOwner(cv, user)`: Nếu người dùng là chủ sở hữu $\rightarrow$ hiển thị nút "Chỉnh Sửa CV Của Bạn".
+     - Nếu là khách hoặc người dùng khác xem hồ sơ mẫu $\rightarrow$ cung cấp nút "Dùng Mẫu Này" (`cloneCV`), tự động sao chép toàn bộ nội dung sang một ID mới gắn với tài khoản cá nhân, bảo vệ toàn vẹn dữ liệu gốc.
+  6. **Trang Dashboard Cá Nhân (`/dashboard`)**:
+     - Code-split bằng `React.lazy()`.
+     - Thống kê tổng số CV, số CV công khai, lưới thẻ CV trực quan kèm các action (Xem trực tiếp, Chỉnh sửa, Nhân bản, Xóa có modal xác nhận).
+     - Khu vực khởi tạo nhanh từ 3 mẫu chuẩn Classic Teal, Warm Bold, Modern Minimal.
+

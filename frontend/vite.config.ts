@@ -21,9 +21,12 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'lucide-icons': ['lucide-react'],
+          'firebase-auth': ['firebase/app', 'firebase/auth'],
+          'firebase-firestore': ['firebase/firestore'],
         },
       },
     },
+    chunkSizeWarningLimit: 700,
   },
   test: {
     globals: true,

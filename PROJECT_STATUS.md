@@ -168,5 +168,46 @@
 - `stage2/brief-5-ok`: Chuyển dịch sang Zustand v5 store, auto-save debounce 600ms, migration schema v1 -> v2.
 - `stage2/brief-6-ok`: Tùy biến màu sắc, font chữ theo từng section, kiểm tra độ tương phản WCAG 2.1, và cascade CSS Custom Properties trên cả 3 template.
 
+---
+
+## 9. GIAI ĐOẠN 3: XÁC THỰC FIREBASE AUTH, PHÂN QUYỀN SỞ HỮU & DASHBOARD (HOÀN THÀNH — 16/10/2026)
+
+### 9.1. Bảng đối chiếu chỉ số kỹ thuật Giai đoạn 3
+
+| Tiêu chí kỹ thuật | Trước Giai đoạn 3 (`v0.2.0`) | Sau Giai đoạn 3 (`v0.3.0-rc`) | Đánh giá kỹ thuật | Trạng thái |
+|:---|:---:|:---:|:---|:---:|
+| **Xác thực tài khoản** | Chưa có (Khách vãng lai) | **Google 1-click & Email/Password** | Firebase v13 Modular SDK singleton | ✅ Hoàn thành |
+| **Quản lý phiên đăng nhập** | Chưa có | **`useAuthStore` (Zustand v5)** | `onAuthStateChanged` tự khôi phục phiên | ✅ Hoàn thành |
+| **Trải nghiệm đăng nhập (UX)** | Chưa có | **`AuthModal` + `UserDropdown`** | Modal toàn app, Avatar, dropdown menu, toggle pass | ✅ Hoàn thành |
+| **Phân quyền sở hữu (`isOwner`)** | Mọi người đều sửa chung draft | **`isCVOwner` + `cloneCV`** | Chủ CV sửa trực tiếp; Khách bấm "Dùng Mẫu Này" để nhân bản | ✅ Hoàn thành |
+| **Trang Dashboard cá nhân** | Chưa có | **`/dashboard` (`DashboardPage.tsx`)** | Thống kê số lượng CV, lưới thẻ CV, CRUD, tạo nhanh từ 3 template | ✅ Hoàn thành |
+| **Entry Chunk JS chính** | 13.65 kB | **33.34 kB** (9.56 kB gzip) | Tách biệt hoàn toàn `firebase-auth` và `firebase-firestore` | ✅ Vượt ngân sách (< 350 kB) |
+| **Vendor Chunk Firebase** | Chưa có | **`firebase-auth`: 171 kB / `firebase-firestore`: 351 kB** | Code-split Rollup `manualChunks`, không làm nặng main chunk | ✅ Tối ưu |
+| **Kiểm thử tự động (Unit Tests)** | 46 tests (9 suites) | **69 tests** (13 suites) | Bổ sung test cho authStore, storageService, UserDropdown, AuthModal | ✅ 69/69 Pass |
+| **Kiểm tra TypeScript (`tsc`)** | 0 error | **0 error (`tsc --noEmit`)** | 100% type-safe, có `vite-env.d.ts` | ✅ Pass 100% |
+
+### 9.2. Chi tiết các tệp thay đổi và tạo mới
+- **Mới**:
+  - `frontend/.env.example` & `frontend/.env`: Cấu hình Firebase Web App credentials.
+  - `frontend/src/vite-env.d.ts`: Khai báo kiểu môi trường Vite và biến môi trường Firebase.
+  - `frontend/src/services/firebase.ts`: Singleton khởi tạo Firebase App, Auth, Firestore, GoogleAuthProvider.
+  - `frontend/src/services/cvStorageService.ts`: Dịch vụ lưu trữ đa hồ sơ, phân quyền `isCVOwner`, nhân bản `cloneCV`, tạo mới `createNewCV`.
+  - `frontend/src/services/__tests__/cvStorageService.test.ts`: 9 unit tests cho storage service.
+  - `frontend/src/stores/useAuthStore.ts`: Store Zustand quản lý user, loginGoogle, loginEmail, registerEmail, logout, initAuth.
+  - `frontend/src/stores/__tests__/useAuthStore.test.ts`: 7 unit tests cho auth store.
+  - `frontend/src/components/auth/AuthModal.tsx`: Giao diện modal đăng nhập/đăng ký với thông báo lỗi tiếng Việt.
+  - `frontend/src/components/auth/UserDropdown.tsx`: Dropdown người dùng hiển thị avatar/initial, dashboard link, logout.
+  - `frontend/src/components/auth/__tests__/UserDropdown.test.tsx`: 3 unit tests cho UserDropdown.
+  - `frontend/src/components/auth/__tests__/AuthModal.test.tsx`: 4 unit tests cho AuthModal.
+  - `frontend/src/pages/DashboardPage.tsx`: Trang quản lý CV cá nhân với metrics và starter templates.
+- **Cập nhật**:
+  - `frontend/src/App.tsx`: Khởi tạo `initAuth()` trên mount, render `<AuthModal />` toàn cục, thêm route code-split `/dashboard`.
+  - `frontend/src/components/layout/Navbar.tsx`: Tích hợp nút Đăng Nhập / `<UserDropdown />` và link Dashboard khi đã đăng nhập.
+  - `frontend/src/pages/CVViewPage.tsx`: Bổ sung kiểm tra `isOwner`, hiển thị badge "CV Của Bạn" hoặc "Công Khai", nút "Chỉnh Sửa CV Của Bạn" (Owner) hoặc "Dùng Mẫu Này" (Clone).
+  - `frontend/src/pages/CVEditorPage.tsx`: Bổ sung nạp draft theo ID cho các CV tạo từ Dashboard, nút "Lưu Vào Dashboard", `<UserDropdown />`.
+  - `frontend/vite.config.ts`: Cấu hình Rollup `manualChunks` tách `firebase-auth` và `firebase-firestore`.
+  - `DECISIONS.md`: Bổ sung quyết định kiến trúc ADR-016.
+
+
 
 

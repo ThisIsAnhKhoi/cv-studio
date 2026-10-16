@@ -26,6 +26,9 @@ import {
   ZoomOut,
   Moon,
   Sun,
+  LogIn,
+  BookmarkPlus,
+  LayoutDashboard,
 } from 'lucide-react';
 import { PersonalInfoSection } from '../features/cv-editor/components/sections/PersonalInfoSection';
 import { SummarySection } from '../features/cv-editor/components/sections/SummarySection';
@@ -37,6 +40,10 @@ import { AchievementsSection } from '../features/cv-editor/components/sections/A
 import { CertificatesSection } from '../features/cv-editor/components/sections/CertificatesSection';
 import { ThemeCustomizerSection } from '../features/cv-editor/components/sections/ThemeCustomizerSection';
 import { NotFoundPage } from './NotFoundPage';
+import { useAuthStore } from '../stores/useAuthStore';
+import { UserDropdown } from '../components/auth/UserDropdown';
+import { saveUserCV, isCVOwner } from '../services/cvStorageService';
+import { CVData } from '../types/cv';
 
 type ActiveTabMobile = 'editor' | 'preview';
 
@@ -47,7 +54,27 @@ interface CVEditorPageProps {
 
 export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDarkMode }) => {
   const { id } = useParams<{ id: string }>();
-  const initialPreset = id ? getCVByIdOrSlug(id) : undefined;
+  const { user, openAuthModal } = useAuthStore();
+  const [saveToast, setSaveToast] = useState<string | null>(null);
+
+  const resolvePreset = (targetId?: string): CVData | undefined => {
+    if (!targetId) return undefined;
+    const mock = getCVByIdOrSlug(targetId);
+    if (mock) return mock;
+    if (typeof localStorage !== 'undefined') {
+      const draft = localStorage.getItem(`cv_studio_draft_${targetId}`);
+      if (draft) {
+        try {
+          return JSON.parse(draft);
+        } catch {
+          // ignore corrupted JSON
+        }
+      }
+    }
+    return undefined;
+  };
+
+  const initialPreset = id ? resolvePreset(id) : undefined;
   const isNotFound = Boolean(id && !initialPreset);
 
   const {
@@ -248,8 +275,49 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
               <Printer className="w-3.5 h-3.5" />
               <span>In A4</span>
             </button>
+
+            {/* Save to Dashboard if user logged in and not yet owner */}
+            {user && cvData.userId !== user.uid && (
+              <button
+                id="btn-save-to-dashboard"
+                type="button"
+                onClick={() => {
+                  saveUserCV({ ...cvData, userId: user.uid }, user.uid);
+                  setSaveToast('Đã lưu CV vào Dashboard cá nhân của bạn!');
+                  setTimeout(() => setSaveToast(null), 3000);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
+                title="Lưu hồ sơ này vào Dashboard cá nhân của bạn để quản lý"
+              >
+                <BookmarkPlus className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Lưu Vào Dashboard</span>
+              </button>
+            )}
+
+            {/* User Auth or Dropdown */}
+            {user ? (
+              <UserDropdown />
+            ) : (
+              <button
+                id="btn-editor-login"
+                type="button"
+                onClick={() => openAuthModal('login')}
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
+              >
+                <LogIn className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                <span>Đăng Nhập</span>
+              </button>
+            )}
           </div>
         </div>
+
+        {/* Save Toast */}
+        {saveToast && (
+          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 text-white shadow-xl text-xs sm:text-sm font-semibold animate-in slide-in-from-bottom-3 duration-200">
+            <Check className="w-4 h-4" />
+            <span>{saveToast}</span>
+          </div>
+        )}
 
         {/* Mobile Tab Switcher */}
         <div className="flex lg:hidden mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
