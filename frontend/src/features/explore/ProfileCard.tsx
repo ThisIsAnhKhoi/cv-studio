@@ -32,11 +32,14 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ cv }) => {
               <img
                 src={personalInfo.avatarUrl}
                 alt={personalInfo.fullName}
-                className="w-13 h-13 sm:w-15 sm:h-15 rounded-2xl object-cover ring-2 ring-slate-100 dark:ring-slate-800 shadow-sm group-hover:ring-teal-500/50 transition-all"
+                className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-2xl object-cover ring-2 ring-slate-100 dark:ring-slate-800 shadow-sm group-hover:ring-teal-500/50 transition-all"
                 loading="lazy"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(personalInfo.fullName)}&background=0d9488&color=fff&bold=true`;
+                }}
               />
               <div
-                className="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-white"
+                className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-white shadow-xs"
                 title="Đã xác thực hồ sơ"
               >
                 <CheckCircle className="w-2.5 h-2.5 stroke-[3]" />
@@ -79,7 +82,8 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ cv }) => {
           {topSkills.map((skill, idx) => (
             <span
               key={idx}
-              className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60"
+              className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 max-w-[140px] truncate"
+              title={skill}
             >
               {skill}
             </span>

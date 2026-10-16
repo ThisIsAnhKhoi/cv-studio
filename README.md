@@ -5,60 +5,65 @@
 </p>
 
 <p align="center">
-  <a href="#trạng-thái-dự-án"><img src="https://img.shields.io/badge/Status-Prototype%20v0.1.0-orange?style=flat-square" alt="Status" /></a>
-  <a href="#kiểm-thử-tự-động"><img src="https://img.shields.io/badge/Vitest-15%2F15%20Passed-brightgreen?style=flat-square" alt="Tests" /></a>
+  <a href="#trạng-thái-dự-án"><img src="https://img.shields.io/badge/Status-v0.4.0%20(95.2%25)-success?style=flat-square" alt="Status" /></a>
+  <a href="#kiểm-thử-tự-động"><img src="https://img.shields.io/badge/Vitest-132%2F132%20Passed-brightgreen?style=flat-square" alt="Tests" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-0%20Errors-blue?style=flat-square" alt="TypeScript" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" /></a>
+  <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-orange?style=flat-square" alt="Firebase" /></a>
   <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-18.3-61dafb?style=flat-square" alt="React" /></a>
-  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.6-3178c6?style=flat-square" alt="TypeScript" /></a>
   <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/TailwindCSS-3.4-38bdf8?style=flat-square" alt="Tailwind CSS" /></a>
 </p>
 
 <p align="center">
-  <a href="README.en.md"><strong>English Version (README.en.md)</strong></a> | <a href="#bắt-đầu-nhanh-trong-5-phút"><strong>Cài Đặt Nhanh</strong></a> | <a href="docs/ARCHITECTURE.md"><strong>Kiến Trúc</strong></a> | <a href="CHANGELOG.md"><strong>Nhật Ký Thay Đổi</strong></a>
+  <a href="README.en.md"><strong>English Version (README.en.md)</strong></a> | <a href="#bắt-đầu-nhanh-trong-5-phút"><strong>Cài Đặt Nhanh</strong></a> | <a href="docs/ARCHITECTURE.md"><strong>Kiến Trúc</strong></a> | <a href="docs/QA_AUDIT_v2.md"><strong>Báo Cáo Kiểm Toán v2</strong></a> | <a href="CHANGELOG.md"><strong>Nhật Ký Thay Đổi</strong></a>
 </p>
 
 ---
 
 ## 1. Tổng Quan Sản Phẩm
 
-**CV Studio** là một nền tảng mã nguồn mở hỗ trợ ứng viên, chuyên viên công nghệ và nhà thiết kế kiến tạo bản CV/Portfolio cá nhân trực quan, sắc nét và chuyên nghiệp.
+**CV Studio** là một nền tảng tạo và quản lý CV / Portfolio trực tuyến chuyên nghiệp, bảo mật và chuẩn in ấn A4 dành cho ứng viên và nhà tuyển dụng.
 
 - **Vấn đề giải quyết**: Đa số công cụ tạo CV trực tuyến hiện nay thường gò bó trong định dạng cứng nhắc, font chữ lỗi dấu tiếng Việt, xuất file vỡ khung hình, hoặc yêu cầu trả phí để lưu trữ bản nháp.
-- **Giải pháp**: Xây dựng một ứng dụng web dạng Client-Side Single Page Application (SPA) với kiến trúc linh hoạt:
+- **Giải pháp**: Xây dựng một ứng dụng web hiện đại (Clean Architecture) với:
   - Xem trước thời gian thực (Live Preview) theo từng phím gõ.
   - Tách biệt nội dung dữ liệu (`CVData`) khỏi lớp hiển thị thông qua **Template Registry**.
-  - Tự động lưu trữ cục bộ an toàn, không phụ thuộc máy chủ ở giai đoạn đầu.
-- **Đối tượng sử dụng**: Lập trình viên, Nhà thiết kế, Chuyên viên dữ liệu, Marketer và Nhân sự muốn sở hữu một trang CV cá nhân trực tuyến chỉn chu.
+  - Xác thực người dùng (Google 1-click & Email) và đồng bộ đám mây **Firebase Cloud Firestore**.
+  - Phân quyền quản trị 3 cấp (RBAC), kiểm duyệt hồ sơ và nhật ký kiểm toán bất biến.
+  - Bộ soạn thảo Rich Text (TipTap) chuyên sâu và trình quản lý 16 kênh mạng xã hội động.
+- **Đối tượng sử dụng**: Lập trình viên, Nhà thiết kế, Chuyên viên dữ liệu, Marketer, Nhân sự và Quản trị viên hệ thống.
 
 ---
 
-## 2. Trạng Thái Dự Án (Project Status)
+## 2. Trạng Thái Dự Án (Project Status — v0.4.0)
 
 > [!NOTE]
-> **Dự án hiện đang ở giai đoạn Client-Side Prototype (v0.1.0).**  
-> Dữ liệu hồ sơ và các chỉnh sửa hiện được lưu trữ an toàn trong bộ nhớ trình duyệt (`localStorage`) của người dùng. Hệ thống **chưa tích hợp Backend database và Authentication**. Lộ trình tích hợp Firebase Auth và Cloud Firestore sẽ được triển khai ở Giai đoạn 3 & 4.
+> **Dự án hiện đạt 95.2% tiến độ hoàn thiện kỹ thuật (Phiên bản v0.4.0 — 16/10/2026).**  
+> Hệ thống đã kết nối hoàn chỉnh Firebase Auth & Cloud Firestore, kiểm duyệt hồ sơ đa cấp RBAC, đếm lượt xem nguyên tử, dọn sạch cơ sở dữ liệu và đạt **132/132 unit tests passed (21 test suites)** cùng **0 lỗi TypeScript**.
 
 ### Ma trận tính năng thực tế
 
 | Phân hệ / Tính năng | Trạng thái | Chi tiết kỹ thuật |
 |:---|:---:|:---|
-| **Trang Khám Phá Hồ Sơ (`/`)** | ✅ Hoàn thành | Tìm kiếm theo từ khóa họ tên/kỹ năng, lọc danh mục (Tech, Design, Data & AI, Marketing, HR). |
-| **Trang Xem CV Chi Tiết (`/cv/:id`)** | ✅ Hoàn thành | Khổ A4 chuẩn mực, thanh công cụ sao chép link, in ấn và điều hướng chỉnh sửa. |
-| **Mẫu CV 1: Classic Teal** | ✅ Hoàn thành | Bố cục 2 cột sidebar xanh biển thanh lịch, tối ưu không gian hiển thị. |
-| **Mẫu CV 2: Warm Bold** | ✅ Hoàn thành | Tone màu cam Tangerine ấm áp, khối nổi bật cho Senior & Lead. |
-| **Mẫu CV 3: Modern Minimal** | ✅ Hoàn thành | Phong cách tối giản quốc tế, thanh mảnh và hiện đại. |
-| **Trình Biên Tập Trực Quan (`/editor/:id`)** | ✅ Hoàn thành | Chia 2 cột: 9 nhóm form Accordion bên trái, bản xem trước A4 thu phóng trực tiếp bên phải. |
-| **Lưu Bản Nháp Cục Bộ (Draft Storage)** | ✅ Hoàn thành | Tự động lưu sau 600ms debounce, phân lập theo ID (`cv_studio_draft_${id}`), F5 giữ nguyên 100% dữ liệu. |
-| **Tùy Biến Giao Diện Động** | ✅ Hoàn thành | Đổi tức thì 6 bộ màu accent, 5 bộ font chữ Việt hóa, và chế độ nền giấy Sáng/Tối. |
-| **Dark Mode Toàn Diện (Zero-FOUC)** | ✅ Hoàn thành | Loại bỏ triệt để hiện tượng nháy trắng khi reload trang bằng blocking script đồng bộ tại `<head>`. |
-| **Phòng Chống Lỗ Hổng XSS** | ✅ Hoàn thành | Hàm `formatSafeUrl()` lọc sạch scheme nguy hiểm (`javascript:`, `data:`). |
-| **Điều Hướng Trang 404** | ✅ Hoàn thành | Tự động render trang `NotFoundPage` chuẩn khi nhập ID không tồn tại trên hệ thống. |
-| **Tối Ưu Bundle & Phông Chữ WOFF2** | 🚧 Đang làm dở | Kế hoạch Giai đoạn 2: Subsetting font từ 5.4 MB xuống dưới 400 kB và `React.lazy()` routes. |
-| **Chuyển Đổi Quản Lý State (Zustand)** | 🚧 Đang làm dở | Kế hoạch Giai đoạn 2: Thay thế `useState` trong `useCVEditor` bằng Zustand Store toàn cục. |
-| **Xác Thực Tài Khoản (Firebase Auth)** | ⏳ Chưa làm | Kế hoạch Giai đoạn 3: Đăng nhập Google 1-click & Email/Password, phân quyền `isOwner`. |
-| **Lưu Trữ Đám Mây (Cloud Firestore)** | ⏳ Chưa làm | Kế hoạch Giai đoạn 4: Đồng bộ đa thiết bị và chia sẻ liên kết cá nhân thực thụ. |
-| **Tải Lên Ảnh Đại Diện (Cloudinary)** | ⏳ Chưa làm | Kế hoạch Giai đoạn 4: Upload từ máy tính, tự động crop tỉ lệ 1:1 và nén WebP. |
-| **Xuất File PDF In Ấn (Native Print)** | ⏳ Chưa làm | Kế hoạch Giai đoạn 5: Chuẩn hóa CSS `@media print` A4 native, gỡ bỏ thư viện `html2pdf.js`. |
+| **Trang Chủ Showcase (`/`)** | ✅ Hoàn thành | Hiển thị Top 6 hồ sơ CV xem nhiều nhất, điều hướng sang trang Khám phá. |
+| **Trang Khám Phá CV (`/explore`)** | ✅ Hoàn thành | 7 ngành nghề chuẩn hóa, tìm kiếm tiếng Việt không dấu, phân trang mượt mà. |
+| **Trang Xem CV Chi Tiết (`/cv/:id`)** | ✅ Hoàn thành | Khổ A4 chuẩn mực, Action Bar chuyển 3 template, đổi màu/font, sao chép link, gửi email. |
+| **Bộ 3 Mẫu CV Chuẩn Tuyển Dụng** | ✅ Hoàn thành | Classic Teal (sidebar), Warm Bold (Tangerine), Modern Minimal (tối giản). |
+| **Xác Thực Người Dùng (Firebase Auth)** | ✅ Hoàn thành | Đăng nhập Google 1-click & Email/Password, modal tương tác, thông báo lỗi tiếng Việt. |
+| **Đồng Bộ Đám Mây (Cloud Firestore)** | ✅ Hoàn thành | Lưu trữ realtime qua `cvStorageService.ts`, offline-first fallback `localStorage`. |
+| **Trang Dashboard Cá Nhân (`/dashboard`)** | ✅ Hoàn thành | Quản lý danh sách CV cá nhân, tạo mới, chỉnh sửa, nhân bản (duplicate), xóa, đổi Public/Private. |
+| **Phân Quyền Quản Trị RBAC (`/admin`)** | ✅ Hoàn thành | 3 cấp (Super Admin, Admin, Moderator), bảo vệ định tuyến `<AdminAuthGuard />`, màn hình 403. |
+| **Kiểm Duyệt Hồ Sơ (`/admin/cvs`)** | ✅ Hoàn thành | Soft-delete & Khôi phục CV, yêu cầu nhập lý do bắt buộc $\ge 5$ ký tự, tự động ghi Audit Log. |
+| **Quản Lý Tài Khoản (`/admin/users`)** | ✅ Hoàn thành | Phân vai trò, khóa tài khoản đồng thời khóa toàn bộ CV của user bằng batch write Firestore. |
+| **Nhật Ký Kiểm Toán (`/admin/logs`)** | ✅ Hoàn thành | Ghi nhận bất biến mọi thao tác nhạy cảm, bảo vệ bất khả sửa xóa ở tầng Firestore Rules. |
+| **Đếm Lượt Xem Tự Động** | ✅ Hoàn thành | Firestore `increment(1)` nguyên tử, khử trùng lặp 30 phút qua session, miễn trừ chủ sở hữu CV. |
+| **Bộ Soạn Thảo Rich Text (TipTap)** | ✅ Hoàn thành | Định dạng tóm tắt nghề nghiệp (Bold, Italic, Underline, Font, Size, Color, Bullets, Align). |
+| **Kênh Mạng Xã Hội Động** | ✅ Hoàn thành | Hỗ trợ 16 nền tảng (GitHub, LinkedIn, Behance, YouTube...), icon vector chuẩn màu, chống vỡ dòng. |
+| **Chọn Tỉnh/Thành & Google Maps** | ✅ Hoàn thành | Dropdown 63 tỉnh/thành Việt Nam kèm nút mở vị trí trên Google Maps trong tab mới. |
+| **Chọn Ngày Sinh Native** | ✅ Hoàn thành | Date picker chuẩn ISO, tự động format hiển thị `DD/MM/YYYY`. |
+| **Dark Mode Toàn Diện (Zero-FOUC)** | ✅ Hoàn thành | Loại bỏ triệt để hiện tượng nháy trắng khi reload trang bằng blocking script tại `<head>`. |
+| **Phòng Chống Lỗ Hổng XSS** | ✅ Hoàn thành | Hàm `formatSafeUrl()` kết hợp `DOMPurify` lọc sạch mã độc và scheme nguy hiểm. |
+| **Xuất File PDF In Ấn (Native Print)** | 🚧 Tạm hoãn | Chờ chuẩn hóa CSS `@media print` A4 native; tạm khóa nút tải để phát triển chuyên sâu. |
 
 ---
 
@@ -89,19 +94,16 @@
 
 ## 4. Công Nghệ Sử Dụng (Tech Stack)
 
-### Đang vận hành trong mã nguồn (Current Prototype)
-- **Cốt lõi**: React 18, TypeScript 5.6, Vite 5.4.
-- **Tạo kiểu (Styling)**: Tailwind CSS 3.4, PostCSS, Autoprefixer.
-- **Điều hướng (Routing)**: React Router DOM v7 (Client-side routing).
-- **Biểu tượng (Icons)**: Lucide React (hơn 40 icons đồng bộ).
-- **Kiểm thử (Testing)**: Vitest 2.1, @testing-library/react, @testing-library/dom, JSDOM.
-- **Typography**: Google Fonts (`Outfit`, `Be Vietnam Pro`) kết hợp bộ font tự lưu trữ (`iCiel Cubano`, `SVN-Optima`, `Gilroy`, `Montserrat`).
-
-### Lộ trình tích hợp tiếp theo (Target Architecture)
-- **State Management**: Zustand v5.
-- **Backend as a Service (BaaS)**: Firebase Authentication & Cloud Firestore (Serverless).
-- **Media CDN**: Cloudinary Unsigned Upload Widget.
-- **Hosting & CI/CD**: Vercel (Frontend SPA) + GitHub Actions.
+### Đang vận hành trong mã nguồn (Production Ready)
+- **Cốt lõi**: React 18.3, TypeScript 5.6 (Strict Mode, 0 Lỗi), Vite 5.4.
+- **Tạo kiểu (Styling)**: Tailwind CSS 3.4, PostCSS, Autoprefixer, Custom Print CSS `@media print`.
+- **Điều hướng (Routing)**: React Router DOM v7 (Client-side routing, Lazy-loaded Admin & Explore routes).
+- **Backend as a Service (BaaS)**: Firebase Authentication (Google 1-click & Email/Password) & Cloud Firestore (NoSQL, Atomic increments, Security Rules).
+- **Quản lý trạng thái (State)**: Zustand v5 (Auth Store, CV Store, Theme Store).
+- **Bộ soạn thảo Rich Text**: TipTap Suite (@tiptap/react, starter-kit, color, font-family, text-style, underline) kết hợp DOMPurify chống XSS.
+- **Biểu tượng (Icons)**: Lucide React (hơn 50 icons vector chuyên nghiệp).
+- **Kiểm thử (Testing)**: Vitest 2.1, @testing-library/react, @testing-library/dom, JSDOM (132 tests, 21 test suites).
+- **Typography**: Google Fonts (`Outfit`, `Be Vietnam Pro`) kết hợp bộ font tự lưu trữ WOFF2 (`iCiel Cubano`, `SVN-Optima`, `Gilroy`, `Montserrat`).
 
 ---
 
@@ -141,7 +143,7 @@ Bản build tĩnh tối ưu hóa sẽ được xuất ra tại thư mục `front
 
 ## 6. Kiểm Thử Tự Động (Testing)
 
-Dự án tích hợp bộ kiểm thử đơn vị tự động với Vitest để bảo vệ tính toàn vẹn của mã nguồn:
+Dự án tích hợp bộ kiểm thử tự động toàn diện với Vitest:
 
 ```bash
 cd frontend
@@ -153,14 +155,20 @@ npm run test
  ✓ src/utils/__tests__/url.test.ts (6 tests)
  ✓ src/data/__tests__/mockProfiles.test.ts (4 tests)
  ✓ src/features/cv-editor/hooks/__tests__/useCVEditor.test.ts (5 tests)
+ ✓ src/features/admin/__tests__/AdminAuthGuard.test.tsx (6 tests)
+ ✓ src/features/admin/__tests__/adminModeration.test.ts (8 tests)
+ ✓ src/features/view-counter/__tests__/useCVViewCount.test.ts (7 tests)
+ ✓ src/features/explore/__tests__/exploreFilter.test.ts (9 tests)
+ ... và 14 test suites khác
 
- Test Files  3 passed (3)
-      Tests  15 passed (15)
-   Duration  2.38s
+ Test Files  21 passed (21)
+      Tests  132 passed (132)
+   Duration  43.46s
 ```
-- **Kiểm tra an toàn URL**: 100% các chuỗi `javascript:alert(1)`, `data:text/html` đều bị lọc và vô hiệu hóa thành `#`.
-- **Kiểm tra lưu nháp**: Xác minh cơ chế cô lập draft theo `id` và khôi phục toàn vẹn dữ liệu khi tải lại trang (F5).
-- **Kiểm tra thao tác dữ liệu**: Xác minh logic thêm/xóa kinh nghiệm, kỹ năng, thành tựu và chứng chỉ trong hook.
+- **Kiểm tra an toàn URL & HTML**: 100% các chuỗi `javascript:alert(1)`, `data:text/html` đều bị lọc và vô hiệu hóa thành `#`; mã HTML trong Rich Text được làm sạch qua DOMPurify.
+- **Kiểm tra phân quyền RBAC**: Xác minh 100% chặn trái phép route `/admin`, cho phép Super Admin / Moderator đúng vai trò, và whitelist fail-safe.
+- **Kiểm tra đếm lượt xem**: Xác minh tăng lượt xem nguyên tử, chống đếm lặp 30 phút, miễn trừ chủ hồ sơ.
+- **Kiểm tra lưu nháp & đồng bộ**: Xác minh cơ chế cô lập draft theo `id`, đồng bộ Firestore hai chiều và khôi phục toàn vẹn dữ liệu.
 
 ---
 

@@ -9,7 +9,8 @@ import {
   User as FirebaseUser,
   AuthError,
 } from 'firebase/auth';
-import { auth, googleProvider } from '../services/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db, googleProvider } from '../services/firebase';
 
 export interface AuthUser {
   uid: string;
@@ -81,6 +82,47 @@ export function formatFirebaseAuthError(error: unknown): string {
   }
 }
 
+async function syncUserProfileToFirestore(firebaseUser: FirebaseUser | null): Promise<void> {
+  if (!db || !firebaseUser?.uid) return;
+  try {
+    const userRef = doc(db, 'users', firebaseUser.uid);
+    const userSnap = await getDoc(userRef);
+    const now = new Date().toISOString();
+
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email || '',
+        displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Người dùng',
+        photoURL: firebaseUser.photoURL || null,
+        role: 'user',
+        status: 'active',
+        createdAt: now,
+        updatedAt: now,
+      });
+    } else {
+      const existing = userSnap.data();
+      const updates: Record<string, unknown> = {
+        uid: firebaseUser.uid,
+        updatedAt: now,
+      };
+      if (firebaseUser.email && !existing.email) updates.email = firebaseUser.email;
+      if (
+        firebaseUser.displayName &&
+        (!existing.displayName || existing.displayName === 'Người dùng')
+      ) {
+        updates.displayName = firebaseUser.displayName;
+      }
+      if (firebaseUser.photoURL && !existing.photoURL) updates.photoURL = firebaseUser.photoURL;
+
+      await setDoc(userRef, updates, { merge: true });
+    }
+  } catch (err) {
+    // Non-blocking sync error
+    console.warn('Lỗi đồng bộ hồ sơ người dùng lên Firestore:', err);
+  }
+}
+
 function mapFirebaseUser(user: FirebaseUser | null): AuthUser | null {
   if (!user) return null;
   return {
@@ -119,6 +161,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const result = await signInWithPopup(auth, googleProvider);
+      syncUserProfileToFirestore(result.user).catch(() => {});
       set({
         user: mapFirebaseUser(result.user),
         isLoading: false,
@@ -137,6 +180,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const result = await signInWithEmailAndPassword(auth, email.trim(), pass);
+      syncUserProfileToFirestore(result.user).catch(() => {});
       set({
         user: mapFirebaseUser(result.user),
         isLoading: false,
@@ -158,6 +202,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (displayName.trim()) {
         await updateProfile(result.user, { displayName: displayName.trim() });
       }
+      syncUserProfileToFirestore(result.user).catch(() => {});
       set({
         user: mapFirebaseUser(result.user),
         isLoading: false,
@@ -189,6 +234,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isLoading: false,
         isInitialized: true,
       });
+      if (firebaseUser) {
+        syncUserProfileToFirestore(firebaseUser).catch(() => {});
+      }
     });
     return unsubscribe;
   },

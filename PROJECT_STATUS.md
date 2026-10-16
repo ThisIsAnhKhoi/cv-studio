@@ -47,8 +47,14 @@
 ### 4.1. Thông số môi trường và mã nguồn đã xác minh
 - **TypeScript Strict Compile**: `npx tsc --noEmit` $\rightarrow$ **0 Lỗi (Pass 100%)**.
 - **Automated Tests**: Vitest + React Testing Library $\rightarrow$ **132 Tests (21 Test Suites - 100% Pass)**.
-- **Production Build**: `npm run build` $\rightarrow$ **Thành công (8.45s, 0 cảnh báo chunk)**.
-- **Tiến độ hoàn thiện tổng thể thực tế**: **95%** (Tầng Client đạt ~98%, Tầng Backend/Firestore & RBAC đạt ~95%).
+- **Production Build**: `npm run build` $\rightarrow$ **Thành công (6.75s, 0 cảnh báo chunk)**.
+- **Đợt Vá Lỗi Giao Diện & Responsive (16/10/2026)**:
+  - Khắc phục dứt điểm lỗi vỡ layout: Chuẩn hóa kích thước avatar `ProfileCard` (`w-14 h-14`), badge xác thực `w-5 h-5`, cắt ngắn chip kỹ năng `truncate`.
+  - Chuẩn hóa `Navbar`: Thêm `whitespace-nowrap`, nâng breakpoint desktop lên `lg:flex` (hết rớt dòng), bổ sung Mobile Hamburger Menu & Drawer mượt mà.
+  - Tích hợp `frontend/public/` với `favicon.svg`, `robots.txt`, `sitemap.xml`, OpenGraph tags và nạp bổ sung font `Merriweather`.
+  - Tích hợp `onError` avatar monogram fallback cho 3 mẫu template CV và thẻ hồ sơ.
+  - Kiểm chứng trực tiếp trên trình duyệt ở 4 breakpoints (1280px, 1024px, 768px, 375px) đều hiển thị sắc nét, thẳng hàng.
+- **Tiến độ hoàn thiện tổng thể thực tế**: **95.2%** (Tầng Client đạt ~98%, Tầng Backend/Firestore & RBAC đạt ~95%).
 - **Cơ sở dữ liệu Firestore**: Đã dọn sạch 46 bản ghi test rác, nạp mới 8 hồ sơ chuẩn hóa đa dạng 7 ngành nghề và tài khoản Super Admin `thanhanhkhoi.work@gmail.com`.
 
 ### 4.2. Bảng tiến độ đã hiệu chỉnh chuẩn xác

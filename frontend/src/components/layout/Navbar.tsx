@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Sparkles,
@@ -10,6 +10,8 @@ import {
   Layers,
   LogIn,
   LayoutDashboard,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { UserDropdown } from '../auth/UserDropdown';
@@ -22,42 +24,60 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) => {
   const location = useLocation();
   const { user, openAuthModal } = useAuthStore();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isHome = location.pathname === '/';
   const isExplore = location.pathname === '/explore';
   const isDashboard = location.pathname === '/dashboard';
 
+  // Automatically close mobile menu when navigating
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Prevent background scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   return (
-    <header className="no-print sticky top-0 z-50 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+    <header className="no-print sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-200">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
         {/* Brand Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-xl"
+          className="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-xl shrink-0"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-600 via-teal-500 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-transform duration-200">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-teal-600 via-teal-500 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-transform duration-200 shrink-0">
             <Sparkles className="w-5 h-5" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-xl tracking-tight font-display bg-gradient-to-r from-teal-700 via-emerald-600 to-teal-500 dark:from-teal-300 dark:via-emerald-400 dark:to-teal-200 bg-clip-text text-transparent">
+              <span className="font-extrabold text-lg sm:text-xl tracking-tight font-display bg-gradient-to-r from-teal-700 via-emerald-600 to-teal-500 dark:from-teal-300 dark:via-emerald-400 dark:to-teal-200 bg-clip-text text-transparent">
                 CV Studio
               </span>
               <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60">
                 PRO
               </span>
             </div>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium -mt-1 hidden sm:block">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium -mt-1 hidden md:block">
               Nền Tảng CV & Portfolio Đẳng Cấp
             </span>
           </div>
         </Link>
 
-        {/* Navigation Menu */}
-        <nav className="hidden md:flex items-center gap-1 text-sm font-semibold text-slate-600 dark:text-slate-300">
+        {/* Desktop Navigation Menu (Visible on lg and above: >= 1024px) */}
+        <nav className="hidden lg:flex items-center gap-1 text-sm font-semibold text-slate-600 dark:text-slate-300">
           <Link
             to="/"
-            className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors ${
+            className={`px-3 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors ${
               isHome
                 ? 'text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-950/40 font-bold'
                 : 'hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
@@ -68,13 +88,13 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
 
           <Link
             to="/explore"
-            className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors ${
+            className={`px-3 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors ${
               isExplore
                 ? 'text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-950/40 font-bold'
                 : 'hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
             }`}
           >
-            <Compass className="w-4 h-4" />
+            <Compass className="w-4 h-4 text-teal-600 dark:text-teal-400" />
             <span>Khám Phá Hồ Sơ</span>
           </Link>
 
@@ -82,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
           {user && (
             <Link
               to="/dashboard"
-              className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors ${
+              className={`px-3 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors ${
                 isDashboard
                   ? 'text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-950/40 font-bold'
                   : 'hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
@@ -95,14 +115,14 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
 
           <a
             href="/#templates-showcase"
-            className="px-3.5 py-2 rounded-lg flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
+            className="px-3 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
           >
             <LayoutTemplate className="w-4 h-4" />
             <span>3 Mẫu CV Chuẩn</span>
           </a>
           <a
             href="/#features-section"
-            className="px-3.5 py-2 rounded-lg flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
+            className="px-3 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
           >
             <Layers className="w-4 h-4" />
             <span>Quy Chuẩn A4</span>
@@ -110,13 +130,14 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
         </nav>
 
         {/* Actions Bar */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           {/* Dark / Light Toggle */}
           <button
             onClick={onToggleDarkMode}
-            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 transition-all hover:scale-105 cursor-pointer"
+            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 transition-all hover:scale-105 cursor-pointer shrink-0"
             title={darkMode ? 'Chuyển sang Giao diện Sáng' : 'Chuyển sang Giao diện Tối'}
             aria-label="Toggle Dark Mode"
+            aria-pressed={darkMode}
           >
             {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
           </button>
@@ -129,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
               id="btn-nav-login"
               type="button"
               onClick={() => openAuthModal('login')}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700/80 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700/80 transition-all cursor-pointer shrink-0"
             >
               <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-teal-600 dark:text-teal-400" />
               <span>Đăng Nhập</span>
@@ -139,14 +160,91 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
           {/* Primary CTA: Go to Editor */}
           <Link
             to="/editor"
-            className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 active:scale-95 text-white font-semibold text-xs sm:text-sm shadow-md shadow-teal-700/20 hover:shadow-teal-700/30 transition-all duration-150 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 active:scale-95 text-white font-semibold text-xs sm:text-sm shadow-md shadow-teal-700/20 hover:shadow-teal-700/30 transition-all duration-150 cursor-pointer shrink-0"
           >
-            <span className="hidden xs:inline sm:inline">Tạo CV</span>
-            <span className="inline xs:hidden sm:hidden">Tạo</span>
+            <span className="hidden sm:inline">Tạo CV</span>
+            <span className="inline sm:hidden">Tạo</span>
             <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </Link>
+
+          {/* Mobile Menu Toggle Button (Visible on < lg) */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            aria-expanded={isMobileMenuOpen}
+            aria-label={isMobileMenuOpen ? 'Đóng menu điều hướng' : 'Mở menu điều hướng'}
+            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 transition-all lg:hidden cursor-pointer shrink-0"
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5 text-teal-600 dark:text-teal-400" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Navigation Drawer / Menu (Rendered on < lg when open) */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden border-t border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl animate-in slide-in-from-top-2 duration-200 shadow-xl">
+          <div className="px-4 py-4 space-y-1.5 max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <Link
+              to="/"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+                isHome
+                  ? 'text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-950/40 font-bold'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-teal-500" />
+              <span>Trang Chủ</span>
+            </Link>
+
+            <Link
+              to="/explore"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+                isExplore
+                  ? 'text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-950/40 font-bold'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+              }`}
+            >
+              <Compass className="w-4 h-4 text-teal-500" />
+              <span>Khám Phá Hồ Sơ</span>
+            </Link>
+
+            {user && (
+              <Link
+                to="/dashboard"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+                  isDashboard
+                    ? 'text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-950/40 font-bold'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4 text-teal-500" />
+                <span>Dashboard CV Của Tôi</span>
+              </Link>
+            )}
+
+            <a
+              href="/#templates-showcase"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-semibold text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <LayoutTemplate className="w-4 h-4 text-slate-400" />
+              <span>3 Mẫu CV Chuẩn Tuyển Dụng</span>
+            </a>
+
+            <a
+              href="/#features-section"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-semibold text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <Layers className="w-4 h-4 text-slate-400" />
+              <span>Quy Chuẩn A4 Không Lỗi Font</span>
+            </a>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

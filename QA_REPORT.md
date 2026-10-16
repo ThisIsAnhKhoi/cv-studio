@@ -1,4 +1,10 @@
-# BÁO CÁO KIỂM TOÁN CHẤT LƯỢNG TOÀN DIỆN (QA AUDIT REPORT)
+# BÁO CÁO KIỂM TOÁN CHẤT LƯỢNG TOÀN DIỆN (QA AUDIT REPORT - PHA 1)
+
+> [!IMPORTANT]
+> **TÀI LIỆU LƯU TRỮ LỊCH SỬ (HISTORICAL AUDIT ARCHIVE - PHA 1)**  
+> Báo cáo này ghi nhận hiện trạng hệ thống tại thời điểm **Pha 1 (13/10/2026 - v0.1.0 Prototype)** khi dự án đạt 28.5% tiến độ.  
+> Đối với báo cáo kiểm toán toàn diện mới nhất của hệ thống hoàn thiện (Pha 3 & 4 - v0.4.0, 95.2% tiến độ, 132/132 tests pass), vui lòng xem: **[docs/QA_AUDIT_v2.md](docs/QA_AUDIT_v2.md)**.
+
 **Dự án**: CV Studio / MyPortfolio  
 **Vai trò thực hiện**: Senior QA Lead / Test Architect (12+ năm kinh nghiệm)  
 **Thời điểm kiểm định**: 13/10/2026 — 11:20:00 (GMT+7)  

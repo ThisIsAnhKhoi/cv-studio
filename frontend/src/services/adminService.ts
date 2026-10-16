@@ -16,7 +16,17 @@ import { db } from './firebase';
 import { AuthUser } from '../stores/useAuthStore';
 import { CVData, UserProfileData, AuditLogEntry, UserRole } from '../types/cv';
 
-export const SUPER_ADMIN_EMAIL = 'thanhanhkhoi.work@gmail.com';
+export const SUPER_ADMIN_EMAILS = [
+  'thanhanhkhoi.work@gmail.com',
+  'thisisanhkhoi@gmail.com',
+];
+
+export const SUPER_ADMIN_EMAIL = 'thisisanhkhoi@gmail.com';
+
+export const isSuperAdminEmail = (email?: string | null): boolean => {
+  if (!email) return false;
+  return SUPER_ADMIN_EMAILS.some((e) => e.toLowerCase() === email.toLowerCase());
+};
 
 export interface AdminPermissions {
   isSuperAdmin: boolean;
@@ -41,7 +51,7 @@ export async function checkAdminPermissions(user: AuthUser | null): Promise<Admi
   }
 
   // 1. Founder hardcoded fail-safe check
-  if (user.email && user.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
+  if (user.email && isSuperAdminEmail(user.email)) {
     return { isSuperAdmin: true, isAdmin: true, isModerator: true };
   }
 
@@ -226,7 +236,21 @@ export async function getAllUsersForAdmin(): Promise<UserProfileData[]> {
     const snap = await getDocs(q);
     const list: UserProfileData[] = [];
     snap.forEach((d) => {
-      list.push(d.data() as UserProfileData);
+      const data = d.data();
+      list.push({
+        uid: d.id,
+        email: data.email || '',
+        displayName: data.displayName || data.email?.split('@')[0] || 'Người dùng',
+        photoURL: data.photoURL,
+        role: data.role || 'user',
+        status: data.status || 'active',
+        disabledReason: data.disabledReason,
+        disabledAt: data.disabledAt,
+        disabledBy: data.disabledBy,
+        createdAt: data.createdAt || data.updatedAt || '',
+        updatedAt: data.updatedAt || '',
+        ...data,
+      } as UserProfileData);
     });
     return list;
   } catch (err) {

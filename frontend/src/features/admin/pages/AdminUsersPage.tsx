@@ -21,6 +21,7 @@ import {
   unlockUser,
   changeUserRole,
   SUPER_ADMIN_EMAIL,
+  isSuperAdminEmail,
 } from '../../../services/adminService';
 import { UserProfileData, UserRole } from '../../../types/cv';
 import { removeVietnameseTones } from '../../../utils/text';
@@ -68,7 +69,16 @@ export const AdminUsersPage: React.FC = () => {
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
       // 1. Role Filter
-      if (selectedRole !== 'all' && u.role !== selectedRole) return false;
+      if (selectedRole !== 'all') {
+        const isSuperAdmin = u.role === 'superadmin' || isSuperAdminEmail(u.email);
+        if (selectedRole === 'superadmin') {
+          if (!isSuperAdmin) return false;
+        } else if (selectedRole === 'admin') {
+          if (u.role !== 'admin' && !isSuperAdmin) return false;
+        } else if (u.role !== selectedRole) {
+          return false;
+        }
+      }
 
       // 2. Status Filter
       if (selectedStatus === 'active' && u.status === 'disabled') return false;
@@ -268,9 +278,10 @@ export const AdminUsersPage: React.FC = () => {
             className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:outline-hidden focus:border-rose-500 transition-colors cursor-pointer"
           >
             <option value="all">Tất cả vai trò</option>
-            <option value="user">Người dùng (User)</option>
-            <option value="moderator">Kiểm duyệt viên (Moderator)</option>
+            <option value="superadmin">Super Admin</option>
             <option value="admin">Quản trị viên (Admin)</option>
+            <option value="moderator">Kiểm duyệt viên (Moderator)</option>
+            <option value="user">Người dùng (User)</option>
           </select>
 
           {/* Status Filter */}
@@ -338,7 +349,7 @@ export const AdminUsersPage: React.FC = () => {
                   const isItemDisabled = item.status === 'disabled';
                   const isCurrent = currentUser?.uid === item.uid;
                   const isSuperAdminUser =
-                    item.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+                    item.role === 'superadmin' || isSuperAdminEmail(item.email);
 
                   return (
                     <tr
@@ -382,7 +393,12 @@ export const AdminUsersPage: React.FC = () => {
 
                       {/* Role */}
                       <td className="py-3.5 px-4">
-                        {item.role === 'admin' ? (
+                        {isSuperAdminUser ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                            <ShieldAlert className="w-3.5 h-3.5" />
+                            Super Admin
+                          </span>
+                        ) : item.role === 'admin' ? (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
                             <ShieldAlert className="w-3.5 h-3.5" />
                             Admin

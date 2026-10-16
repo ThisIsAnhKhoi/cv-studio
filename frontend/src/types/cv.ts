@@ -207,7 +207,7 @@ export const CV_CATEGORIES: CVCategoryMeta[] = [
   }
 ];
 
-export type UserRole = 'user' | 'moderator' | 'admin';
+export type UserRole = 'user' | 'moderator' | 'admin' | 'superadmin';
 export type UserStatus = 'active' | 'disabled';
 
 export interface UserProfileData {

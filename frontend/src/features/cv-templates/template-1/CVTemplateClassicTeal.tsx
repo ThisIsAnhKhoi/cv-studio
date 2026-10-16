@@ -152,6 +152,9 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
             src={personalInfo.avatarUrl}
             alt={personalInfo.fullName}
             className="w-24 h-24 rounded-full object-cover border-4 border-white/30 shadow-lg group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(personalInfo.fullName)}&background=0d9488&color=fff&bold=true`;
+            }}
           />
           <div className="absolute inset-0 rounded-full ring-2 ring-white/50 pointer-events-none" />
         </div>

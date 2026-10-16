@@ -68,7 +68,7 @@ export const HeroSection: React.FC = () => {
         </div>
 
         {/* Stats Strip */}
-        <div className="mt-14 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 p-4 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-md">
+        <div className="mt-14 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 p-3 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-md">
           <div className="text-center p-2 border-r border-slate-100 dark:border-slate-800 last:border-none">
             <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-display">
               3 Mẫu
@@ -83,7 +83,7 @@ export const HeroSection: React.FC = () => {
               1-Click
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
-              Xuất PDF Tự Động
+              In A4 Chuẩn Xác
             </div>
           </div>
 

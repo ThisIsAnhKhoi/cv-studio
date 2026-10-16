@@ -13,8 +13,10 @@ service cloud.firestore {
     // Fail-safe email whitelist dành riêng cho người sáng lập hệ thống
     function isSuperAdmin() {
       return isAuthenticated()
-        && request.auth.token.email_verified == true
-        && request.auth.token.email == 'thanhanhkhoi.work@gmail.com';
+        && (
+          request.auth.token.email == 'thanhanhkhoi.work@gmail.com'
+          || request.auth.token.email == 'thisisanhkhoi@gmail.com'
+        );
     }
 
     // Admin: là Super Admin hoặc nằm trong collection admins/{uid}

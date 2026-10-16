@@ -5,60 +5,65 @@
 </p>
 
 <p align="center">
-  <a href="#project-status"><img src="https://img.shields.io/badge/Status-Prototype%20v0.1.0-orange?style=flat-square" alt="Status" /></a>
-  <a href="#automated-tests"><img src="https://img.shields.io/badge/Vitest-15%2F15%20Passed-brightgreen?style=flat-square" alt="Tests" /></a>
+  <a href="#project-status"><img src="https://img.shields.io/badge/Status-v0.4.0%20(95.2%25)-success?style=flat-square" alt="Status" /></a>
+  <a href="#automated-testing"><img src="https://img.shields.io/badge/Vitest-132%2F132%20Passed-brightgreen?style=flat-square" alt="Tests" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-0%20Errors-blue?style=flat-square" alt="TypeScript" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" /></a>
+  <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-orange?style=flat-square" alt="Firebase" /></a>
   <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-18.3-61dafb?style=flat-square" alt="React" /></a>
-  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.6-3178c6?style=flat-square" alt="TypeScript" /></a>
   <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/TailwindCSS-3.4-38bdf8?style=flat-square" alt="Tailwind CSS" /></a>
 </p>
 
 <p align="center">
-  <a href="README.md"><strong>Bản Tiếng Việt (README.md)</strong></a> | <a href="#quick-start-in-5-minutes"><strong>Quick Start</strong></a> | <a href="docs/ARCHITECTURE.md"><strong>Architecture</strong></a> | <a href="CHANGELOG.md"><strong>Changelog</strong></a>
+  <a href="README.md"><strong>Bản Tiếng Việt (README.md)</strong></a> | <a href="#quick-start-in-5-minutes"><strong>Quick Start</strong></a> | <a href="docs/ARCHITECTURE.md"><strong>Architecture</strong></a> | <a href="docs/QA_AUDIT_v2.md"><strong>QA Audit Report v2</strong></a> | <a href="CHANGELOG.md"><strong>Changelog</strong></a>
 </p>
 
 ---
 
 ## 1. Overview
 
-**CV Studio** is an open-source, client-side Single Page Application (SPA) designed to help software engineers, product designers, and professionals build elegant, typography-optimized, print-ready CVs and personal portfolios.
+**CV Studio** is a full-featured, secure, and modern online CV & Portfolio platform engineered with Clean Architecture to help candidates build and share print-accurate A4 resumes.
 
-- **Problem**: Most existing online CV builders enforce rigid layouts, suffer from Vietnamese accent font glitches, produce broken PDF exports, or require subscriptions just to save editing drafts.
-- **Solution**: A modular React + TypeScript architecture:
+- **Problem**: Most online resume builders impose rigid structures, break on Vietnamese diacritics, distort print outputs, or paywall basic draft saving.
+- **Solution**: A production-grade React + TypeScript platform:
   - Real-time keystroke live preview.
-  - Strict decoupling of resume data (`CVData`) from visual representation using the **Template Registry Pattern**.
-  - ID-isolated local storage draft persistence with auto-save debouncing.
-- **Target Audience**: Developers, UX/UI Designers, Data Scientists, Marketers, and HR specialists looking for a modern personal CV page.
+  - Strict decoupling of resume data (`CVData`) from templates via the **Template Registry Pattern**.
+  - **Firebase Authentication** (Google 1-click & Email) and dual-layer **Cloud Firestore** synchronization with local fallback.
+  - **3-Tier RBAC Admin Subsystem** (Super Admin, Admin, Moderator) with immutable audit logging.
+  - TipTap Rich Text Editor for career summaries and 16 dynamic social platform integrations.
+- **Target Audience**: Developers, Designers, Data Specialists, Marketers, HR Managers, and Platform Administrators.
 
 ---
 
-## 2. Project Status
+## 2. Project Status (v0.4.0 — October 16, 2026)
 
 > [!NOTE]
-> **This project is currently a Client-Side Prototype (v0.1.0).**  
-> All profiles and editor modifications are stored locally in the browser's `localStorage`. The platform currently **has no backend database or authentication integrated**. Firebase Auth and Cloud Firestore integration are scheduled for Phases 3 and 4.
+> **Technical completion is at 95.2% (v0.4.0 Release).**  
+> Firebase Auth, Cloud Firestore persistence, 3-tier RBAC admin dashboard, atomic view counter, and cleaned production database are verified. The test suite passes **132/132 automated tests (21 test suites)** with **0 TypeScript compiler errors**.
 
 ### Feature Matrix
 
 | Feature / Module | Status | Technical Details |
 |:---|:---:|:---|
-| **Explore Directory (`/`)** | ✅ Done | Keyword search (name/skills) and industry category filters (Tech, Design, Data & AI, Marketing, HR). |
-| **Public CV View (`/cv/:id`)** | ✅ Done | Standard A4 canvas, shareable link bar, print action, and quick edit toggle. |
-| **Template 1: Classic Teal** | ✅ Done | 2-column sidebar layout in deep teal, space-efficient and elegant. |
-| **Template 2: Warm Bold** | ✅ Done | Tangerine warm palette with prominent cards, tailored for Senior & Lead roles. |
-| **Template 3: Modern Minimal** | ✅ Done | International minimalist styling, light typography, and clean white space. |
-| **Interactive Editor (`/editor/:id`)** | ✅ Done | Split-screen workspace: 9 accordion form sections on the left, live A4 preview on the right. |
-| **Draft Persistence** | ✅ Done | 600ms debounce auto-save, isolated per CV ID (`cv_studio_draft_${id}`), survives page reload (F5). |
-| **Dynamic Theme Customizer** | ✅ Done | Live switching across 6 accent color presets, 5 typography sets, and Dark/Light paper modes. |
-| **Seamless Dark Mode (Zero-FOUC)** | ✅ Done | Zero flash of unstyled content on reload via synchronous blocking script in `<head>`. |
-| **Stored XSS Prevention** | ✅ Done | `formatSafeUrl()` sanitizes malicious `javascript:` and `data:` schemes in user-supplied links. |
-| **404 Routing Fallback** | ✅ Done | Graceful `<NotFoundPage />` display when an invalid CV ID or slug is requested. |
-| **Font Subsetting & Bundle Optimization** | 🚧 In Progress | Phase 2: Convert local fonts to WOFF2 (< 400 kB) and code-split routes via `React.lazy()`. |
-| **State Management (Zustand)** | 🚧 In Progress | Phase 2: Migrate `useCVEditor` hook to a global Zustand Store. |
-| **Authentication (Firebase Auth)** | ⏳ Planned | Phase 3: Google 1-click & Email/Password login, `isOwner` permission checks. |
-| **Cloud Storage (Cloud Firestore)** | ⏳ Planned | Phase 4: Multi-device sync and real personal portfolio URL publishing. |
-| **Avatar Upload (Cloudinary)** | ⏳ Planned | Phase 4: Local image upload with automatic 1:1 face crop and WebP compression. |
-| **Native Print Engine** | ⏳ Planned | Phase 5: Standardize native CSS `@media print` A4, deprecate and remove legacy `html2pdf.js`. |
+| **Showcase Homepage (`/`)** | ✅ Done | Curated Top 6 most viewed CVs with direct navigation to the full Explore directory. |
+| **Explore Directory (`/explore`)** | ✅ Done | 7 standardized career domains, Vietnamese unaccented search, fast pagination. |
+| **Public CV View (`/cv/:id`)** | ✅ Done | Print-accurate A4 canvas, Action Bar for switching templates, colors, fonts, link sharing, and email. |
+| **3 Production Templates** | ✅ Done | Classic Teal (sidebar), Warm Bold (Tangerine), Modern Minimal. |
+| **User Authentication (Firebase Auth)** | ✅ Done | Google 1-click & Email/Password login, reactive auth modal, Vietnamese error mapping. |
+| **Cloud Persistence (Cloud Firestore)** | ✅ Done | Realtime storage via `cvStorageService.ts` with offline-first `localStorage` fallback. |
+| **Personal Dashboard (`/dashboard`)** | ✅ Done | Resume management, create, edit, duplicate, soft-delete, and Public/Private visibility toggle. |
+| **RBAC Admin Guard (`/admin`)** | ✅ Done | 3 tiers (Super Admin, Admin, Moderator), `<AdminAuthGuard />`, custom 403 Forbidden screen. |
+| **Resume Moderation (`/admin/cvs`)** | ✅ Done | Soft-disable & restore CVs with mandatory reason ($\ge 5$ chars) and automated audit logging. |
+| **User Management (`/admin/users`)** | ✅ Done | Role promotion/demotion, account locking with atomic batch disabling of owned CVs. |
+| **Immutable Audit Log (`/admin/logs`)** | ✅ Done | Secure logging of sensitive operations; locked from updates and deletions via Firestore rules. |
+| **Atomic View Counter** | ✅ Done | Atomic `increment(1)`, 30-min session deduplication, and CV owner exemption. |
+| **Rich Text Editor (TipTap)** | ✅ Done | Rich text formatting for summary & objectives (Bold, Italic, Underline, Fonts, Colors, Bullets). |
+| **Dynamic Social Platforms** | ✅ Done | 16 platforms supported (GitHub, LinkedIn, Behance, YouTube...) with auto-overflow truncation. |
+| **63 Provinces & Google Maps** | ✅ Done | Vietnam province dropdown with 1-click Google Maps coordinate locator. |
+| **Native Date Picker** | ✅ Done | Standard date picker converting ISO inputs to Vietnamese `DD/MM/YYYY` format. |
+| **Seamless Dark Mode (Zero-FOUC)** | ✅ Done | Synchronous `<head>` blocking script eliminating white reload flashes. |
+| **Stored XSS Prevention** | ✅ Done | `formatSafeUrl()` and `DOMPurify` sanitize dangerous URLs and rich HTML snippets. |
+| **Native Print Engine** | 🚧 Deferred | Preparing native CSS `@media print` A4 engine; download button temporarily disabled for polish. |
 
 ---
 
@@ -77,12 +82,15 @@
 
 ## 4. Tech Stack
 
-- **Core**: React 18, TypeScript 5.6, Vite 5.4.
-- **Styling**: Tailwind CSS 3.4, PostCSS, Autoprefixer.
-- **Routing**: React Router DOM v7.
-- **Icons**: Lucide React.
-- **Testing**: Vitest 2.1, @testing-library/react, @testing-library/dom, JSDOM.
-- **Typography**: Google Fonts (`Outfit`, `Be Vietnam Pro`) + self-hosted typefaces (`iCiel Cubano`, `SVN-Optima`, `Gilroy`, `Montserrat`).
+- **Core**: React 18.3, TypeScript 5.6 (Strict Mode, 0 Errors), Vite 5.4.
+- **Styling**: Tailwind CSS 3.4, PostCSS, Autoprefixer, Custom Print CSS `@media print`.
+- **Routing**: React Router DOM v7 (Client-side routing with lazy-split Admin & Explore chunks).
+- **Backend as a Service (BaaS)**: Firebase Authentication & Cloud Firestore (NoSQL, Atomic increments, Security Rules).
+- **State Management**: Zustand v5 (Auth Store, CV Store, Theme Store).
+- **Rich Text Suite**: TipTap (@tiptap/react, starter-kit, color, font-family, text-style, underline) + DOMPurify.
+- **Icons**: Lucide React (50+ vector icons).
+- **Testing**: Vitest 2.1, @testing-library/react, @testing-library/dom, JSDOM (132 tests, 21 test suites).
+- **Typography**: Google Fonts (`Outfit`, `Be Vietnam Pro`) + self-hosted WOFF2 fonts (`iCiel Cubano`, `SVN-Optima`, `Gilroy`, `Montserrat`).
 
 ---
 
@@ -130,10 +138,15 @@ npm run test
  ✓ src/utils/__tests__/url.test.ts (6 tests)
  ✓ src/data/__tests__/mockProfiles.test.ts (4 tests)
  ✓ src/features/cv-editor/hooks/__tests__/useCVEditor.test.ts (5 tests)
+ ✓ src/features/admin/__tests__/AdminAuthGuard.test.tsx (6 tests)
+ ✓ src/features/admin/__tests__/adminModeration.test.ts (8 tests)
+ ✓ src/features/view-counter/__tests__/useCVViewCount.test.ts (7 tests)
+ ✓ src/features/explore/__tests__/exploreFilter.test.ts (9 tests)
+ ... and 14 other test suites
 
- Test Files  3 passed (3)
-      Tests  15 passed (15)
-   Duration  2.38s
+ Test Files  21 passed (21)
+      Tests  132 passed (132)
+   Duration  43.46s
 ```
 
 ---

@@ -175,6 +175,9 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                   src={personalInfo.avatarUrl}
                   alt={personalInfo.fullName}
                   className="w-full h-full rounded-full object-cover shadow-inner"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(personalInfo.fullName)}&background=ea580c&color=fff&bold=true`;
+                  }}
                 />
               </div>
             </div>

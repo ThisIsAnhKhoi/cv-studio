@@ -161,6 +161,9 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
                   src={personalInfo.avatarUrl}
                   alt={personalInfo.fullName}
                   className="w-full h-full rounded-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(personalInfo.fullName)}&background=0284c7&color=fff&bold=true`;
+                  }}
                 />
               </div>
             </div>

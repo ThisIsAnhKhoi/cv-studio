@@ -11,7 +11,7 @@ import {
   Compass,
   ShieldCheck,
 } from 'lucide-react';
-import { SUPER_ADMIN_EMAIL } from '../../services/adminService';
+import { isSuperAdminEmail } from '../../services/adminService';
 
 interface UserDropdownProps {
   className?: string;
@@ -171,7 +171,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ className = '' }) =>
               <span>Khám Phá Mẫu Hồ Sơ</span>
             </Link>
 
-            {user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() && (
+            {isSuperAdminEmail(user.email) && (
               <Link
                 to="/admin"
                 role="menuitem"
