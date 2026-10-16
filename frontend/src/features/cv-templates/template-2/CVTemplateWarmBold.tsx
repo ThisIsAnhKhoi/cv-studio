@@ -3,6 +3,7 @@ import { CVTemplateProps } from '../../../types/template';
 import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import { getSectionStyleProperties } from '../../cv-editor/utils/styleHelpers';
 import { RichTextRenderer } from '../../../components/common/RichTextRenderer';
+import { SocialIcon, getNormalizedSocialLinks } from '../../cv-editor/utils/socialPlatforms';
 import {
   Mail,
   Phone,
@@ -441,50 +442,25 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
             </h2>
 
             <div className="space-y-2 text-[11.5px]" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {personalInfo.website && (
+              {getNormalizedSocialLinks(personalInfo).map((link) => (
                 <a
-                  href={formatSafeUrl(personalInfo.website)}
+                  key={link.id}
+                  href={formatSafeUrl(link.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
+                  title={link.url}
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <Globe className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
-                    <span className="truncate">{cleanDisplayUrl(personalInfo.website)}</span>
+                    <SocialIcon
+                      platform={link.platform}
+                      className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current"
+                    />
+                    <span className="truncate">{cleanDisplayUrl(link.url)}</span>
                   </div>
                   <ChevronRight className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
-              )}
-
-              {personalInfo.github && (
-                <a
-                  href={formatSafeUrl(personalInfo.github)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Github className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
-                    <span className="truncate">{cleanDisplayUrl(personalInfo.github)}</span>
-                  </div>
-                  <ChevronRight className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-              )}
-
-              {personalInfo.linkedin && (
-                <a
-                  href={formatSafeUrl(personalInfo.linkedin)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Linkedin className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current" />
-                    <span className="truncate">{cleanDisplayUrl(personalInfo.linkedin)}</span>
-                  </div>
-                  <ChevronRight className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-              )}
+              ))}
             </div>
           </section>
 

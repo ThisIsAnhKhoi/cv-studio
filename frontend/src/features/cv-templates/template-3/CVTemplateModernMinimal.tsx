@@ -3,6 +3,7 @@ import { CVTemplateProps } from '../../../types/template';
 import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import { getSectionStyleProperties } from '../../cv-editor/utils/styleHelpers';
 import { RichTextRenderer } from '../../../components/common/RichTextRenderer';
+import { SocialIcon, getNormalizedSocialLinks } from '../../cv-editor/utils/socialPlatforms';
 import {
   Mail,
   Phone,
@@ -247,43 +248,30 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
             </span>
           </a>
 
-          {personalInfo.website && (
+          {getNormalizedSocialLinks(personalInfo).map((link) => (
             <a
-              href={formatSafeUrl(personalInfo.website)}
+              key={link.id}
+              href={formatSafeUrl(link.url)}
               target="_blank"
               rel="noopener noreferrer"
               className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
+              title={link.url}
             >
               <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
-                <Globe className="w-3 h-3 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
+                <SocialIcon
+                  platform={link.platform}
+                  className="w-3 h-3 shrink-0"
+                  style={{ color: 'var(--sec-accent-color, inherit)' }}
+                />
               </div>
               <span
                 className={`font-medium text-[11.5px] ${tc.body}`}
                 style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}
               >
-                {cleanDisplayUrl(personalInfo.website)}
+                {cleanDisplayUrl(link.url)}
               </span>
             </a>
-          )}
-
-          {personalInfo.github && (
-            <a
-              href={formatSafeUrl(personalInfo.github)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
-            >
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
-                <Github className="w-3 h-3 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              </div>
-              <span
-                className={`font-medium text-[11.5px] ${tc.body}`}
-                style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}
-              >
-                {cleanDisplayUrl(personalInfo.github)}
-              </span>
-            </a>
-          )}
+          ))}
         </div>
       </header>
 

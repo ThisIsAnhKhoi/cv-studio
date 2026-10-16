@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MapPin, ArrowUpRight, CheckCircle, Briefcase, Sparkles } from 'lucide-react';
 import { CVData } from '../../types/cv';
 import { TEMPLATES_REGISTRY } from '../cv-templates/TemplateRegistry';
+import { stripHtml } from '../../utils/text';
 
 interface ProfileCardProps {
   cv: CVData;
@@ -57,7 +58,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ cv }) => {
 
         {/* Bio Summary Snippet */}
         <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed mt-4">
-          {summary}
+          {stripHtml(summary)}
         </p>
 
         {/* Skill Badges */}

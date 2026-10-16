@@ -6,6 +6,7 @@ import { TemplatesShowcaseSection } from '../features/explore/TemplatesShowcaseS
 import { mockProfilesList } from '../data/mockProfiles';
 import { getPublicCVs } from '../services/cvStorageService';
 import { CVData } from '../types/cv';
+import { stripHtml } from '../utils/text';
 import { Users, Sparkles, FileText, CheckCircle, SearchX, Loader2 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
@@ -88,12 +89,14 @@ export const HomePage: React.FC = () => {
         const skills = profile.skillCategories
           .flatMap((c) => c.skills.map((s) => s.name.toLowerCase()))
           .join(' ');
+        const summaryText = stripHtml(profile.summary).toLowerCase();
 
         return (
           fullName.includes(q) ||
           title.includes(q) ||
           location.includes(q) ||
-          skills.includes(q)
+          skills.includes(q) ||
+          summaryText.includes(q)
         );
       }
 

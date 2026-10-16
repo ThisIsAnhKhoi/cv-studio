@@ -1,3 +1,28 @@
+export type SocialPlatformId =
+  | 'github'
+  | 'linkedin'
+  | 'facebook'
+  | 'twitter'
+  | 'behance'
+  | 'dribbble'
+  | 'youtube'
+  | 'tiktok'
+  | 'zalo'
+  | 'telegram'
+  | 'gitlab'
+  | 'leetcode'
+  | 'figma'
+  | 'medium'
+  | 'website'
+  | 'other';
+
+export interface SocialLink {
+  id: string;
+  platform: SocialPlatformId | string;
+  url: string;
+  label?: string;
+}
+
 export interface PersonalInfo {
   avatarUrl: string;
   fullName: string;
@@ -9,6 +34,7 @@ export interface PersonalInfo {
   website?: string;
   github?: string;
   linkedin?: string;
+  socialLinks?: SocialLink[];
 }
 
 export interface ExperienceItem {

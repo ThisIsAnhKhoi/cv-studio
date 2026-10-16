@@ -273,6 +273,25 @@ export const ShareDropdown: React.FC<ShareDropdownProps> = ({
                 )}
               </button>
             </div>
+            {/* Deploy environment notice */}
+            <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400">
+              {typeof window !== 'undefined' &&
+              (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 animate-pulse" />
+                  <span>
+                    Đang ở <strong>Localhost</strong> (khi lên link deploy/Vercel sẽ tự đổi thành tên miền thật).
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span>
+                    Đường dẫn trực tiếp chính thức trên môi trường <strong>Production</strong>.
+                  </span>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Menu Options List */}
