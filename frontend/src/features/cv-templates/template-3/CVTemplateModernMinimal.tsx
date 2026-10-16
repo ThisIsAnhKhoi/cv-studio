@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CVTemplateProps } from '../../../types/template';
 import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import { getSectionStyleProperties } from '../../cv-editor/utils/styleHelpers';
+import { RichTextRenderer } from '../../../components/common/RichTextRenderer';
 import {
   Mail,
   Phone,
@@ -192,16 +193,15 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
               </div>
 
               {/* Bio summary crisp */}
-              <p
+              <RichTextRenderer
+                content={summary}
                 className={`text-[12px] ${tc.bodyMuted} mt-2 max-w-xl leading-relaxed`}
                 style={{
                   ...getSectionStyleProperties('summary', theme.sectionStyles),
                   color: 'var(--sec-text-color, inherit)',
                   fontFamily: 'var(--sec-body-font, inherit)',
                 }}
-              >
-                {summary}
-              </p>
+              />
             </div>
           </div>
         </div>

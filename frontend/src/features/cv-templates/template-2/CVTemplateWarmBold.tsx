@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CVTemplateProps } from '../../../types/template';
 import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import { getSectionStyleProperties } from '../../cv-editor/utils/styleHelpers';
+import { RichTextRenderer } from '../../../components/common/RichTextRenderer';
 import {
   Mail,
   Phone,
@@ -265,15 +266,14 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                 Giới Thiệu Bản Thân
               </h2>
             </div>
-            <p
+            <RichTextRenderer
+              content={summary}
               className={`text-[12.5px] leading-relaxed ${tc.body} text-justify`}
               style={{
                 color: 'var(--sec-text-color, inherit)',
                 fontFamily: 'var(--sec-body-font, inherit)',
               }}
-            >
-              {summary}
-            </p>
+            />
           </section>
 
           {/* Work Experience */}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CVTemplateProps } from '../../../types/template';
 import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import { getSectionStyleProperties } from '../../cv-editor/utils/styleHelpers';
+import { RichTextRenderer } from '../../../components/common/RichTextRenderer';
 import {
   Mail,
   Phone,
@@ -433,15 +434,14 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               <Sparkles className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
               <span>Giới Thiệu Bản Thân</span>
             </h2>
-            <p
+            <RichTextRenderer
+              content={summary}
               className={`text-[12.5px] leading-relaxed ${tc.body} text-justify`}
               style={{
                 color: 'var(--sec-text-color, inherit)',
                 fontFamily: 'var(--sec-body-font, inherit)',
               }}
-            >
-              {summary}
-            </p>
+            />
           </section>
 
           {/* Work Experience */}

@@ -78,6 +78,39 @@
 }
 
 /* ==========================================================================
+   RICH TEXT CONTENT STYLING (A4 CV Safe Spacing & Print Resilient)
+   ========================================================================== */
+.rich-text-content {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.rich-text-content p {
+  margin-bottom: 0.35rem;
+}
+.rich-text-content p:last-child {
+  margin-bottom: 0;
+}
+.rich-text-content ul {
+  list-style-type: disc !important;
+  margin-left: 1.25rem !important;
+  margin-bottom: 0.35rem;
+  padding-left: 0 !important;
+}
+.rich-text-content ol {
+  list-style-type: decimal !important;
+  margin-left: 1.25rem !important;
+  margin-bottom: 0.35rem;
+  padding-left: 0 !important;
+}
+.rich-text-content li {
+  margin-bottom: 0.2rem;
+}
+.rich-text-content a {
+  text-decoration: underline;
+  color: inherit;
+}
+
+/* ==========================================================================
    CHẾ ĐỘ IN ẤN & XUẤT PDF CHUẨN A4 TUYỆT ĐỐI (Không tràn viền, không gãy trang)
    ========================================================================== */
 @media print {

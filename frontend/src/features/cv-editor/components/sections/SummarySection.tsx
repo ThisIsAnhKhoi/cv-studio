@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
+import { RichTextEditor } from '../../../../components/common/RichTextEditor';
 
 interface SummarySectionProps {
   summary: string;
@@ -7,6 +8,9 @@ interface SummarySectionProps {
 }
 
 export const SummarySection: React.FC<SummarySectionProps> = ({ summary, onChange }) => {
+  // Visible character count excluding HTML tags
+  const visibleTextLength = summary ? summary.replace(/<[^>]*>/g, '').trim().length : 0;
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -14,16 +18,15 @@ export const SummarySection: React.FC<SummarySectionProps> = ({ summary, onChang
           Đoạn giới thiệu năng lực cốt lõi / Mục tiêu nghề nghiệp
         </label>
         <span className="text-[11px] text-slate-400 font-medium">
-          {summary.length} ký tự
+          {visibleTextLength} ký tự
         </span>
       </div>
 
-      <textarea
-        rows={4}
+      <RichTextEditor
         value={summary}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={onChange}
         placeholder="Tóm tắt ngắn gọn từ 2-4 câu về kinh nghiệm, thế mạnh chuyên môn và định hướng phát triển của bạn..."
-        className="w-full p-3 text-xs leading-relaxed rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-900 dark:text-white resize-y"
+        minHeight="120px"
       />
 
       <div className="flex items-start gap-2 p-2.5 bg-teal-50/60 dark:bg-teal-950/40 rounded-lg border border-teal-100 dark:border-teal-900/40 text-[11px] text-teal-800 dark:text-teal-300">
