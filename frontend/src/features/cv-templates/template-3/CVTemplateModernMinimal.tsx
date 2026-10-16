@@ -248,7 +248,7 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
             </span>
           </a>
 
-          {getNormalizedSocialLinks(personalInfo).map((link) => (
+          {getNormalizedSocialLinks(personalInfo, true).map((link) => (
             <a
               key={link.id}
               href={formatSafeUrl(link.url)}

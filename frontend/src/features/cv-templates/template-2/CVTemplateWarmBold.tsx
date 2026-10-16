@@ -442,7 +442,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
             </h2>
 
             <div className="space-y-2 text-[11.5px]" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {getNormalizedSocialLinks(personalInfo).map((link) => (
+              {getNormalizedSocialLinks(personalInfo, true).map((link) => (
                 <a
                   key={link.id}
                   href={formatSafeUrl(link.url)}

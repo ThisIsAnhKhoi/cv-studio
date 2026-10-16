@@ -209,16 +209,24 @@ export const SocialIcon: React.FC<{
 
 /**
  * Normalizes PersonalInfo social links with 100% backward compatibility.
- * If socialLinks array exists, returns it.
- * Otherwise, maps legacy fields (website, github, linkedin) into standardized SocialLink items.
+ * @param filterEmpty - If true, only returns links with non-empty URLs (for CV templates/views).
+ *                      If false (default), returns all links including empty drafts (for CV Editor).
  */
-export function getNormalizedSocialLinks(info?: PersonalInfo | null): SocialLink[] {
+export function getNormalizedSocialLinks(
+  info?: PersonalInfo | null,
+  filterEmpty: boolean = false
+): SocialLink[] {
   if (!info) return [];
 
-  if (Array.isArray(info.socialLinks) && info.socialLinks.length > 0) {
-    return info.socialLinks.filter((l) => Boolean(l && l.url && l.url.trim()));
+  // If socialLinks array has been initialized (even if empty [])
+  if (Array.isArray(info.socialLinks)) {
+    if (filterEmpty) {
+      return info.socialLinks.filter((l) => Boolean(l && l.url && l.url.trim()));
+    }
+    return info.socialLinks;
   }
 
+  // Fallback for legacy profiles where socialLinks array was never defined
   const legacy: SocialLink[] = [];
   if (info.website && info.website.trim()) {
     legacy.push({

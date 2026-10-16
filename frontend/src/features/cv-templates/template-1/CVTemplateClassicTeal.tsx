@@ -241,7 +241,7 @@ export const CVTemplateClassicTeal: React.FC<CVTemplateProps> = ({ data, theme }
               </a>
 
               {/* Dynamic Social Links */}
-              {getNormalizedSocialLinks(personalInfo).map((link) => (
+              {getNormalizedSocialLinks(personalInfo, true).map((link) => (
                 <a
                   key={link.id}
                   href={formatSafeUrl(link.url)}

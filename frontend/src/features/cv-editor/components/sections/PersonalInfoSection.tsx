@@ -25,7 +25,7 @@ import { generateId } from '../../../../stores/useCVStore';
 
 interface PersonalInfoSectionProps {
   personalInfo: PersonalInfo;
-  onChange: (field: keyof PersonalInfo, value: any) => void;
+  onChange: (fieldOrFields: any, value?: any) => void;
 }
 
 /**
@@ -65,8 +65,8 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   const [locationSearch, setLocationSearch] = useState('');
   const locationDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Social Links động (hợp nhất với legacy website/github/linkedin)
-  const socialLinks: SocialLink[] = getNormalizedSocialLinks(personalInfo);
+  // Social Links động (giữ nguyên các liên kết đang soạn thảo, không filter rỗng)
+  const socialLinks: SocialLink[] = getNormalizedSocialLinks(personalInfo, false);
 
   // Đóng dropdown vị trí khi click ra ngoài
   useEffect(() => {
@@ -103,6 +103,16 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     onChange('birthday', formatted);
   };
 
+  // Hàm đồng bộ danh sách mạng xã hội và legacy fields
+  const commitSocialLinks = (updated: SocialLink[]) => {
+    const legacy = syncLegacySocialFields(updated);
+    // Cập nhật đồng bộ cả socialLinks lẫn legacy fields
+    onChange({
+      socialLinks: updated,
+      ...legacy,
+    });
+  };
+
   // Thêm một liên kết mạng xã hội mới
   const handleAddSocialLink = () => {
     const newLink: SocialLink = {
@@ -111,13 +121,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
       url: '',
     };
     const updated = [...socialLinks, newLink];
-    onChange('socialLinks', updated);
-
-    // Đồng bộ legacy fields
-    const legacy = syncLegacySocialFields(updated);
-    onChange('website', legacy.website);
-    onChange('github', legacy.github);
-    onChange('linkedin', legacy.linkedin);
+    commitSocialLinks(updated);
   };
 
   // Cập nhật một liên kết mạng xã hội
@@ -128,23 +132,13 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   ) => {
     const updated = [...socialLinks];
     updated[index] = { ...updated[index], [field]: value };
-    onChange('socialLinks', updated);
-
-    const legacy = syncLegacySocialFields(updated);
-    onChange('website', legacy.website);
-    onChange('github', legacy.github);
-    onChange('linkedin', legacy.linkedin);
+    commitSocialLinks(updated);
   };
 
   // Xóa liên kết mạng xã hội
   const handleRemoveSocialLink = (index: number) => {
     const updated = socialLinks.filter((_, i) => i !== index);
-    onChange('socialLinks', updated);
-
-    const legacy = syncLegacySocialFields(updated);
-    onChange('website', legacy.website);
-    onChange('github', legacy.github);
-    onChange('linkedin', legacy.linkedin);
+    commitSocialLinks(updated);
   };
 
   return (

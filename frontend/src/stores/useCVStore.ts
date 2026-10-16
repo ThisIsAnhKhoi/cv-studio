@@ -38,7 +38,10 @@ export interface CVState {
 
   // Updaters
   updateVisibility: (isPublic: boolean) => void;
-  updatePersonalInfo: (field: keyof PersonalInfo, value: string) => void;
+  updatePersonalInfo: (
+    fieldOrFields: keyof PersonalInfo | Partial<PersonalInfo>,
+    value?: any
+  ) => void;
   updateSummary: (summary: string) => void;
 
   // Experience
@@ -182,16 +185,23 @@ export const useCVStore = create<CVState>((set, get) => ({
     triggerDebouncedAutoSave(get, set);
   },
 
-  updatePersonalInfo: (field: keyof PersonalInfo, value: string) => {
-    set((prev) => ({
-      cvData: {
-        ...prev.cvData,
-        personalInfo: {
-          ...prev.cvData.personalInfo,
-          [field]: value,
+  updatePersonalInfo: (
+    fieldOrFields: keyof PersonalInfo | Partial<PersonalInfo>,
+    value?: any
+  ) => {
+    set((prev) => {
+      const updatedPersonalInfo =
+        typeof fieldOrFields === 'string'
+          ? { ...prev.cvData.personalInfo, [fieldOrFields]: value }
+          : { ...prev.cvData.personalInfo, ...fieldOrFields };
+
+      return {
+        cvData: {
+          ...prev.cvData,
+          personalInfo: updatedPersonalInfo,
         },
-      },
-    }));
+      };
+    });
     triggerDebouncedAutoSave(get, set);
   },
 
