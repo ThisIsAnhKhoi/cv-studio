@@ -1,4 +1,4 @@
-import { CVData } from '../types/cv';
+import { CVData, CVCategory } from '../types/cv';
 import { mockCVData } from '../data/mockCVData';
 import { mockProfilesList, getCVByIdOrSlug } from '../data/mockProfiles';
 import { generateId, getDraftStorageKey } from '../stores/useCVStore';
@@ -9,11 +9,16 @@ import {
   getDoc,
   getDocs,
   deleteDoc,
+  updateDoc,
+  increment,
   collection,
   query,
   where,
   orderBy,
   limit,
+  startAfter,
+  QueryDocumentSnapshot,
+  DocumentData,
 } from 'firebase/firestore';
 
 const USER_CVS_KEY_PREFIX = 'cv_studio_user_cvs_';
@@ -315,3 +320,162 @@ export async function getCVById(targetId: string): Promise<CVData | null> {
 
   return null;
 }
+
+/**
+ * Atomically increments the view count of a CV on Firestore without updating updatedAt.
+ * Follows Rule of Safety: viewCount updates NEVER modify updatedAt.
+ */
+export async function incrementCVViewCount(cvId: string): Promise<void> {
+  if (!cvId) return;
+
+  // 1. Update Firestore atomically
+  try {
+    if (db) {
+      const cvRef = doc(db, 'cvs', cvId);
+      await updateDoc(cvRef, {
+        viewCount: increment(1),
+      });
+    }
+  } catch (err) {
+    console.warn('Lỗi khi tăng viewCount trên Firestore:', err);
+  }
+
+  // 2. Also keep local storage draft in sync if present
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const draftKey = getDraftStorageKey(cvId);
+      const raw = localStorage.getItem(draftKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        parsed.viewCount = (parsed.viewCount || 0) + 1;
+        localStorage.setItem(draftKey, JSON.stringify(parsed));
+      }
+    } catch {
+      // ignore
+    }
+  }
+}
+
+/**
+ * Retrieves the Top N most viewed public CVs for the Homepage showcase.
+ * Only fetches active, public CVs whose owners are not disabled.
+ */
+export async function getTopViewedCVs(limitCount = 6): Promise<CVData[]> {
+  const result: CVData[] = [];
+
+  try {
+    if (db) {
+      const q = query(
+        collection(db, 'cvs'),
+        where('isPublic', '==', true),
+        where('status', '==', 'active'),
+        where('ownerDisabled', '==', false),
+        orderBy('viewCount', 'desc'),
+        orderBy('updatedAt', 'desc'),
+        limit(limitCount)
+      );
+      const snapshot = await getDocs(q);
+      snapshot.forEach((docSnap) => {
+        result.push(docSnap.data() as CVData);
+      });
+    }
+  } catch (err) {
+    console.warn('Không thể truy vấn Top CV xem nhiều nhất từ Firestore:', err);
+  }
+
+  if (result.length > 0) {
+    return result;
+  }
+
+  // Fallback to mock profiles sorted by viewCount if offline or empty
+  return [...mockProfilesList]
+    .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+    .slice(0, limitCount);
+}
+
+export interface ExploreFilterOptions {
+  category?: CVCategory | 'all';
+  sort?: 'views' | 'newest';
+  cursor?: QueryDocumentSnapshot<DocumentData> | null;
+  limitCount?: number;
+}
+
+export interface ExploreCVsResult {
+  cvs: CVData[];
+  lastVisible: QueryDocumentSnapshot<DocumentData> | null;
+  hasMore: boolean;
+}
+
+/**
+ * Retrieves paginated public CVs for the Explore Directory page using Cursor pagination.
+ */
+export async function getExploreCVs(
+  options: ExploreFilterOptions = {}
+): Promise<ExploreCVsResult> {
+  const { category = 'all', sort = 'views', cursor = null, limitCount = 24 } = options;
+  const cvs: CVData[] = [];
+  let lastVisible: QueryDocumentSnapshot<DocumentData> | null = null;
+  let hasMore = false;
+
+  try {
+    if (db) {
+      const constraints: any[] = [
+        where('isPublic', '==', true),
+        where('status', '==', 'active'),
+        where('ownerDisabled', '==', false),
+      ];
+
+      if (category && category !== 'all') {
+        constraints.push(where('category', '==', category));
+      }
+
+      if (sort === 'views') {
+        constraints.push(orderBy('viewCount', 'desc'));
+        constraints.push(orderBy('updatedAt', 'desc'));
+      } else {
+        constraints.push(orderBy('updatedAt', 'desc'));
+      }
+
+      if (cursor) {
+        constraints.push(startAfter(cursor));
+      }
+
+      constraints.push(limit(limitCount));
+
+      const q = query(collection(db, 'cvs'), ...constraints);
+      const snapshot = await getDocs(q);
+
+      snapshot.forEach((docSnap) => {
+        cvs.push(docSnap.data() as CVData);
+      });
+
+      if (snapshot.docs.length > 0) {
+        lastVisible = snapshot.docs[snapshot.docs.length - 1];
+        hasMore = snapshot.docs.length === limitCount;
+      }
+    }
+  } catch (err) {
+    console.warn('Lỗi khi tải danh sách Explore CVs từ Firestore:', err);
+  }
+
+  // Fallback if offline / empty and no cursor
+  if (cvs.length === 0 && !cursor) {
+    let filtered = [...mockProfilesList];
+    if (category && category !== 'all') {
+      filtered = filtered.filter((p) => p.category === category);
+    }
+    if (sort === 'views') {
+      filtered.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+    } else {
+      filtered.sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime());
+    }
+    return {
+      cvs: filtered.slice(0, limitCount),
+      lastVisible: null,
+      hasMore: filtered.length > limitCount,
+    };
+  }
+
+  return { cvs, lastVisible, hasMore };
+}
+

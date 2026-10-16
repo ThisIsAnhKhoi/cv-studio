@@ -35,3 +35,19 @@ export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength).trim()}...`;
 }
+
+/**
+ * Chuyển đổi chuỗi tiếng Việt có dấu thành không dấu chữ thường, phục vụ tìm kiếm thông minh.
+ * Ví dụ: "Nguyễn Lê Thanh Trúc" -> "nguyen le thanh truc"
+ */
+export function removeVietnameseTones(str?: string | null): string {
+  if (!str || typeof str !== 'string') return '';
+
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'd')
+    .toLowerCase()
+    .trim();
+}

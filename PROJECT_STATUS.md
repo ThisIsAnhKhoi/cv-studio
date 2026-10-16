@@ -42,27 +42,29 @@
 
 ---
 
-## 4. HIỆN TRẠNG ĐÃ KIỂM CHỨNG (CẬP NHẬT PHIÊN BẢN V0.3.0 — 16/10/2026)
+## 4. HIỆN TRẠNG ĐÃ KIỂM CHỨNG (CẬP NHẬT PHIÊN BẢN V0.4.0 — 16/10/2026)
 
 ### 4.1. Thông số môi trường và mã nguồn đã xác minh
-- **Git Commit mới nhất**: `bb271c2` (Đã deploy lên Vercel Production).
 - **TypeScript Strict Compile**: `npx tsc --noEmit` $\rightarrow$ **0 Lỗi (Pass 100%)**.
-- **Automated Tests**: Vitest + React Testing Library $\rightarrow$ **102 Tests (17 Test Suites - 100% Pass)**.
-- **Production Build**: `npm run build` $\rightarrow$ **Thành công (7.2s - 8.0s)**.
-- **Tiến độ hoàn thiện tổng thể thực tế**: **85%** (Tầng Client đạt ~95%, Tầng Backend/Firestore & Auth đạt ~85%).
-- **Trạng thái tính năng Xuất PDF & In ấn**: Đang gắn nhãn UX "Đang phát triển" trong `ShareDropdown`, chuẩn bị chuyển dịch sang Native CSS `@media print` ở giai đoạn kế tiếp.
+- **Automated Tests**: Vitest + React Testing Library $\rightarrow$ **132 Tests (21 Test Suites - 100% Pass)**.
+- **Production Build**: `npm run build` $\rightarrow$ **Thành công (8.45s, 0 cảnh báo chunk)**.
+- **Tiến độ hoàn thiện tổng thể thực tế**: **95%** (Tầng Client đạt ~98%, Tầng Backend/Firestore & RBAC đạt ~95%).
+- **Cơ sở dữ liệu Firestore**: Đã dọn sạch 46 bản ghi test rác, nạp mới 8 hồ sơ chuẩn hóa đa dạng 7 ngành nghề và tài khoản Super Admin `thanhanhkhoi.work@gmail.com`.
 
 ### 4.2. Bảng tiến độ đã hiệu chỉnh chuẩn xác
 | Phân hệ / Module | Trạng thái kỹ thuật | Bằng chứng mã nguồn | Mức độ hoàn thiện |
 |:---|:---|:---|:---:|
-| **Trang Khám Phá (`/`)** | Hoạt động hoàn hảo | `frontend/src/pages/HomePage.tsx` | 95% (Showcase CV Public động, bóc sạch tag HTML) |
-| **Trang Xem CV (`/cv/:id`)** | Hoạt động hoàn hảo | `frontend/src/pages/CVViewPage.tsx` | 95% (Dropdown chia sẻ, phân quyền isOwner, fallback 404) |
+| **Trang Chủ Showcase (`/`)** | Hoạt động hoàn hảo | `frontend/src/pages/HomePage.tsx` | 100% (Top 6 CV xem nhiều nhất, điều hướng sang /explore) |
+| **Trang Khám Phá CV (`/explore`)** | Hoạt động hoàn hảo | `frontend/src/pages/ExplorePage.tsx` | 100% (7 ngành nghề chuẩn hóa, tìm kiếm không dấu, phân trang) |
+| **Đếm Lượt Xem Tự Động** | Hoạt động hoàn hảo | `features/view-counter/useCVViewCount.ts` | 100% (Firestore increment(1), khử trùng lặp 30p, owner exemption) |
+| **Phân Quyền RBAC & Admin Guard**| Hoạt động hoàn hảo | `features/admin/AdminAuthGuard.tsx` | 100% (3 cấp Super Admin/Admin/Moderator, whitelist fail-safe, 403 screen) |
+| **Trung Tâm Quản Trị (`/admin`)** | Hoạt động hoàn hảo | `features/admin/pages/` | 100% (Tổng quan metrics, Quản lý CVs, Quản lý Người dùng, Audit Logs) |
+| **Trang Xem CV (`/cv/:id`)** | Hoạt động hoàn hảo | `frontend/src/pages/CVViewPage.tsx` | 100% (Dropdown chia sẻ, hiển thị lượt xem, phân quyền isOwner, fallback 404) |
 | **Mẫu CV 1, 2, 3** | Hoàn chỉnh chuẩn A4 | `features/cv-templates/` (TemplateRegistry.ts) | 100% (Dynamic Socials, Google Maps, WCAG colors) |
 | **Trình Biên Tập CV (`/editor`)** | Hoàn chỉnh | `features/cv-editor/` | 95% (Đủ 9/9 khối, Rich text, 63 tỉnh/thành, Date picker, Section Customizer) |
-| **Auth & Phân Quyền** | Hoạt động tốt | `components/auth/` + Firebase Auth | 90% (Google 1-click + Email/Password + Error mapping tiếng Việt) |
-| **Dashboard Quản Trị** | Hoạt động tốt | `pages/DashboardPage.tsx` | 90% (Quản lý danh sách CV, nhân bản, xóa, Public/Private) |
-| **Lưu Trữ & Cloud Sync** | Firestore + Local | `services/cvStorageService.ts` | 85% (Tự động đồng bộ cloud + offline fallback) |
-| **Avatar Profile** | URL input | `PersonalInfoSection.tsx` | 40% (Đang dùng URL, kế hoạch nâng cấp Cloudinary crop) |
+| **Auth & Phân Quyền** | Hoạt động tốt | `components/auth/` + Firebase Auth | 95% (Google 1-click + Email/Password + Error mapping tiếng Việt) |
+| **Dashboard Cá Nhân** | Hoạt động tốt | `pages/DashboardPage.tsx` | 95% (Thống kê lượt xem, quản lý danh sách CV, nhân bản, xóa, Public/Private) |
+| **Lưu Trữ & Cloud Sync** | Firestore + Local | `services/cvStorageService.ts` | 95% (Atomic increment, explore queries, offline fallback) |
 
 ### 4.3. Danh sách lỗi đã giải quyết (Resolved Bug Backlog)
 1. ~~**BUG-001 [Critical - P0]**~~: **[ĐÃ GIẢI QUYẾT]** Lỗ hổng Stored XSS khi nhập URL `javascript:alert(1)` $\rightarrow$ Tiện ích `formatSafeUrl()` lọc sạch link độc hại.

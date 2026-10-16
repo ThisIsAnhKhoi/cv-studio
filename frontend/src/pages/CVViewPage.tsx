@@ -8,6 +8,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 import { isCVOwner, cloneCV, saveUserCV, getCVById } from '../services/cvStorageService';
 import { NotFoundPage } from './NotFoundPage';
 import { ShareDropdown } from '../components/common/ShareDropdown';
+import { useCVViewCount } from '../features/view-counter/useCVViewCount';
 import {
   ArrowLeft,
   Share2,
@@ -28,6 +29,7 @@ import {
   Edit3,
   Copy,
   LogIn,
+  Eye,
 } from 'lucide-react';
 
 interface CVViewPageProps {
@@ -99,6 +101,13 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
   }, [id]);
 
   const isOwner = isCVOwner(cvData, user);
+
+  // Ghi nhận lượt xem hợp lệ với cơ chế khử trùng lặp 30 phút, loại trừ chủ sở hữu
+  useCVViewCount({
+    cvId: cvData.id,
+    isOwner,
+    isPublic: Boolean(cvData.isPublic && cvData.status !== 'disabled'),
+  });
 
   if (isLoading) {
     return (
@@ -248,6 +257,14 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
                   Công Khai
                 </span>
               )}
+
+              <span
+                className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 inline-flex items-center gap-1"
+                title="Tổng lượt xem hồ sơ này"
+              >
+                <Eye className="w-2.5 h-2.5 text-teal-600 dark:text-teal-400" />
+                <span>{cvData.viewCount || 0} lượt xem</span>
+              </span>
             </div>
 
             {/* Template Switcher Tabs */}

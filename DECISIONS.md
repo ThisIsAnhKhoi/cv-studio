@@ -249,3 +249,58 @@
      - Thống kê tổng số CV, số CV công khai, lưới thẻ CV trực quan kèm các action (Xem trực tiếp, Chỉnh sửa, Nhân bản, Xóa có modal xác nhận).
      - Khu vực khởi tạo nhanh từ 3 mẫu chuẩn Classic Teal, Warm Bold, Modern Minimal.
 
+---
+
+## ADR-017: Mô hình RBAC Phân quyền Quản trị, Fail-safe Super Admin & Khóa Chặt Security Rules
+- **Ngữ cảnh**: Hệ thống mở rộng tính năng kiểm duyệt, phân quyền quản trị viên, chống phá hoại dữ liệu và đóng lỗ hổng bảo mật P0 trên Firestore.
+- **Quyết định**: **[QUYẾT ĐỊNH] TRIỂN KHAI RBAC 3 CẤP ĐỘ (`user`, `moderator`, `admin`), FAIL-SAFE EMAIL WHITELIST CỨNG VÀ BẢO VỆ ATOMIC QUA `affectedKeys()`.**
+- **Nguyên tắc kỹ thuật**:
+  1. Collection `admins/{uid}` và `moderators/{uid}` quản lý vai trò.
+  2. Phao cứu sinh bất khả xâm phạm: Super Admin được công nhận qua token email whitelist `request.auth.token.email_verified == true && request.auth.token.email == 'thanhanhkhoi.work@gmail.com'`.
+  3. Chống leo thang đặc quyền: User cập nhật hồ sơ cá nhân bị cấm tuyệt đối chạm vào `['role', 'status', 'isAdmin', 'disabledAt', 'disabledBy', 'disabledReason']`.
+  4. Nhật ký kiểm toán `auditLogs/{logId}` là bất biến tuyệt đối (`allow update, delete: if false`).
+
+---
+
+## ADR-018: Động cơ Đếm Lượt Xem Atomic Khử Trùng Lặp 30 Phút & Bảo Toàn Timestamp
+- **Ngữ cảnh**: Nhu cầu hiển thị lượt xem CV thực tế mà không gây xung đột dữ liệu với cơ chế Auto-save và không làm sai lệch timestamp chỉnh sửa hồ sơ.
+- **Quyết định**: **[QUYẾT ĐỊNH] ĐẾM VIEW TRỰC TIẾP TRÊN DOCUMENT QUA `increment(1)`, KHỬ TRÙNG LẶP 30 PHÚT BẰNG `sessionStorage` VÀ TUYỆT ĐỐI KHÔNG CẬP NHẬT `updatedAt`.**
+- **Nguyên tắc kỹ thuật**:
+  1. Chỉ đếm khi vào trang chi tiết `/cv/:id` hoặc `/u/:id`; tuyệt đối không đếm khi lướt trang chủ hoặc trang tìm kiếm.
+  2. Bỏ qua lượt xem của chính chủ sở hữu CV (`user?.uid === cv.userId`) và bỏ qua bot tự động.
+  3. Lệnh cập nhật Firestore chỉ chứa duy nhất `{ viewCount: increment(1) }`; Firestore Rules khóa chặt bằng `request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount'])`.
+  4. Bảo toàn nguyên vẹn `updatedAt` để không kích hoạt ghi đè bản nháp local trong `useCVStore`.
+
+---
+
+## ADR-019: Kiến trúc Showcase Trang Chủ Top 6 & Trang Duyệt CV Riêng Biệt (`/explore`) với Cursor Pagination
+- **Ngữ cảnh**: Tải toàn bộ CV trên trang chủ gây lãng phí 90%+ quota đọc Firestore gói Spark (50k reads/ngày) và không hỗ trợ tìm kiếm chuyên sâu.
+- **Quyết định**: **[QUYẾT ĐỊNH] GIỚI HẠN TRANG CHỦ TOP 6 CV XEM NHIỀU NHẤT, TÁCH TRANG KHÁM PHÁ `/explore` ĐỘC LẬP VỚI CURSOR PAGINATION (`startAfter`) VÀ BỘ LỌC 7 DANH MỤC.**
+- **Nguyên tắc kỹ thuật**:
+  1. Trang chủ chỉ đọc 6 CV có `isPublic: true`, `status: 'active'`, `ownerDisabled: false` sắp xếp theo `viewCount: desc`.
+  2. Route `/explore` được lazy-load, tải từng lô 24 hồ sơ sử dụng Cursor document snapshot `startAfter` (Cấm dùng `offset`).
+  3. Tìm kiếm tức thì không dấu `removeVietnameseTones` trên tập kết quả và đồng bộ bộ lọc vào URL query string (`?category=&sort=&q=`).
+  4. Khai báo 6 composite index chuẩn xác trong `firestore.indexes.json`.
+
+---
+
+## ADR-020: Nguyên tắc Soft Delete Toàn Diện & Khử Liên Kết Không Cần JOIN (`ownerDisabled`)
+- **Ngữ cảnh**: Cần loại bỏ hồ sơ của người dùng vi phạm hoặc CV bị khóa mà không làm mất dấu vết kiểm toán, trong điều kiện Firestore không hỗ trợ câu lệnh JOIN.
+- **Quyết định**: **[QUYẾT ĐỊNH] THỰC THI SOFT DELETE TUYỆT ĐỐI ("XÓA = TẮT") VÀ DENORMALIZE TRƯỜNG `ownerDisabled: boolean` TRÊN DOCUMENT CV.**
+- **Nguyên tắc kỹ thuật**:
+  1. Tuyệt đối không xóa vật lý tài khoản người dùng hoặc CV vi phạm.
+  2. Khi Admin khóa tài khoản: Sử dụng `writeBatch` cập nhật đồng thời `users/{uid}` $\rightarrow$ `status: 'disabled'` và quét toàn bộ CV của họ gán `ownerDisabled: true`.
+  3. Tất cả truy vấn công khai chỉ cần lọc thêm `where('ownerDisabled', '==', false)` để triệt tiêu việc hiển thị hồ sơ của tài khoản bị khóa mà không tốn thêm read join.
+  4. Thao tác khóa bắt buộc nhập lý do tối thiểu 5 ký tự và ghi nhật ký nguyên tử vào `auditLogs`.
+
+---
+
+## ADR-021: Chiến lược Tái Khởi Tạo Cơ Sở Dữ Liệu Sạch (Clean Database Reset & Seeding)
+- **Ngữ cảnh**: Toàn bộ dữ liệu hiện tại trên Firestore là dữ liệu thử nghiệm (sample mock data). Việc duy trì mã migration phức tạp cho dữ liệu nháp cũ gây dư thừa kỹ thuật. Chủ dự án đã chính thức phê duyệt phương án làm sạch cơ sở dữ liệu.
+- **Quyết định**: **[QUYẾT ĐỊNH] RESET TOÀN BỘ DATABASE VÀ KHỞI TẠO TỪ ĐẦU BỘ DỮ LIỆU CHUẨN HÓA VỚI SCHEMA ĐẦY ĐỦ.**
+- **Nguyên tắc kỹ thuật**:
+  1. Dọn dẹp collection `cvs` và khởi tạo lại các hồ sơ mẫu chất lượng cao đại diện cho 7 ngành nghề (`tech`, `design`, `data-ai`, `marketing`, `business`, `hr`, `other`).
+  2. Mọi document được gán sẵn các trường schema v0.4.0: `viewCount` (phong phú từ ban đầu), `status: 'active'`, `ownerDisabled: false`, `category`.
+  3. Khởi tạo sẵn quyền `admins/{superAdminUid}` cho quản trị viên chính chủ.
+  4. Mã nguồn loại bỏ các rào cản tương thích ngược không cần thiết, đạt độ tinh gọn và hiệu năng tối ưu.
+

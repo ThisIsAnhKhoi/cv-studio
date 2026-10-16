@@ -1,0 +1,165 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // HÀM BỔ TRỢ PHÂN QUYỀN (RBAC HELPER FUNCTIONS)
+    // =========================================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Fail-safe email whitelist dành riêng cho người sáng lập hệ thống
+    function isSuperAdmin() {
+      return isAuthenticated()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'thanhanhkhoi.work@gmail.com';
+    }
+
+    // Admin: là Super Admin hoặc nằm trong collection admins/{uid}
+    function isAdmin() {
+      return isSuperAdmin() || (
+        isAuthenticated() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Moderator: là Admin hoặc nằm trong collection moderators/{uid}
+    function isModerator() {
+      return isAdmin() || (
+        isAuthenticated() && exists(/databases/$(database)/documents/moderators/$(request.auth.uid))
+      );
+    }
+
+    // Kiểm tra tài khoản người dùng có đang hoạt động hay không
+    function isUserActive(userId) {
+      return !exists(/databases/$(database)/documents/users/$(userId))
+        || get(/databases/$(database)/documents/users/$(userId)).data.status != 'disabled';
+    }
+
+    // =========================================================================
+    // 1. COLLECTION USERS (HỒ SƠ TÀI KHOẢN NGƯỜI DÙNG)
+    // =========================================================================
+    match /users/{userId} {
+      // User đọc được hồ sơ của mình; Moderator & Admin đọc được tất cả
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isModerator());
+
+      // User tự tạo hồ sơ khi đăng ký (role cố định 'user', status 'active')
+      allow create: if isAuthenticated()
+        && request.auth.uid == userId
+        && request.resource.data.role == 'user'
+        && request.resource.data.status == 'active';
+
+      // Cập nhật hồ sơ:
+      // - Admin được sửa (đổi vai trò, khóa tài khoản)
+      // - User chỉ được sửa thông tin cá nhân, CẤM SỬA role, status, isAdmin
+      allow update: if isAuthenticated() && (
+        isAdmin() ||
+        (request.auth.uid == userId &&
+         !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+           'role', 'status', 'isAdmin', 'disabledAt', 'disabledBy', 'disabledReason'
+         ]))
+      );
+
+      // Tuyệt đối cấm xóa vật lý tài khoản (Tuân thủ nguyên tắc "Xóa = Tắt")
+      allow delete: if false;
+    }
+
+    // =========================================================================
+    // 2. COLLECTION ADMINS & MODERATORS (QUẢN LÝ VAI TRÒ ĐẶC QUYỀN)
+    // =========================================================================
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if isSuperAdmin();
+    }
+
+    match /moderators/{modId} {
+      allow read: if isModerator();
+      allow write: if isAdmin();
+    }
+
+    // =========================================================================
+    // 3. COLLECTION CVS (HỒ SƠ CV CÔNG KHAI VÀ CÁ NHÂN)
+    // =========================================================================
+    match /cvs/{cvId} {
+      // Đọc CV:
+      // - Khách & Người ngoài: Xem CV nếu công khai, đang active và chủ không bị vô hiệu hóa
+      // - Chủ sở hữu: Xem được cả CV cá nhân/nháp
+      // - Moderator & Admin: Xem được toàn bộ để kiểm duyệt
+      allow read: if (
+        resource.data.isPublic == true
+        && resource.data.status == 'active'
+        && resource.data.ownerDisabled != true
+      ) || (
+        isAuthenticated() && resource.data.userId == request.auth.uid
+      ) || isModerator();
+
+      // Tạo CV:
+      // - Bắt buộc đã đăng nhập, tạo bằng UID chính chủ, tài khoản chưa bị khóa
+      // - Mặc định status 'active', ownerDisabled false
+      allow create: if isAuthenticated()
+        && request.auth.uid == request.resource.data.userId
+        && isUserActive(request.auth.uid)
+        && request.resource.data.status == 'active'
+        && request.resource.data.ownerDisabled != true;
+
+      // Cập nhật CV:
+      allow update: if
+        // Kịch bản 1: Tăng lượt xem (kể cả khách vãng lai)
+        // Chỉ duy nhất field viewCount được phép thay đổi và bắt buộc tăng đúng 1 đơn vị
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount'])
+          && (
+            (!('viewCount' in resource.data) && request.resource.data.viewCount == 1)
+            || request.resource.data.viewCount == resource.data.viewCount + 1
+          )
+          && resource.data.isPublic == true
+          && resource.data.status == 'active'
+          && resource.data.ownerDisabled != true
+        )
+        // Kịch bản 2: Chủ sở hữu chỉnh sửa nội dung CV của họ
+        // CẤM chủ sở hữu tự sửa status, ownerDisabled, viewCount, disabledReason
+        || (
+          isAuthenticated()
+          && request.auth.uid == resource.data.userId
+          && resource.data.status == 'active'
+          && isUserActive(request.auth.uid)
+          && request.resource.data.userId == resource.data.userId
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+            'status', 'ownerDisabled', 'disabledAt', 'disabledBy', 'disabledReason', 'viewCount'
+          ])
+        )
+        // Kịch bản 3: Moderator can thiệp kiểm duyệt (Khóa/Mở khóa CV)
+        || (
+          isModerator()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'status', 'disabledAt', 'disabledBy', 'disabledReason', 'ownerDisabled', 'updatedAt'
+          ])
+        )
+        // Kịch bản 4: Admin có toàn quyền cứu hộ/quản trị
+        || isAdmin();
+
+      // Xóa CV:
+      // Chỉ chủ sở hữu hoặc Admin mới có quyền xóa
+      allow delete: if (
+        isAuthenticated() && request.auth.uid == resource.data.userId
+      ) || isAdmin();
+    }
+
+    // =========================================================================
+    // 4. COLLECTION AUDITLOGS (NHẬT KÝ KIỂM TOÁN BẤT BIẾN)
+    // =========================================================================
+    match /auditLogs/{logId} {
+      // Chỉ Moderator & Admin được đọc nhật ký
+      allow read: if isModerator();
+
+      // Chỉ Moderator/Admin được ghi log, bắt buộc actorUid trùng với người đăng nhập, lý do >= 5 ký tự
+      allow create: if isModerator()
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.reason.size() >= 5;
+
+      // TUYỆT ĐỐI CẤM SỬA VÀ CẤM XÓA (Audit Trail bất biến)
+      allow update, delete: if false;
+    }
+  }
+}

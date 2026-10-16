@@ -3,6 +3,44 @@
 Toàn bộ các thay đổi đáng chú ý của dự án **CV Studio / MyPortfolio** được ghi lại tại tài liệu này.  
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/) và tuân thủ [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-10-16
+
+### Admin Subsystem & Role-Based Access Control (RBAC)
+- **Kiến Trúc Phân Quyền 3 Cấp (Super Admin, Admin, Moderator)**:
+  - Fail-safe Whitelist bảo vệ nhà sáng lập `thanhanhkhoi.work@gmail.com` luôn có quyền tối cao ngay cả khi lỗi kết nối Firestore.
+  - Bộ bảo vệ định tuyến an ninh `<AdminAuthGuard />`: Chặn người dùng chưa xác thực hoặc không đủ quyền, cung cấp màn hình 403 Forbidden chuyên nghiệp.
+  - Bộ định tuyến quản trị chuyên biệt (`/admin`): Giao diện Dark theme Slate/Rose cao cấp, bố cục độc lập không xung đột với Navbar/Footer chính.
+- **Trang Tổng Quan Quản Trị (`/admin`)**:
+  - Truy vấn số lượng thực thể thời gian thực (`getCountFromServer`): Tổng người dùng, Tổng CV, CV Công khai và CV Đã vô hiệu hóa.
+- **Quản Lý & Kiểm Duyệt Hồ Sơ CV (`/admin/cvs`)**:
+  - Xem, tìm kiếm tiếng Việt không dấu, lọc theo trạng thái duyệt, chế độ hiển thị và 7 danh mục nghề.
+  - Thao tác Vô hiệu hóa (Soft-delete) và Khôi phục hồ sơ: Yêu cầu lý do bắt buộc $\ge 5$ ký tự, tự động ghi nhận vào Nhật ký Kiểm toán bất biến (`auditLogs`).
+- **Quản Lý Người Dùng & Phân Quyền (`/admin/users`)**:
+  - Danh sách tài khoản, chuyển đổi quyền hạn (`user` $\leftrightarrow$ `moderator`).
+  - Khóa tài khoản người dùng: Khóa hàng loạt hồ sơ CV của người dùng thông qua cờ `ownerDisabled: true` trong 1 Firestore batch nguyên tử.
+  - Cơ chế tự bảo vệ an toàn: Chặn tự khóa tài khoản bản thân và chặn tự hạ quyền của chính mình.
+- **Nhật Ký Kiểm Toán Bất Biến (`/admin/logs` - Immutable Audit Trail)**:
+  - Ghi nhận lịch sử mọi hành động nhạy cảm (`DISABLE_CV`, `RESTORE_CV`, `LOCK_USER`, `UNLOCK_USER`, `CHANGE_ROLE`).
+  - Bảo vệ bất biến ở tầng Firestore Security Rules: chỉ có thể thêm mới (`create`), nghiêm cấm sửa (`update: false`) hoặc xóa (`delete: false`).
+
+### Khám Phá Hồ Sơ & Đếm Lượt Xem Chuẩn Hóa
+- **Trang Khám Phá CV Chuyên Sâu (`/explore` - Explore Directory)**:
+  - Phân tầng trang chủ: Chỉ hiển thị Top 6 CV tiêu biểu được xem nhiều nhất (`getTopViewedCVs(6)`), điều hướng xem toàn bộ sang trang `/explore`.
+  - Phân loại 7 ngành nghề chuẩn hóa (`CV_CATEGORIES`: CNTT & Phần mềm, Thiết kế & Sáng tạo, Dữ liệu & Trí tuệ nhân tạo, Tiếp thị & Truyền thông, Kinh doanh & Bán hàng, Quản trị Nhân sự, Lĩnh vực khác).
+  - Tìm kiếm tiếng Việt không dấu `removeVietnameseTones`, phân trang phân đoạn tải nhanh.
+- **Động Cơ Đếm Lượt Xem Nguyên Tử (Atomic View Counter)**:
+  - Sử dụng Firestore `FieldValue.increment(1)` nguyên tử, 100% nằm trong Free Tier ($0/tháng).
+  - Khử trùng lặp 30 phút qua `sessionStorage` và miễn trừ lượt xem từ chính chủ nhân hồ sơ (Owner Exemption).
+  - Bảo vệ thuộc tính: chỉ cho phép cập nhật `viewCount`, không được ghi đè `updatedAt` hay nội dung CV.
+- **Làm Sạch & Chuẩn Hóa Cơ Sở Dữ Liệu (Clean DB Reset & Seeding)**:
+  - Dọn dẹp sạch sẽ 46 bản ghi dữ liệu mẫu cũ.
+  - Nạp 8 hồ sơ CV chất lượng cao bao phủ đủ 7 danh mục nghề nghiệp và khởi tạo tài khoản Super Admin trên hệ thống Firestore.
+
+### Quality, Testing & Performance
+- **132 Automated Unit Tests (21 Test Suites - 100% Pass)**: Tăng thêm 30 tests bao phủ kiểm tra phân quyền RBAC, kiểm tra validation lý do kiểm duyệt, khử trùng lặp đếm lượt xem và bộ lọc trang khám phá.
+- **0 Lỗi TypeScript (`tsc --noEmit`)**: 100% Type-safe trên toàn bộ hệ thống.
+- **Tối Ưu Hóa Kích Thước Bundle**: Tách toàn bộ các trang Admin và Explore thành các chunk lazy riêng biệt; chunk khởi tạo trang chủ vẫn giữ ở mức lý tưởng $\sim 34\text{ kB}$ (gzip $9.74\text{ kB}$).
+
 ## [0.3.0] - 2026-10-16
 
 ### Authentication & Cloud Persistence

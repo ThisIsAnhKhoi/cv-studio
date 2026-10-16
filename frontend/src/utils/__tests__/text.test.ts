@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { stripHtml, truncateText } from '../text';
+import { stripHtml, truncateText, removeVietnameseTones } from '../text';
 
 describe('text utility', () => {
   describe('stripHtml', () => {
@@ -41,6 +41,24 @@ describe('text utility', () => {
 
     it('should not truncate if length is within maxLength', () => {
       expect(truncateText('Hello', 10)).toBe('Hello');
+    });
+  });
+
+  describe('removeVietnameseTones', () => {
+    it('should normalize and remove tones accurately', () => {
+      expect(removeVietnameseTones('Trần Anh Khôi')).toBe('tran anh khoi');
+      expect(removeVietnameseTones('Nguyễn Lê Thanh Trúc')).toBe('nguyen le thanh truc');
+      expect(removeVietnameseTones('Kỹ Sư Phần Mềm & AI')).toBe('ky su phan mem & ai');
+    });
+
+    it('should convert đ and Đ to d', () => {
+      expect(removeVietnameseTones('Đà Nẵng & Đồng Nai')).toBe('da nang & dong nai');
+    });
+
+    it('should handle empty or null values', () => {
+      expect(removeVietnameseTones('')).toBe('');
+      expect(removeVietnameseTones(null)).toBe('');
+      expect(removeVietnameseTones(undefined)).toBe('');
     });
   });
 });

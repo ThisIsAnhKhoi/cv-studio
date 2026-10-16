@@ -9,7 +9,9 @@ import {
   ChevronDown,
   Sparkles,
   Compass,
+  ShieldCheck,
 } from 'lucide-react';
+import { SUPER_ADMIN_EMAIL } from '../../services/adminService';
 
 interface UserDropdownProps {
   className?: string;
@@ -168,6 +170,18 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ className = '' }) =>
               <Compass className="w-4 h-4 text-slate-400" />
               <span>Khám Phá Mẫu Hồ Sơ</span>
             </Link>
+
+            {user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() && (
+              <Link
+                to="/admin"
+                role="menuitem"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2.5 text-xs sm:text-sm font-bold text-rose-600 dark:text-rose-400 bg-rose-50/60 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-colors"
+              >
+                <ShieldCheck className="w-4 h-4 text-rose-500" />
+                <span>Trung Tâm Quản Trị (Admin)</span>
+              </Link>
+            )}
           </div>
 
           {/* Logout Action */}

@@ -129,6 +129,10 @@ export const mockProfilesList: CVData[] = [
     },
     createdAt: '2024-03-01T08:00:00.000Z',
     updatedAt: '2024-04-12T10:00:00.000Z',
+    viewCount: 1250,
+    status: 'active',
+    ownerDisabled: false,
+    category: 'design',
   },
 
   // Profile 3: Lê Hoàng Nam (Data Scientist & AI Specialist) - Template 3 Modern Minimal
@@ -245,6 +249,10 @@ export const mockProfilesList: CVData[] = [
     },
     createdAt: '2024-02-15T08:00:00.000Z',
     updatedAt: '2024-04-10T10:00:00.000Z',
+    viewCount: 980,
+    status: 'active',
+    ownerDisabled: false,
+    category: 'data-ai',
   },
 
   // Profile 4: Đỗ Minh Trang (Digital Marketing Lead & Brand Strategist) - Template 1 Classic Teal
@@ -351,6 +359,10 @@ export const mockProfilesList: CVData[] = [
     },
     createdAt: '2024-03-10T08:00:00.000Z',
     updatedAt: '2024-04-11T10:00:00.000Z',
+    viewCount: 860,
+    status: 'active',
+    ownerDisabled: false,
+    category: 'marketing',
   },
 
   // Profile 5: Phạm Quốc Bảo (Mobile Flutter & React Native Engineer) - Template 2 Warm Bold
@@ -446,6 +458,10 @@ export const mockProfilesList: CVData[] = [
     },
     createdAt: '2024-01-20T08:00:00.000Z',
     updatedAt: '2024-04-12T10:00:00.000Z',
+    viewCount: 740,
+    status: 'active',
+    ownerDisabled: false,
+    category: 'tech',
   },
 
   // Profile 6: Hoàng Thảo My (HR Manager & Talent Partner) - Template 3 Modern Minimal
@@ -540,6 +556,206 @@ export const mockProfilesList: CVData[] = [
     },
     createdAt: '2024-02-10T08:00:00.000Z',
     updatedAt: '2024-04-10T10:00:00.000Z',
+    viewCount: 650,
+    status: 'active',
+    ownerDisabled: false,
+    category: 'hr',
+  },
+
+  // Profile 7: Trần Văn Khang (Head of Business Development & B2B Sales) - Template 2 Warm Bold
+  {
+    id: 'cv-vankhang-business',
+    userId: 'user-007',
+    slug: 'tran-van-khang',
+    isPublic: true,
+    personalInfo: {
+      avatarUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
+      fullName: 'Trần Văn Khang',
+      title: 'Head of Business Development & Strategic Partnerships',
+      email: 'vankhang.biz@gmail.com',
+      phone: '0909 334 556',
+      location: 'Quận 1, TP. Hồ Chí Minh',
+      birthday: '10/05/1994',
+      linkedin: 'linkedin.com/in/vankhang-biz',
+    },
+    summary:
+      'Giám đốc Phát triển Kinh doanh với hơn 8 năm kiến tạo và mở rộng doanh thu B2B cho các giải pháp SaaS và hạ tầng đám mây. Đã mang lại hơn 45 tỷ VNĐ doanh thu hợp đồng mới trong 3 năm gần nhất, thiết lập mạng lưới 60+ đối tác chiến lược tại khu vực Đông Nam Á.',
+    experiences: [
+      {
+        id: 'exp-vk-1',
+        company: 'CloudTech Enterprise Solutions',
+        position: 'Head of Business Development',
+        startDate: '06/2021',
+        endDate: 'Hiện tại',
+        isCurrent: true,
+        location: 'TP. Hồ Chí Minh',
+        descriptions: [
+          'Dẫn dắt đội ngũ 12 chuyên viên kinh doanh doanh nghiệp, vượt 130% KPI doanh số năm 2023 với ARR tăng trưởng 42%.',
+          'Đàm phán và ký kết thành công hợp đồng cung cấp dịch vụ hạ tầng đám mây 3 năm với 5 ngân hàng và tập đoàn tài chính hàng đầu.',
+        ],
+      },
+    ],
+    educations: [
+      {
+        id: 'edu-vk-1',
+        school: 'Đại học Quốc Tế - ĐHQG TP.HCM',
+        degree: 'Cử Nhân Quản Trị Kinh Doanh',
+        major: 'Kinh Doanh Quốc Tế',
+        startDate: '2012',
+        endDate: '2016',
+        gpa: '3.65 / 4.0',
+      },
+    ],
+    skillCategories: [
+      {
+        id: 'skill-vk-1',
+        categoryName: 'Kỹ Năng Kinh Doanh & Lãnh Đạo',
+        skills: [
+          { name: 'B2B Enterprise Sales & Solution Selling', level: 5 },
+          { name: 'Strategic Partnerships & Negotiation', level: 5 },
+          { name: 'Key Account Management & Revenue Growth', level: 5 },
+          { name: 'CRM Pipeline (HubSpot, Salesforce)', level: 4 },
+        ],
+      },
+    ],
+    projects: [
+      {
+        id: 'proj-vk-1',
+        name: 'SEA Cloud Expansion Strategy',
+        role: 'Commercial Lead',
+        description: 'Chiến lược mở rộng thị trường khu vực mang lại 1.8 triệu USD doanh thu hợp đồng quốc tế trong 18 tháng.',
+        techStack: ['B2B Sales', 'Market Expansion', 'Partner Ecosystem'],
+      },
+    ],
+    achievements: [
+      {
+        id: 'ach-vk-1',
+        title: 'Top Sales Leader of the Year 2023',
+        issuer: 'Vietnam Enterprise Sales Association',
+        year: '2023',
+      },
+    ],
+    certificates: [
+      {
+        id: 'cert-vk-1',
+        name: 'Certified Enterprise Sales Professional (CESP)',
+        issuer: 'Sales Management Association',
+        issueDate: '2022',
+      },
+    ],
+    themeConfig: {
+      templateId: 'template-warm-bold',
+      primaryColor: '#D97706',
+      primaryColorPreset: 'orange',
+      accentColor: '#B45309',
+      fontHeading: 'Montserrat',
+      fontBody: 'Be Vietnam Pro',
+      darkMode: false,
+    },
+    createdAt: '2024-01-15T08:00:00.000Z',
+    updatedAt: '2024-04-08T10:00:00.000Z',
+    viewCount: 590,
+    status: 'active',
+    ownerDisabled: false,
+    category: 'business',
+  },
+
+  // Profile 8: Vũ Phương Anh (Senior Legal Counsel & Compliance) - Template 3 Modern Minimal
+  {
+    id: 'cv-phuonganh-other',
+    userId: 'user-008',
+    slug: 'vu-phuong-anh',
+    isPublic: true,
+    personalInfo: {
+      avatarUrl: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=400&q=80',
+      fullName: 'Vũ Phương Anh',
+      title: 'Senior Legal Counsel & Data Privacy Specialist',
+      email: 'phuonganh.legal@gmail.com',
+      phone: '0988 445 667',
+      location: 'Hoàn Kiếm, Hà Nội',
+      birthday: '28/07/1993',
+      linkedin: 'linkedin.com/in/phuonganh-legal',
+    },
+    summary:
+      'Cố vấn Pháp lý Doanh nghiệp cao cấp với 8+ năm kinh nghiệm tư vấn luật công nghệ, an toàn thông tin, bảo vệ dữ liệu cá nhân (Nghị định 13/2023/NĐ-CP, GDPR) và sở hữu trí tuệ cho các tập đoàn công nghệ và công ty khởi nghiệp đổi mới sáng tạo.',
+    experiences: [
+      {
+        id: 'exp-pa-1',
+        company: 'VNG Corporation',
+        position: 'Senior Legal & Privacy Counsel',
+        startDate: '03/2020',
+        endDate: 'Hiện tại',
+        isCurrent: true,
+        location: 'Hà Nội',
+        descriptions: [
+          'Chủ trì xây dựng khung tuân thủ bảo vệ dữ liệu cá nhân cho 5 dòng sản phẩm công nghệ trọng điểm với hơn 20 triệu người dùng.',
+          'Soạn thảo, rà soát và thẩm định hơn 400 hợp đồng thương mại quốc tế, thỏa thuận hợp tác đối tác và điều khoản bảo mật.',
+        ],
+      },
+    ],
+    educations: [
+      {
+        id: 'edu-pa-1',
+        school: 'Đại học Luật Hà Nội (HLU)',
+        degree: 'Thạc Sĩ Luật Kinh Tế',
+        major: 'Pháp Luật Kinh Tế & Thương Mại Quốc Tế',
+        startDate: '2016',
+        endDate: '2018',
+        gpa: '3.75 / 4.0',
+      },
+    ],
+    skillCategories: [
+      {
+        id: 'skill-pa-1',
+        categoryName: 'Chuyên Môn Pháp Lý & Tuân Thủ',
+        skills: [
+          { name: 'Data Privacy & Cyber Security Law (Nghị định 13, GDPR)', level: 5 },
+          { name: 'Corporate Governance & Risk Management', level: 5 },
+          { name: 'Intellectual Property (IP) & Tech Contracts', level: 5 },
+          { name: 'M&A Due Diligence & Commercial Disputes', level: 4 },
+        ],
+      },
+    ],
+    projects: [
+      {
+        id: 'proj-pa-1',
+        name: 'Enterprise Privacy Compliance Program',
+        role: 'Lead Counsel',
+        description: 'Triển khai toàn diện chương trình đánh giá tác động xử lý dữ liệu (DPIA) đạt 100% chứng nhận tuân thủ theo tiêu chuẩn pháp lý mới.',
+        techStack: ['Privacy Assessment', 'Compliance Audit', 'Policy Design'],
+      },
+    ],
+    achievements: [
+      {
+        id: 'ach-pa-1',
+        title: 'Outstanding Corporate In-House Counsel',
+        issuer: 'Vietnam Legal Professionals Forum',
+        year: '2023',
+      },
+    ],
+    certificates: [
+      {
+        id: 'cert-pa-1',
+        name: 'Chứng Chỉ Hành Nghề Luật Sư',
+        issuer: 'Bộ Tư Pháp Việt Nam',
+        issueDate: '2019',
+      },
+    ],
+    themeConfig: {
+      templateId: 'template-modern-minimal',
+      primaryColor: '#0E7C6B',
+      primaryColorPreset: 'teal',
+      accentColor: '#0F766E',
+      fontHeading: 'Gilroy',
+      fontBody: 'Be Vietnam Pro',
+      darkMode: false,
+    },
+    createdAt: '2024-02-01T08:00:00.000Z',
+    updatedAt: '2024-04-05T10:00:00.000Z',
+    viewCount: 420,
+    status: 'active',
+    ownerDisabled: false,
+    category: 'other',
   },
 ];
 

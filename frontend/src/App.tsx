@@ -8,32 +8,57 @@ import { useAuthStore } from './stores/useAuthStore';
 
 // Route-level code-splitting
 const HomePage = lazy(() => import('./pages/HomePage').then((m) => ({ default: m.HomePage })));
+const ExplorePage = lazy(() => import('./pages/ExplorePage').then((m) => ({ default: m.ExplorePage })));
 const CVViewPage = lazy(() => import('./pages/CVViewPage').then((m) => ({ default: m.CVViewPage })));
 const CVEditorPage = lazy(() => import('./pages/CVEditorPage').then((m) => ({ default: m.CVEditorPage })));
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
+
+// Admin Subsystem code-splitting
+const AdminAuthGuard = lazy(() =>
+  import('./features/admin/AdminAuthGuard').then((m) => ({ default: m.AdminAuthGuard }))
+);
+const AdminLayout = lazy(() =>
+  import('./features/admin/AdminLayout').then((m) => ({ default: m.AdminLayout }))
+);
+const AdminOverviewPage = lazy(() =>
+  import('./features/admin/pages/AdminOverviewPage').then((m) => ({ default: m.AdminOverviewPage }))
+);
+const AdminCVsPage = lazy(() =>
+  import('./features/admin/pages/AdminCVsPage').then((m) => ({ default: m.AdminCVsPage }))
+);
+const AdminUsersPage = lazy(() =>
+  import('./features/admin/pages/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage }))
+);
+const AdminAuditLogsPage = lazy(() =>
+  import('./features/admin/pages/AdminAuditLogsPage').then((m) => ({ default: m.AdminAuditLogsPage }))
+);
 
 const AppLayout: React.FC<{
   darkMode: boolean;
   toggleDarkMode: () => void;
 }> = ({ darkMode, toggleDarkMode }) => {
   const location = useLocation();
-  const isEditor = location.pathname.startsWith('/editor');
+  const isDedicatedLayout =
+    location.pathname.startsWith('/editor') || location.pathname.startsWith('/admin');
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-200">
       {/* Global Firebase Auth Modal */}
       <AuthModal />
 
-      {/* Hide marketing Navbar in dedicated fullscreen studio editor to prevent header duplication */}
-      {!isEditor && <Navbar darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
+      {/* Hide marketing Navbar in dedicated fullscreen studio editor or admin panel to prevent header duplication */}
+      {!isDedicatedLayout && <Navbar darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
 
       {/* Dynamic Route Content with Suspense boundary */}
       <div className="flex-1">
         <Suspense fallback={<PageSkeleton />}>
           <Routes>
-            {/* Route 1: Home / Explore Directory */}
+            {/* Route 1: Home Showcase */}
             <Route path="/" element={<HomePage />} />
+
+            {/* Route 1b: Dedicated Explore Directory */}
+            <Route path="/explore" element={<ExplorePage />} />
 
             {/* Route 2: User CV Management Dashboard */}
             <Route path="/dashboard" element={<DashboardPage />} />
@@ -60,14 +85,29 @@ const AppLayout: React.FC<{
               element={<CVViewPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
             />
 
-            {/* Route 5: 404 Fallback */}
+            {/* Route 5: Admin Subsystem (Protected by RBAC Guard) */}
+            <Route
+              path="/admin"
+              element={
+                <AdminAuthGuard>
+                  <AdminLayout />
+                </AdminAuthGuard>
+              }
+            >
+              <Route index element={<AdminOverviewPage />} />
+              <Route path="cvs" element={<AdminCVsPage />} />
+              <Route path="users" element={<AdminUsersPage />} />
+              <Route path="logs" element={<AdminAuditLogsPage />} />
+            </Route>
+
+            {/* Route 6: 404 Fallback */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </div>
 
-      {/* Global Footer (hidden on editor and print) */}
-      {!isEditor && <Footer />}
+      {/* Global Footer (hidden on editor and admin) */}
+      {!isDedicatedLayout && <Footer />}
     </div>
   );
 };

@@ -142,4 +142,9 @@ export const mockCVData: CVData = {
   },
   createdAt: '2026-10-12T00:00:00.000Z',
   updatedAt: '2026-10-12T00:00:00.000Z',
+  viewCount: 1420,
+  status: 'active',
+  ownerDisabled: false,
+  category: 'tech',
 };
+

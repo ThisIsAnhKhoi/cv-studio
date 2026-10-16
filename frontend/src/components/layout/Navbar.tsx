@@ -24,6 +24,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
   const { user, openAuthModal } = useAuthStore();
 
   const isHome = location.pathname === '/';
+  const isExplore = location.pathname === '/explore';
   const isDashboard = location.pathname === '/dashboard';
 
   return (
@@ -58,6 +59,17 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
             to="/"
             className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors ${
               isHome
+                ? 'text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-950/40 font-bold'
+                : 'hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+            }`}
+          >
+            <span>Trang Chủ</span>
+          </Link>
+
+          <Link
+            to="/explore"
+            className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors ${
+              isExplore
                 ? 'text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-950/40 font-bold'
                 : 'hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
             }`}

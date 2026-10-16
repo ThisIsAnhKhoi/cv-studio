@@ -99,6 +99,7 @@ export const DashboardPage: React.FC = () => {
   };
 
   const publicCount = userCVs.filter((c) => c.isPublic).length;
+  const totalViews = userCVs.reduce((sum, c) => sum + (c.viewCount || 0), 0);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8">
@@ -214,7 +215,7 @@ export const DashboardPage: React.FC = () => {
 
         {/* Stats Row (when logged in) */}
         {user && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
             <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Tổng Số CV
@@ -229,6 +230,14 @@ export const DashboardPage: React.FC = () => {
               </p>
               <p className="text-3xl font-black text-teal-600 dark:text-teal-400 mt-1">
                 {publicCount}
+              </p>
+            </div>
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Tổng Lượt Xem
+              </p>
+              <p className="text-3xl font-black text-blue-600 dark:text-blue-400 mt-1">
+                {totalViews}
               </p>
             </div>
             <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
@@ -330,9 +339,15 @@ export const DashboardPage: React.FC = () => {
                         {cv.personalInfo.title || 'Chưa có chức danh'}
                       </p>
 
-                      <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-4">
-                        <Calendar className="w-3 h-3" />
-                        <span>Cập nhật: {updatedTime}</span>
+                      <div className="flex items-center justify-between gap-2 text-[11px] text-slate-400 mt-4">
+                        <div className="flex items-center gap-1 truncate">
+                          <Calendar className="w-3 h-3 shrink-0" />
+                          <span className="truncate">Cập nhật: {updatedTime}</span>
+                        </div>
+                        <div className="flex items-center gap-1 font-semibold text-teal-600 dark:text-teal-400 shrink-0" title="Lượt xem hồ sơ">
+                          <Eye className="w-3 h-3" />
+                          <span>{cv.viewCount || 0}</span>
+                        </div>
                       </div>
                     </div>
 
