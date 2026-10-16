@@ -145,4 +145,28 @@
 - [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md): Ghi chú phát hành chi tiết cho GitHub Release v0.1.0.
 - `.github/`: Mẫu Issue Template (Bug Report, Feature Request) và Pull Request Template.
 
+---
+
+## 8. GIAI ĐOẠN 2: TỐI ƯU HIỆU NĂNG, KIẾN TRÚC ZUSTAND & TÙY BIẾN THEO KHỐI (HOÀN THÀNH — 16/10/2026)
+
+### 8.1. Bảng đối chiếu chỉ số kỹ thuật Trước & Sau (Before vs After)
+
+| Tiêu chí kỹ thuật | Trước Giai đoạn 2 (`v0.1.0`) | Sau Giai đoạn 2 (`v0.2.0`) | Mức độ cải thiện | Trạng thái |
+|:---|:---:|:---:|:---:|:---:|
+| **Entry Chunk JS chính** | 1,045.30 kB | **13.65 kB** (4.64 kB gzip) | **Giảm 98.7%** | ✅ Vượt mục tiêu (< 350 kB) |
+| **Tổng tải JS khởi tạo trang** | ~1,045 kB | **217 kB** (68 kB gzip) | **Giảm 79.2%** | ✅ Vượt mục tiêu (< 500 kB) |
+| **Dung lượng thư mục Fonts** | 5.41 MB (39 tệp `.otf`) | **0 MB** (Google Fonts WOFF2 subset) | **Tiết kiệm 5.41 MB** | ✅ Hoàn thành |
+| **Initial Font Payload** | ~5.4 MB | **< 380 kB** (theo nhu cầu subsetting) | **Giảm > 92%** | ✅ Đạt ngân sách |
+| **Quản lý State** | `useCVEditor` (cục bộ `useState`) | `useCVStore` (Zustand v5 Store) | Kiến trúc toàn cục sạch | ✅ Đã di chuyển |
+| **Kiểm thử tự động** | 15 tests (Vitest) | **46 tests** (9 test files) | **Tăng gấp 3.06 lần** | ✅ Pass 100% |
+| **Tùy biến theo từng khối** | Chưa có (chỉ có màu toàn cục) | **9 sections x 3 templates** (Màu, Font, WCAG) | Tính năng mới hoàn chỉnh | ✅ Đã phát hành |
+| **TypeScript Type-check** | 0 error (`tsc --noEmit`) | **0 error (`tsc --noEmit`)** | Giữ vững 100% | ✅ Type-safe |
+
+### 8.2. Các mốc Git Tag đã chốt
+- `stage2/brief-4b-ok`: Code-splitting các routes với `React.lazy()` & dynamic import `html2pdf.js`.
+- `stage2/brief-4a-ok`: Tối ưu hóa phông chữ Google Fonts WOFF2, xóa 39 tệp font nặng, xây dựng `FontRegistry`.
+- `stage2/brief-5-ok`: Chuyển dịch sang Zustand v5 store, auto-save debounce 600ms, migration schema v1 -> v2.
+- `stage2/brief-6-ok`: Tùy biến màu sắc, font chữ theo từng section, kiểm tra độ tương phản WCAG 2.1, và cascade CSS Custom Properties trên cả 3 template.
+
+
 

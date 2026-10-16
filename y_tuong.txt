@@ -242,9 +242,9 @@ Website/
 
 8. LỘ TRÌNH PHÁT TRIỂN NÂNG CẤP (ROADMAP V2)
 --------------------------------------------------------------------------------
-- Giai đoạn 1: Ổn định Client Core & Đóng P0/P1 (Vá XSS, sửa lưu Draft theo ID, xử lý 404, đủ 9 khối Editor, cấu hình `vercel.json`, 10 unit tests Vitest).
-- Giai đoạn 2: Tối ưu Phông chữ & Bundle (Dọn font nặng sang WOFF2/Google Fonts < 400 kB, code-splitting, chuyển sang Zustand Store toàn cục).
-- Giai đoạn 3: Xác thực Firebase Auth & Phân quyền (Đăng nhập Google/Email, phân quyền `isOwner` chỉ cho phép chủ CV sửa, trang Dashboard cá nhân).
+- Giai đoạn 1: Ổn định Client Core & Đóng P0/P1 (Vá XSS, sửa lưu Draft theo ID, xử lý 404, đủ 9 khối Editor, cấu hình `vercel.json`, 15 unit tests Vitest). [✅ ĐÃ HOÀN THÀNH - 13/10/2026]
+- Giai đoạn 2: Tối ưu Phông chữ & Bundle, Chuyển dịch Zustand Store, Tùy biến theo từng khối (Code-splitting JS < 500 kB, WOFF2 < 400 kB, Zustand v5 Store, Section Customizer 9 khối x 3 templates, 46 tests). [✅ ĐÃ HOÀN THÀNH - 16/10/2026]
+- Giai đoạn 3: Xác thực Firebase Auth & Phân quyền (Đăng nhập Google/Email, phân quyền `isOwner` chỉ cho phép chủ CV sửa, trang Dashboard cá nhân). [⏳ BƯỚC TIẾP THEO]
 - Giai đoạn 4: Lưu trữ Đám mây Firestore & Upload Avatar (CRUD Firestore, Cloudinary avatar crop 1:1, bảo mật Security Rules).
 - Giai đoạn 5: Hoàn thiện In ấn A4 Native & Phát hành MVP (CSS print A4 vector sắc nét, gỡ `html2pdf.js`, phát hành production lên Vercel).
 
