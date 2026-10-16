@@ -140,7 +140,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
       </div>
 
       {/* Social Links: Website, GitHub, LinkedIn */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
             Website Cá Nhân
@@ -173,7 +173,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
           </div>
         </div>
 
-        <div>
+        <div className="sm:col-span-2">
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
             LinkedIn
           </label>

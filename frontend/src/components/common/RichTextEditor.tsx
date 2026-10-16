@@ -118,28 +118,43 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       },
     },
     onUpdate: ({ editor: ed }) => {
+      if (!ed || ed.isDestroyed) return;
       setIsEmpty(ed.isEmpty);
       // Debounce onChange by 300ms to preserve 120fps typing and prevent React parent re-render lock
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
       debounceTimerRef.current = setTimeout(() => {
-        const html = ed.getHTML();
-        // If user deleted everything (empty paragraph), send empty string
-        const cleaned = html === '<p></p>' ? '' : html;
-        onChange(cleaned);
+        if (!ed || ed.isDestroyed) return;
+        try {
+          const html = ed.getHTML();
+          // If user deleted everything (empty paragraph), send empty string
+          const cleaned = html === '<p></p>' ? '' : html;
+          onChange(cleaned);
+        } catch {
+          // ignore if unmounted
+        }
       }, 300);
+    },
+    onDestroy: () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
     },
   });
 
   // Vietnamese IME & external value sync:
   // CRITICAL: NEVER call setContent while the user is actively focused or composing with Telex/VNI IME!
   useEffect(() => {
-    if (!editor) return;
+    if (!editor || editor.isDestroyed) return;
 
-    if (!editor.isFocused && value !== editor.getHTML()) {
-      editor.commands.setContent(value || '', { emitUpdate: false });
-      setIsEmpty(!value || value === '<p></p>');
+    try {
+      if (!editor.isFocused && value !== editor.getHTML()) {
+        editor.commands.setContent(value || '', { emitUpdate: false });
+        setIsEmpty(!value || value === '<p></p>');
+      }
+    } catch {
+      // guard against destroyed editor or unmounted schema
     }
   }, [value, editor]);
 
@@ -152,7 +167,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     };
   }, []);
 
-  if (!editor) {
+  if (!editor || editor.isDestroyed) {
     return (
       <div
         className={`w-full rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse ${className}`}
@@ -194,10 +209,10 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                   editor.chain().focus().setFontFamily(val).run();
                 }
               }}
-              className="bg-transparent text-[11px] font-semibold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer max-w-[100px] truncate"
+              className="bg-transparent text-[11px] font-semibold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer max-w-[125px] truncate"
               title="Phông chữ"
             >
-              <option value="">Font mặc định</option>
+              <option value="" className="dark:bg-slate-900 text-slate-900 dark:text-white">Font mặc định</option>
               {FONT_REGISTRY.map((f) => (
                 <option key={f.id} value={f.family} className="dark:bg-slate-900 text-slate-900 dark:text-white">
                   {f.name}
@@ -211,10 +226,10 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <select
               value={activeFontSize}
               onChange={(e) => setFontSize(e.target.value)}
-              className="bg-transparent text-[11px] font-semibold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer max-w-[95px] truncate"
+              className="bg-transparent text-[11px] font-semibold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer max-w-[110px] truncate"
               title="Cỡ chữ"
             >
-              <option value="">Cỡ chuẩn</option>
+              <option value="" className="dark:bg-slate-900 text-slate-900 dark:text-white">Cỡ chuẩn</option>
               {SAFE_FONT_SIZES.map((s) => (
                 <option key={s.value} value={s.value} className="dark:bg-slate-900 text-slate-900 dark:text-white">
                   {s.label}

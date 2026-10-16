@@ -159,6 +159,15 @@
   }
 
   /* Khử phóng to/thu nhỏ zoomLevel khi in */
+  .cv-zoom-outer {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    display: block !important;
+  }
+
   .cv-zoom-wrapper {
     transform: none !important;
     margin: 0 !important;

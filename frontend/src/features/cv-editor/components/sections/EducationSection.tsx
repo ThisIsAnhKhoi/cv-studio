@@ -87,7 +87,7 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
                     Chuyên Ngành
@@ -118,7 +118,7 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
                   />
                 </div>
 
-                <div>
+                <div className="sm:col-span-2">
                   <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
                     Điểm GPA / Xếp Loại
                   </label>

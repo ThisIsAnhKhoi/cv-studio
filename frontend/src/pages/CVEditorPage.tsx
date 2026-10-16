@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useCVEditor } from '../features/cv-editor/hooks/useCVEditor';
 import { getCVByIdOrSlug } from '../data/mockProfiles';
@@ -24,6 +24,7 @@ import {
   Palette,
   ZoomIn,
   ZoomOut,
+  Maximize2,
   Moon,
   Sun,
   LogIn,
@@ -135,6 +136,26 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportSuccess, setExportSuccess] = useState<boolean>(false);
   const [activeMobileTab, setActiveMobileTab] = useState<ActiveTabMobile>('editor');
+  const previewContainerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-fit initial zoom on smaller screens (mobile / tablet)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      const screenW = window.innerWidth - 32;
+      const initialMobileZoom = Math.min(Math.max(Math.floor((screenW / 794) * 100), 38), 60);
+      setZoomLevel(initialMobileZoom);
+    }
+  }, []);
+
+  const handleFitToWidth = () => {
+    if (previewContainerRef.current) {
+      const containerWidth = previewContainerRef.current.clientWidth - 48;
+      const optimalZoom = Math.min(Math.max(Math.floor((containerWidth / 794) * 100), 35), 110);
+      setZoomLevel(optimalZoom);
+    } else {
+      setZoomLevel(85);
+    }
+  };
 
   if (isNotFound) {
     return <NotFoundPage />;
@@ -638,6 +659,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
 
         {/* ================= RIGHT COLUMN: STICKY LIVE A4 PREVIEW (7/12 cols) ================= */}
         <div
+          ref={previewContainerRef}
           className={`lg:col-span-6 xl:col-span-7 sticky top-20 flex flex-col items-center bg-slate-200/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-6 overflow-hidden ${
             activeMobileTab === 'editor' ? 'hidden lg:flex' : 'flex'
           }`}
@@ -646,14 +668,14 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
           <div className="w-full flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-300/80 dark:border-slate-800 text-xs">
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Bản Xem Trước Trực Tiếp (A4 Live Preview)</span>
+              <span className="truncate">Bản Xem Trước Trực Tiếp (A4 Live Preview)</span>
             </div>
 
             {/* Zoom Controls */}
-            <div className="flex items-center gap-1 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-xs">
+            <div className="flex items-center gap-1 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-xs shrink-0">
               <button
                 type="button"
-                onClick={() => setZoomLevel((z) => Math.max(z - 10, 50))}
+                onClick={() => setZoomLevel((z) => Math.max(z - 10, 35))}
                 className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                 title="Thu nhỏ"
               >
@@ -670,8 +692,16 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
               </button>
               <button
                 type="button"
+                onClick={handleFitToWidth}
+                className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors ml-0.5 cursor-pointer"
+                title="Vừa chiều ngang màn hình"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
                 onClick={() => setZoomLevel(85)}
-                className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors ml-0.5 cursor-pointer"
+                className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                 title="Mặc định 85%"
               >
                 <RotateCcw className="w-3 h-3" />
@@ -682,11 +712,23 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
           {/* Scaled A4 Container */}
           <div className="w-full overflow-x-auto flex justify-center py-2">
             <div
-              className="cv-zoom-wrapper transition-transform duration-150 origin-top"
-              style={{ transform: `scale(${zoomLevel / 100})` }}
+              className="cv-zoom-outer relative flex justify-center items-start shrink-0 transition-all duration-150"
+              style={{
+                width: `${Math.round(794 * (zoomLevel / 100))}px`,
+                height: `${Math.round(1123 * (zoomLevel / 100))}px`,
+              }}
             >
-              <div id="cv-printable-area">
-                <TemplateComponent data={cvData} theme={cvData.themeConfig} />
+              <div
+                className="cv-zoom-wrapper origin-top-left transition-transform duration-150"
+                style={{
+                  transform: `scale(${zoomLevel / 100})`,
+                  width: '210mm',
+                  minHeight: '297mm',
+                }}
+              >
+                <div id="cv-printable-area">
+                  <TemplateComponent data={cvData} theme={cvData.themeConfig} />
+                </div>
               </div>
             </div>
           </div>
