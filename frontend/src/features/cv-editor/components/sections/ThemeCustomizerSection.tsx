@@ -1,16 +1,32 @@
 import React from 'react';
-import { ThemeConfig, ColorPreset, HeadingFontOption } from '../../../../types/cv';
+import {
+  ThemeConfig,
+  ColorPreset,
+  HeadingFontOption,
+  SectionId,
+  SectionStyleConfig,
+} from '../../../../types/cv';
 import { TEMPLATES_REGISTRY } from '../../../cv-templates/TemplateRegistry';
 import { Layout, Palette, Type, Check, Moon, Sun } from 'lucide-react';
+import { SectionCustomizerPanel } from './SectionCustomizerPanel';
+import { FONT_REGISTRY } from '../../utils/fontRegistry';
 
 interface ThemeCustomizerSectionProps {
   themeConfig: ThemeConfig;
   onUpdateTheme: (updates: Partial<ThemeConfig>) => void;
+  onUpdateSectionStyle?: (sectionId: SectionId, style: Partial<SectionStyleConfig>) => void;
+  onResetSectionStyle?: (sectionId: SectionId) => void;
+  onResetAllSectionStyles?: () => void;
+  onApplyStyleToAllSections?: (style: SectionStyleConfig) => void;
 }
 
 export const ThemeCustomizerSection: React.FC<ThemeCustomizerSectionProps> = ({
   themeConfig,
   onUpdateTheme,
+  onUpdateSectionStyle,
+  onResetSectionStyle,
+  onResetAllSectionStyles,
+  onApplyStyleToAllSections,
 }) => {
   const colorPresets: { id: ColorPreset; label: string; bgClass: string; hex: string }[] = [
     { id: 'teal', label: 'Teal Xanh Biển', bgClass: 'bg-[#0E7C6B]', hex: '#0E7C6B' },
@@ -19,14 +35,6 @@ export const ThemeCustomizerSection: React.FC<ThemeCustomizerSectionProps> = ({
     { id: 'blue', label: 'Royal Blue Xanh Dương', bgClass: 'bg-blue-700', hex: '#1D4ED8' },
     { id: 'purple', label: 'Violet Tím', bgClass: 'bg-purple-700', hex: '#7E22CE' },
     { id: 'emerald', label: 'Emerald Xanh Ngọc', bgClass: 'bg-emerald-700', hex: '#047857' },
-  ];
-
-  const localFonts: { id: HeadingFontOption; label: string }[] = [
-    { id: 'Gilroy', label: 'Gilroy (Font máy hiện đại)' },
-    { id: 'iCiel Cubano', label: 'iCiel Cubano (Font máy đậm nét)' },
-    { id: 'SVN-Optima', label: 'SVN-Optima (Font máy thanh thoát)' },
-    { id: 'Be Vietnam Pro', label: 'Be Vietnam Pro (Chuẩn tiếng Việt)' },
-    { id: 'Montserrat', label: 'Montserrat (Font máy hình khối)' },
   ];
 
   return (
@@ -82,7 +90,7 @@ export const ThemeCustomizerSection: React.FC<ThemeCustomizerSectionProps> = ({
       <div>
         <label className="block text-xs font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
           <Palette className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-          <span>Bảng Màu Điểm Nhấn (Accent Color)</span>
+          <span>Bảng Màu Điểm Nhấn Toàn Trang (Global Accent)</span>
         </label>
         <div className="flex flex-wrap items-center gap-2.5">
           {colorPresets.map((c) => {
@@ -112,11 +120,11 @@ export const ThemeCustomizerSection: React.FC<ThemeCustomizerSectionProps> = ({
         </div>
       </div>
 
-      {/* 3. Chọn Font Chữ Tiêu Đề */}
+      {/* 3. Chọn Font Chữ Tiêu Đề Toàn Cục */}
       <div>
         <label className="block text-xs font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
           <Type className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-          <span>Font Chữ Tiêu Đề & Họ Tên</span>
+          <span>Font Chữ Tiêu Đề Mặc Định Toàn Trang</span>
         </label>
         <select
           value={themeConfig.fontHeading}
@@ -127,9 +135,9 @@ export const ThemeCustomizerSection: React.FC<ThemeCustomizerSectionProps> = ({
           }
           className="w-full p-2.5 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
         >
-          {localFonts.map((f) => (
-            <option key={f.id} value={f.id} className="dark:bg-slate-900 text-slate-900 dark:text-white">
-              {f.label}
+          {FONT_REGISTRY.map((f) => (
+            <option key={f.id} value={f.family} className="dark:bg-slate-900 text-slate-900 dark:text-white">
+              {f.name} ({f.category})
             </option>
           ))}
         </select>
@@ -173,8 +181,18 @@ export const ThemeCustomizerSection: React.FC<ThemeCustomizerSectionProps> = ({
           </button>
         </div>
       </div>
+
+      {/* 5. TÙY BIẾN CHI TIẾT THEO TỪNG PHẦN (BRIEF 6) */}
+      <SectionCustomizerPanel
+        themeConfig={themeConfig}
+        onUpdateSectionStyle={onUpdateSectionStyle}
+        onResetSectionStyle={onResetSectionStyle}
+        onResetAllSectionStyles={onResetAllSectionStyles}
+        onApplyStyleToAllSections={onApplyStyleToAllSections}
+      />
     </div>
   );
 };
 
 export default ThemeCustomizerSection;
+

@@ -71,6 +71,10 @@ export function useCVEditor(initialData?: CVData) {
     updateCertificate: store.updateCertificate,
     removeCertificate: store.removeCertificate,
     updateTheme: store.updateTheme,
+    updateSectionStyle: store.updateSectionStyle,
+    resetSectionStyle: store.resetSectionStyle,
+    resetAllSectionStyles: store.resetAllSectionStyles,
+    applyStyleToAllSections: store.applyStyleToAllSections,
     resetToDefault: (presetData?: CVData) => {
       useCVStore.getState().resetToDefault(presetData || initialData);
     },

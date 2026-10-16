@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CVTemplateProps } from '../../../types/template';
 import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
+import { getSectionStyleProperties } from '../../cv-editor/utils/styleHelpers';
 import {
   Mail,
   Phone,
@@ -150,9 +151,15 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
       style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
     >
       {/* ================= HEADER (Full-bleed Dark Ink with Warm Gradient Stripe) ================= */}
-      <header className="bg-slate-900 text-white px-8 py-7 relative shadow-md print:shadow-none">
+      <header
+        className="bg-slate-900 text-white px-8 py-7 relative shadow-md print:shadow-none"
+        style={getSectionStyleProperties('header', theme.sectionStyles)}
+      >
         {/* Gradient Accent Stripe */}
-        <div className={`absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r ${colors.gradientStripe}`} />
+        <div
+          className={`absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r ${colors.gradientStripe}`}
+          style={{ backgroundColor: 'var(--sec-accent-color)' }}
+        />
 
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
           <div className="flex items-center gap-6 text-center sm:text-left">
@@ -160,6 +167,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
             <div className="relative shrink-0 group">
               <div
                 className={`w-24 h-24 rounded-full p-1 border-2 border-dashed ${colors.borderAccent} group-hover:scale-105 transition-transform duration-300`}
+                style={{ borderColor: 'var(--sec-accent-color)' }}
               >
                 <img
                   src={personalInfo.avatarUrl}
@@ -173,14 +181,20 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
             <div>
               <h1
                 className="text-2xl sm:text-3xl font-extrabold uppercase leading-tight text-white tracking-wide break-words"
-                style={{ fontFamily: headingFontFamily }}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, #ffffff)',
+                }}
               >
                 {personalInfo.fullName}
               </h1>
 
               <p
                 className={`text-sm sm:text-base font-semibold tracking-wide mt-1.5 ${colors.subRole}`}
-                style={{ fontFamily: headingFontFamily }}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-text-color, inherit)',
+                }}
               >
                 {personalInfo.title}
               </p>
@@ -201,14 +215,17 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
           </div>
 
           {/* Quick Contact Chips in Header Right */}
-          <div className="flex flex-col gap-2 text-xs text-slate-300 self-center sm:self-start">
+          <div
+            className="flex flex-col gap-2 text-xs text-slate-300 self-center sm:self-start"
+            style={getSectionStyleProperties('contact', theme.sectionStyles)}
+          >
             <div
               onClick={() => copyToClipboard(personalInfo.email, 'header-email')}
               className="group flex items-center gap-2 p-1 px-2.5 rounded-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 cursor-pointer transition-colors"
               title="Nhấn để copy email"
             >
-              <Mail className={`w-3.5 h-3.5 shrink-0 ${colors.accent}`} />
-              <span className="text-[11.5px] font-medium text-slate-200">{personalInfo.email}</span>
+              <Mail className={`w-3.5 h-3.5 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <span className="text-[11.5px] font-medium text-slate-200" style={{ color: 'var(--sec-text-color, inherit)' }}>{personalInfo.email}</span>
               {copiedItem === 'header-email' ? (
                 <Check className="w-3 h-3 text-emerald-400 ml-1" />
               ) : (
@@ -220,8 +237,8 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
               href={`tel:${personalInfo.phone}`}
               className="flex items-center gap-2 p-1 px-2.5 rounded-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 transition-colors"
             >
-              <Phone className={`w-3.5 h-3.5 shrink-0 ${colors.accent}`} />
-              <span className="text-[11.5px] font-medium text-slate-200">{personalInfo.phone}</span>
+              <Phone className={`w-3.5 h-3.5 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <span className="text-[11.5px] font-medium text-slate-200" style={{ color: 'var(--sec-text-color, inherit)' }}>{personalInfo.phone}</span>
             </a>
           </div>
         </div>
@@ -232,34 +249,52 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
         {/* ================= LEFT MAIN CONTENT (1fr) ================= */}
         <main className="flex-1 px-8 py-6 space-y-6">
           {/* Summary / Profile */}
-          <section className="space-y-2">
+          <section
+            className="space-y-2"
+            style={getSectionStyleProperties('summary', theme.sectionStyles)}
+          >
             <div className={`flex items-center gap-2 pb-1.5 border-b ${tc.border}`}>
-              <Sparkles className={`w-4 h-4 shrink-0 ${colors.accent}`} />
+              <Sparkles className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
               <h2
                 className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{ fontFamily: headingFontFamily }}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
               >
                 Giới Thiệu Bản Thân
               </h2>
             </div>
-            <p className={`text-[12.5px] leading-relaxed ${tc.body} text-justify`}>
+            <p
+              className={`text-[12.5px] leading-relaxed ${tc.body} text-justify`}
+              style={{
+                color: 'var(--sec-text-color, inherit)',
+                fontFamily: 'var(--sec-body-font, inherit)',
+              }}
+            >
               {summary}
             </p>
           </section>
 
           {/* Work Experience */}
-          <section className="space-y-3">
+          <section
+            className="space-y-3"
+            style={getSectionStyleProperties('experience', theme.sectionStyles)}
+          >
             <div className={`flex items-center gap-2 pb-1.5 border-b ${tc.border}`}>
-              <Briefcase className={`w-4 h-4 shrink-0 ${colors.accent}`} />
+              <Briefcase className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
               <h2
                 className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{ fontFamily: headingFontFamily }}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
               >
                 Kinh Nghiệm Làm Việc
               </h2>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
               {experiences.map((exp) => (
                 <div
                   key={exp.id}
@@ -268,12 +303,16 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                   {/* Timeline dot */}
                   <div
                     className={`absolute -left-[5px] top-[14px] w-2 h-2 rounded-full transition-transform duration-200 group-hover:scale-150 ${colors.dot}`}
+                    style={{ backgroundColor: 'var(--sec-accent-color)' }}
                   />
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <h3
                       className={`font-bold text-[13px] ${tc.title} transition-colors`}
-                      style={{ fontFamily: headingFontFamily }}
+                      style={{
+                        fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                        color: 'var(--sec-heading-color, inherit)',
+                      }}
                     >
                       {exp.position}
                     </h3>
@@ -282,12 +321,18 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                     </span>
                   </div>
 
-                  <div className={`text-[12px] font-semibold ${tc.body}`}>
+                  <div
+                    className={`text-[12px] font-semibold ${tc.body}`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
                     {exp.company}
                     {exp.location && <span className={`${tc.meta} font-normal`}> • {exp.location}</span>}
                   </div>
 
-                  <ul className={`space-y-1 text-[12px] ${tc.bodyMuted} list-disc list-outside pl-4 leading-relaxed`}>
+                  <ul
+                    className={`space-y-1 text-[12px] ${tc.bodyMuted} list-disc list-outside pl-4 leading-relaxed`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
                     {exp.descriptions.map((desc, idx) => (
                       <li key={idx}>{desc}</li>
                     ))}
@@ -298,18 +343,24 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
           </section>
 
           {/* Featured Projects with warm cards */}
-          <section className="space-y-3">
+          <section
+            className="space-y-3"
+            style={getSectionStyleProperties('projects', theme.sectionStyles)}
+          >
             <div className={`flex items-center gap-2 pb-1.5 border-b ${tc.border}`}>
-              <Code2 className={`w-4 h-4 shrink-0 ${colors.accent}`} />
+              <Code2 className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
               <h2
                 className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{ fontFamily: headingFontFamily }}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
               >
                 Dự Án Tiêu Biểu
               </h2>
             </div>
 
-            <div className="space-y-3.5">
+            <div className="space-y-3.5" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
               {projects.map((proj) => (
                 <div
                   key={proj.id}
@@ -319,7 +370,10 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                     <div className="flex items-center gap-1.5 min-w-0">
                       <h3
                         className={`font-bold text-[13px] ${tc.title} truncate`}
-                        style={{ fontFamily: headingFontFamily }}
+                        style={{
+                          fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                          color: 'var(--sec-heading-color, inherit)',
+                        }}
                       >
                         {proj.name}
                       </h3>
@@ -330,6 +384,7 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                           rel="noopener noreferrer"
                           className={`inline-flex items-center p-1 rounded ${tc.hoverLink} text-slate-400 hover:${colors.accent} transition-colors shrink-0`}
                           title="Xem dự án"
+                          style={{ color: 'var(--sec-accent-color, inherit)' }}
                         >
                           <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                         </a>
@@ -340,7 +395,10 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                     </span>
                   </div>
 
-                  <p className={`text-[11.5px] ${tc.bodyMuted} leading-relaxed`}>
+                  <p
+                    className={`text-[11.5px] ${tc.bodyMuted} leading-relaxed`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
                     {proj.description}
                   </p>
 
@@ -367,16 +425,22 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
           } ${colors.sidebarBg}`}
         >
           {/* Social Links & Web */}
-          <section className="space-y-3">
+          <section
+            className="space-y-3"
+            style={getSectionStyleProperties('contact', theme.sectionStyles)}
+          >
             <h2
               className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
-              style={{ fontFamily: headingFontFamily }}
+              style={{
+                fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                color: 'var(--sec-heading-color, inherit)',
+              }}
             >
-              <Globe className="w-3.5 h-3.5 shrink-0" />
+              <Globe className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
               <span>Liên Kết Mạng Xã Hội</span>
             </h2>
 
-            <div className="space-y-2 text-[11.5px]">
+            <div className="space-y-2 text-[11.5px]" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
               {personalInfo.website && (
                 <a
                   href={formatSafeUrl(personalInfo.website)}
@@ -425,21 +489,30 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
           </section>
 
           {/* Education */}
-          <section className={`space-y-3 pt-3 border-t ${tc.border}`}>
+          <section
+            className={`space-y-3 pt-3 border-t ${tc.border}`}
+            style={getSectionStyleProperties('education', theme.sectionStyles)}
+          >
             <h2
               className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
-              style={{ fontFamily: headingFontFamily }}
+              style={{
+                fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                color: 'var(--sec-heading-color, inherit)',
+              }}
             >
-              <GraduationCap className="w-4 h-4 shrink-0" />
+              <GraduationCap className="w-4 h-4 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
               <span>Học Vấn</span>
             </h2>
 
-            <div className="space-y-3">
+            <div className="space-y-3" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
               {educations.map((edu) => (
                 <div key={edu.id} className="space-y-1 group hover:translate-x-1 transition-transform">
                   <div
                     className={`font-bold text-[12px] ${tc.title} leading-tight`}
-                    style={{ fontFamily: headingFontFamily }}
+                    style={{
+                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                      color: 'var(--sec-heading-color, inherit)',
+                    }}
                   >
                     {edu.school}
                   </div>
@@ -450,7 +523,10 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                     <span>{edu.startDate} – {edu.endDate}</span>
                   </div>
                   {edu.gpa && (
-                    <div className={`text-[10.5px] font-semibold ${tc.gpaColor}`}>
+                    <div
+                      className={`text-[10.5px] font-semibold ${tc.gpaColor}`}
+                      style={{ color: 'var(--sec-accent-color, inherit)' }}
+                    >
                       GPA: {edu.gpa}
                     </div>
                   )}
@@ -460,21 +536,30 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
           </section>
 
           {/* Skills Breakdown */}
-          <section className={`space-y-3 pt-3 border-t ${tc.border}`}>
+          <section
+            className={`space-y-3 pt-3 border-t ${tc.border}`}
+            style={getSectionStyleProperties('skills', theme.sectionStyles)}
+          >
             <h2
               className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
-              style={{ fontFamily: headingFontFamily }}
+              style={{
+                fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                color: 'var(--sec-heading-color, inherit)',
+              }}
             >
-              <Code2 className="w-4 h-4 shrink-0" />
+              <Code2 className="w-4 h-4 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
               <span>Kỹ Năng</span>
             </h2>
 
-            <div className="space-y-3.5">
+            <div className="space-y-3.5" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
               {skillCategories.map((cat) => (
                 <div key={cat.id} className="space-y-1.5">
                   <div
                     className={`font-semibold text-[11px] ${tc.subtitle}`}
-                    style={{ fontFamily: headingFontFamily }}
+                    style={{
+                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                      color: 'var(--sec-heading-color, inherit)',
+                    }}
                   >
                     {cat.categoryName}
                   </div>
@@ -494,20 +579,29 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
           </section>
 
           {/* Certifications & Achievements */}
-          {certificates && certificates.length > 0 && (
-            <section className={`space-y-3 pt-3 border-t ${tc.border}`}>
+          {((certificates && certificates.length > 0) || (achievements && achievements.length > 0)) && (
+            <section
+              className={`space-y-3 pt-3 border-t ${tc.border}`}
+              style={getSectionStyleProperties('certificates', theme.sectionStyles)}
+            >
               <h2
                 className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
-                style={{ fontFamily: headingFontFamily }}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
               >
-                <Award className="w-3.5 h-3.5 shrink-0" />
+                <Award className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
                 <span>Chứng Chỉ & Giải Thưởng</span>
               </h2>
 
-              <div className="space-y-2.5 text-[11px]">
-                {certificates.map((cert) => (
+              <div className="space-y-2.5 text-[11px]" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
+                {certificates && certificates.map((cert) => (
                   <div key={cert.id} className="space-y-0.5 group hover:translate-x-1 transition-transform">
-                    <div className={`font-semibold ${tc.subtitle} leading-snug`}>
+                    <div
+                      className={`font-semibold ${tc.subtitle} leading-snug`}
+                      style={{ color: 'var(--sec-heading-color, inherit)' }}
+                    >
                       {cert.name}
                     </div>
                     <div className={`text-[10px] ${tc.meta} flex justify-between`}>
@@ -518,10 +612,21 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
                 ))}
 
                 {achievements && achievements.length > 0 && (
-                  <div className={`pt-2 border-t border-dashed ${tc.border} space-y-1.5`}>
+                  <div
+                    className={`pt-2 border-t border-dashed ${tc.border} space-y-1.5`}
+                    style={getSectionStyleProperties('achievements', theme.sectionStyles)}
+                  >
                     {achievements.map((ach) => (
                       <div key={ach.id} className="text-[10.5px]">
-                        <span className={`font-bold ${tc.title}`}>★ {ach.title}</span>
+                        <span
+                          className={`font-bold ${tc.title}`}
+                          style={{
+                            fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                            color: 'var(--sec-heading-color, inherit)',
+                          }}
+                        >
+                          ★ {ach.title}
+                        </span>
                       </div>
                     ))}
                   </div>

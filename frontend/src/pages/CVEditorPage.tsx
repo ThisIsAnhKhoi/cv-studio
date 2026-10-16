@@ -79,6 +79,10 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
     updateCertificate,
     removeCertificate,
     updateTheme,
+    updateSectionStyle,
+    resetSectionStyle,
+    resetAllSectionStyles,
+    applyStyleToAllSections,
     resetToDefault,
   } = useCVEditor(initialPreset);
 
@@ -308,6 +312,10 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                 <ThemeCustomizerSection
                   themeConfig={cvData.themeConfig}
                   onUpdateTheme={updateTheme}
+                  onUpdateSectionStyle={updateSectionStyle}
+                  onResetSectionStyle={resetSectionStyle}
+                  onResetAllSectionStyles={resetAllSectionStyles}
+                  onApplyStyleToAllSections={applyStyleToAllSections}
                 />
               </div>
             )}
