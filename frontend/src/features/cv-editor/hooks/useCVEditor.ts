@@ -45,6 +45,7 @@ export function useCVEditor(initialData?: CVData) {
   return {
     cvData,
     saveStatus,
+    updateVisibility: store.updateVisibility,
     updatePersonalInfo: store.updatePersonalInfo,
     updateSummary: store.updateSummary,
     addExperience: store.addExperience,

@@ -30,6 +30,8 @@ import {
   LogIn,
   BookmarkPlus,
   LayoutDashboard,
+  Globe,
+  Lock,
 } from 'lucide-react';
 import { PersonalInfoSection } from '../features/cv-editor/components/sections/PersonalInfoSection';
 import { SummarySection } from '../features/cv-editor/components/sections/SummarySection';
@@ -43,6 +45,7 @@ import { ThemeCustomizerSection } from '../features/cv-editor/components/section
 import { NotFoundPage } from './NotFoundPage';
 import { useAuthStore } from '../stores/useAuthStore';
 import { UserDropdown } from '../components/auth/UserDropdown';
+import { ShareDropdown } from '../components/common/ShareDropdown';
 import { saveUserCV, isCVOwner } from '../services/cvStorageService';
 import { CVData } from '../types/cv';
 
@@ -81,6 +84,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
   const {
     cvData,
     saveStatus,
+    updateVisibility,
     updatePersonalInfo,
     updateSummary,
     addExperience,
@@ -217,10 +221,35 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                   <span className="text-amber-600">Chưa lưu...</span>
                 )}
               </div>
+
+              {/* Public / Private toggle pill */}
+              <button
+                type="button"
+                id="btn-header-toggle-visibility"
+                onClick={() => updateVisibility(!cvData.isPublic)}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors cursor-pointer ${
+                  cvData.isPublic
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
+                }`}
+                title="Nhấp để chuyển đổi giữa Công khai và Riêng tư"
+              >
+                {cvData.isPublic ? (
+                  <>
+                    <Globe className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                    <span>Công khai</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-3 h-3 text-slate-500" />
+                    <span>Riêng tư</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
-          {/* Right: Actions (Theme Toggle, Reset, View Fullscreen, Download PDF, Print) */}
+          {/* Right: Actions (Theme Toggle, Reset, View Fullscreen, Share Dropdown) */}
           <div className="flex items-center gap-2">
             {/* Website Dark Mode Toggle */}
             {onToggleDarkMode && (
@@ -250,52 +279,24 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
 
-            {/* View Public Mode */}
+            {/* View Fullscreen Page */}
             <Link
               id="btn-view-public"
               to={`/cv/${cvData.id}`}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-semibold transition-colors cursor-pointer"
-              title="Xem bản CV toàn màn hình"
+              title="Xem bản CV trực tuyến toàn màn hình"
             >
               <Eye className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Xem Công Khai</span>
+              <span className="hidden md:inline">Xem Trực Tuyến</span>
             </Link>
 
-            {/* 1-Click Download PDF */}
-            <button
-              id="btn-download-pdf"
-              type="button"
-              onClick={handleDownloadPDF}
-              disabled={isExporting}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 active:scale-95 text-white font-semibold text-xs shadow-md transition-all disabled:opacity-60 cursor-pointer"
-            >
-              {isExporting ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Đang xuất...</span>
-                </>
-              ) : exportSuccess ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-200" />
-                  <span>Đã tải PDF!</span>
-                </>
-              ) : (
-                <>
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Tải PDF</span>
-                </>
-              )}
-            </button>
-
-            {/* Print Ctrl + P */}
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>In A4</span>
-            </button>
+            {/* Share Dropdown: Copy link, Email, disabled PDF & disabled Print */}
+            <ShareDropdown
+              cv={cvData}
+              isOwner={true}
+              onUpdateVisibility={updateVisibility}
+              variant="primary"
+            />
 
             {/* Save to Dashboard if user logged in and not yet owner */}
             {user && cvData.userId !== user.uid && (

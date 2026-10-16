@@ -1,18 +1,44 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { HeroSection } from '../features/explore/HeroSection';
 import { SearchFilterBar } from '../features/explore/SearchFilterBar';
 import { ProfileCard } from '../features/explore/ProfileCard';
 import { TemplatesShowcaseSection } from '../features/explore/TemplatesShowcaseSection';
 import { mockProfilesList } from '../data/mockProfiles';
-import { Users, Sparkles, FileText, CheckCircle, SearchX } from 'lucide-react';
+import { getPublicCVs } from '../services/cvStorageService';
+import { CVData } from '../types/cv';
+import { Users, Sparkles, FileText, CheckCircle, SearchX, Loader2 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [profiles, setProfiles] = useState<CVData[]>(mockProfilesList);
+  const [isLoadingProfiles, setIsLoadingProfiles] = useState<boolean>(true);
+
+  // Load public CVs from Firestore & user drafts (fallback to mock profiles)
+  useEffect(() => {
+    let isMounted = true;
+    getPublicCVs()
+      .then((publicList) => {
+        if (isMounted) {
+          if (publicList && publicList.length > 0) {
+            setProfiles(publicList);
+          }
+          setIsLoadingProfiles(false);
+        }
+      })
+      .catch((err) => {
+        console.warn('Lỗi khi tải hồ sơ công khai:', err);
+        if (isMounted) setIsLoadingProfiles(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Filter profiles based on query and category
   const filteredProfiles = useMemo(() => {
-    return mockProfilesList.filter((profile) => {
+    return profiles.filter((profile) => {
       // 1. Category filter
       if (selectedCategory !== 'all') {
         const titleLower = profile.personalInfo.title.toLowerCase();
@@ -73,7 +99,7 @@ export const HomePage: React.FC = () => {
 
       return true;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [profiles, searchQuery, selectedCategory]);
 
   return (
     <div className="space-y-0">
@@ -94,9 +120,15 @@ export const HomePage: React.FC = () => {
                 Khám Phá Hồ Sơ & CV Trực Tuyến
               </h2>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-xl">
-                Lựa chọn một hồ sơ để xem bản CV trực tuyến chuẩn A4, trải nghiệm đổi mẫu động hoặc tải file PDF xuất bản.
+                Lựa chọn một hồ sơ để xem bản CV trực tuyến chuẩn A4, trải nghiệm đổi mẫu động hoặc sao chép liên kết chia sẻ.
               </p>
             </div>
+            {isLoadingProfiles && (
+              <div className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
+                <span>Đang đồng bộ hồ sơ mới nhất...</span>
+              </div>
+            )}
           </div>
 
           {/* Search & Category Filter Bar */}
@@ -105,7 +137,7 @@ export const HomePage: React.FC = () => {
             onSearchChange={setSearchQuery}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
-            totalCount={mockProfilesList.length}
+            totalCount={profiles.length}
             filteredCount={filteredProfiles.length}
           />
 

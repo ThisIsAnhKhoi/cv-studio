@@ -37,6 +37,7 @@ export interface CVState {
   setActiveSection: (section: string) => void;
 
   // Updaters
+  updateVisibility: (isPublic: boolean) => void;
   updatePersonalInfo: (field: keyof PersonalInfo, value: string) => void;
   updateSummary: (summary: string) => void;
 
@@ -169,6 +170,17 @@ export const useCVStore = create<CVState>((set, get) => ({
 
   setSaveStatus: (status: SaveStatus) => set({ saveStatus: status }),
   setActiveSection: (section: string) => set({ activeSection: section }),
+
+  updateVisibility: (isPublic: boolean) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        isPublic,
+        updatedAt: new Date().toISOString(),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
 
   updatePersonalInfo: (field: keyof PersonalInfo, value: string) => {
     set((prev) => ({

@@ -1,7 +1,20 @@
 import { CVData } from '../types/cv';
 import { mockCVData } from '../data/mockCVData';
-import { mockProfilesList } from '../data/mockProfiles';
+import { mockProfilesList, getCVByIdOrSlug } from '../data/mockProfiles';
 import { generateId, getDraftStorageKey } from '../stores/useCVStore';
+import { db } from './firebase';
+import {
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  deleteDoc,
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+} from 'firebase/firestore';
 
 const USER_CVS_KEY_PREFIX = 'cv_studio_user_cvs_';
 
@@ -90,6 +103,9 @@ export function saveUserCV(cv: CVData, userId?: string): void {
       console.error('Lỗi khi cập nhật danh sách index CV người dùng:', err);
     }
   }
+
+  // 3. Asynchronously sync to Firestore (cloud persistence)
+  syncCVToFirestore(updatedCV);
 }
 
 /**
@@ -117,6 +133,9 @@ export function deleteUserCV(cvId: string, userId: string): void {
       console.error('Lỗi khi xóa CV khỏi index người dùng:', err);
     }
   }
+
+  // 3. Remove from Firestore
+  deleteCVFromFirestore(cvId);
 }
 
 /**
@@ -167,4 +186,132 @@ export function createNewCV(templateId = 'template-classic-teal', userId?: strin
 
   saveUserCV(freshCV, userId);
   return freshCV;
+}
+
+/**
+ * Asynchronously synchronizes a CV document to Firestore 'cvs' collection.
+ */
+export async function syncCVToFirestore(cv: CVData): Promise<void> {
+  if (!db || !cv.id) return;
+  try {
+    const cvRef = doc(db, 'cvs', cv.id);
+    await setDoc(cvRef, cv, { merge: true });
+  } catch (err) {
+    console.warn('Không thể đồng bộ CV lên Firestore (dùng offline/localStorage):', err);
+  }
+}
+
+/**
+ * Removes a CV from Firestore.
+ */
+export async function deleteCVFromFirestore(cvId: string): Promise<void> {
+  if (!db || !cvId) return;
+  try {
+    const cvRef = doc(db, 'cvs', cvId);
+    await deleteDoc(cvRef);
+  } catch (err) {
+    console.warn('Không thể xóa CV khỏi Firestore:', err);
+  }
+}
+
+/**
+ * Retrieves public CVs for the Homepage community showcase.
+ * Prioritizes user-published public CVs, falling back to mock profiles if none exist.
+ */
+export async function getPublicCVs(): Promise<CVData[]> {
+  const publicCVs: CVData[] = [];
+  const seenIds = new Set<string>();
+
+  // 1. Fetch from Firestore
+  try {
+    if (db) {
+      const q = query(
+        collection(db, 'cvs'),
+        where('isPublic', '==', true),
+        limit(30)
+      );
+      const snapshot = await getDocs(q);
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data() as CVData;
+        if (data && data.id && !seenIds.has(data.id)) {
+          seenIds.add(data.id);
+          publicCVs.push(data);
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('Không thể truy vấn Firestore public CVs:', err);
+  }
+
+  // 2. Scan localStorage for any local user drafts that are marked isPublic
+  if (typeof localStorage !== 'undefined') {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('cv_studio_draft_') && key !== 'cv_studio_draft_cv') {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            try {
+              const parsed: CVData = JSON.parse(raw);
+              if (parsed.isPublic && parsed.id && !seenIds.has(parsed.id)) {
+                seenIds.add(parsed.id);
+                publicCVs.push(parsed);
+              }
+            } catch {
+              // ignore
+            }
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 3. If no public CVs exist yet, fallback to mockProfilesList so the gallery is never empty
+  if (publicCVs.length === 0) {
+    return mockProfilesList;
+  }
+
+  // Return public CVs sorted newest first
+  return publicCVs.sort(
+    (a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime()
+  );
+}
+
+/**
+ * Resolves a CV by ID or Slug from mock profiles, localStorage, or Firestore.
+ */
+export async function getCVById(targetId: string): Promise<CVData | null> {
+  if (!targetId) return null;
+
+  // 1. Mock profiles
+  const mock = getCVByIdOrSlug(targetId);
+  if (mock) return mock;
+
+  // 2. Local storage draft
+  if (typeof localStorage !== 'undefined') {
+    const key = getDraftStorageKey(targetId);
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      try {
+        return JSON.parse(raw);
+      } catch {}
+    }
+  }
+
+  // 3. Firestore
+  try {
+    if (db) {
+      const cvRef = doc(db, 'cvs', targetId);
+      const snap = await getDoc(cvRef);
+      if (snap.exists()) {
+        return snap.data() as CVData;
+      }
+    }
+  } catch (err) {
+    console.warn('Lỗi khi tải CV từ Firestore:', err);
+  }
+
+  return null;
 }

@@ -6,6 +6,8 @@ import {
   deleteUserCV,
   cloneCV,
   createNewCV,
+  getPublicCVs,
+  getCVById,
 } from '../cvStorageService';
 import { mockCVData } from '../../data/mockCVData';
 
@@ -97,6 +99,57 @@ describe('cvStorageService', () => {
 
       const userCVs = getUserCVs('user-creator');
       expect(userCVs.length).toBe(1);
+    });
+  });
+
+  describe('getPublicCVs', () => {
+    it('should fallback to mockProfilesList if no public drafts exist', async () => {
+      const publicList = await getPublicCVs();
+      expect(publicList.length).toBeGreaterThan(0);
+      expect(publicList[0].id).toBeDefined();
+    });
+
+    it('should include local user drafts marked as isPublic', async () => {
+      const publicDraft = {
+        ...mockCVData,
+        id: 'cv-local-pub-1',
+        isPublic: true,
+        updatedAt: new Date().toISOString(),
+      };
+      saveUserCV(publicDraft, 'user-pub');
+
+      const publicList = await getPublicCVs();
+      expect(publicList.some((c) => c.id === 'cv-local-pub-1')).toBe(true);
+    });
+  });
+
+  describe('getCVById', () => {
+    it('should resolve mock profiles by ID or Slug', async () => {
+      const cv = await getCVById('thanh-truc');
+      expect(cv).not.toBeNull();
+      expect(cv?.personalInfo.fullName).toBe('Trần Anh Khôi');
+
+      const cv2 = await getCVById('nguyen-le-thanh-truc');
+      expect(cv2).not.toBeNull();
+      expect(cv2?.personalInfo.fullName).toBe('Nguyễn Lê Thanh Trúc');
+    });
+
+    it('should resolve locally saved user draft by ID', async () => {
+      const localCV = {
+        ...mockCVData,
+        id: 'cv-test-lookup-99',
+        personalInfo: { ...mockCVData.personalInfo, fullName: 'Nguyễn Văn Tìm Kiếm' },
+      };
+      saveUserCV(localCV, 'u99');
+
+      const resolved = await getCVById('cv-test-lookup-99');
+      expect(resolved).not.toBeNull();
+      expect(resolved?.personalInfo.fullName).toBe('Nguyễn Văn Tìm Kiếm');
+    });
+
+    it('should return null when CV does not exist', async () => {
+      const notFound = await getCVById('non-existent-id-9999');
+      expect(notFound).toBeNull();
     });
   });
 });

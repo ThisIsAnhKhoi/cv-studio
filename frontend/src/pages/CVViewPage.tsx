@@ -5,8 +5,9 @@ import { TEMPLATES_REGISTRY, getTemplateComponent } from '../features/cv-templat
 import { ColorPreset, HeadingFontOption, ThemeConfig, CVData } from '../types/cv';
 import { exportCVToPDF } from '../services/exportPdfService';
 import { useAuthStore } from '../stores/useAuthStore';
-import { isCVOwner, cloneCV } from '../services/cvStorageService';
+import { isCVOwner, cloneCV, saveUserCV, getCVById } from '../services/cvStorageService';
 import { NotFoundPage } from './NotFoundPage';
+import { ShareDropdown } from '../components/common/ShareDropdown';
 import {
   ArrowLeft,
   Share2,
@@ -22,9 +23,11 @@ import {
   Check,
   Layout,
   Globe,
+  Lock,
   ExternalLink,
   Edit3,
   Copy,
+  LogIn,
 } from 'lucide-react';
 
 interface CVViewPageProps {
@@ -35,53 +38,123 @@ interface CVViewPageProps {
 export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, openAuthModal } = useAuthStore();
+  const [isLoading, setIsLoading] = useState<boolean>(Boolean(id));
+  const [notFound, setNotFound] = useState<boolean>(false);
 
-  const resolveCV = (targetId?: string): CVData | undefined => {
-    if (!targetId) return mockProfilesList[0];
-    const mock = getCVByIdOrSlug(targetId);
+  const getInitialCV = (): CVData => {
+    if (!id) return mockProfilesList[0];
+    const mock = getCVByIdOrSlug(id);
     if (mock) return mock;
     if (typeof localStorage !== 'undefined') {
-      const draft = localStorage.getItem(`cv_studio_draft_${targetId}`);
+      const draft = localStorage.getItem(`cv_studio_draft_${id}`);
       if (draft) {
         try {
           return JSON.parse(draft);
         } catch {
-          // ignore corrupted JSON
+          // ignore
         }
       }
     }
-    return undefined;
+    return mockProfilesList[0];
   };
 
-  // Find candidate by id or fallback to first candidate if no id is specified
-  const candidate = resolveCV(id);
-  const isNotFound = Boolean(id && !candidate);
-
-  const [cvData, setCvData] = useState<CVData>(candidate || mockProfilesList[0]);
-  const [theme, setTheme] = useState<ThemeConfig>(
-    (candidate || mockProfilesList[0]).themeConfig
-  );
+  const [cvData, setCvData] = useState<CVData>(getInitialCV());
+  const [theme, setTheme] = useState<ThemeConfig>(cvData.themeConfig);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
-  const [isExporting, setIsExporting] = useState<boolean>(false);
-  const [exportSuccess, setExportSuccess] = useState<boolean>(false);
-  const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
-  // Update cvData when route id changes
+  // Fetch CV asynchronously (Mock, LocalStorage, or Firestore cloud)
   useEffect(() => {
-    if (id) {
-      const found = resolveCV(id);
-      if (found) {
-        setCvData(found);
-        setTheme(found.themeConfig);
-      }
+    if (!id) {
+      setIsLoading(false);
+      return;
     }
+
+    let isMounted = true;
+    setIsLoading(true);
+
+    getCVById(id)
+      .then((found) => {
+        if (!isMounted) return;
+        if (found) {
+          setCvData(found);
+          setTheme(found.themeConfig);
+          setNotFound(false);
+        } else {
+          setNotFound(true);
+        }
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error('Lỗi khi tải CV:', err);
+        if (isMounted) {
+          setNotFound(true);
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   const isOwner = isCVOwner(cvData, user);
 
-  if (isNotFound) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
+          <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+            Đang tải hồ sơ CV trực tuyến...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound) {
     return <NotFoundPage />;
+  }
+
+  // Private CV protection: If not public and current viewer is not the creator
+  if (!cvData.isPublic && !isOwner) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 p-4 text-center">
+        <div className="max-w-md w-full p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+            <Lock className="w-8 h-8" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+              Hồ Sơ Này Đang Ở Chế Độ Riêng Tư
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
+              Chủ sở hữu của hồ sơ này đã thiết lập quyền riêng tư. Chỉ tác giả mới có thể xem và chỉnh sửa thông tin.
+            </p>
+          </div>
+          <div className="pt-2 flex flex-col gap-2.5">
+            <Link
+              to="/"
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Về Trang Chủ Khám Phá CV</span>
+            </Link>
+            {!user && (
+              <button
+                type="button"
+                onClick={() => openAuthModal('login')}
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-colors cursor-pointer"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Đăng Nhập Nếu Đây Là CV Của Bạn</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const handleTemplateChange = (templateId: string) => {
@@ -108,30 +181,6 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
       ...prev,
       fontHeading: font,
     }));
-  };
-
-  // 1-Click Direct PDF Download
-  const handleDownloadPDF = async () => {
-    if (isExporting) return;
-    setIsExporting(true);
-    const success = await exportCVToPDF('cv-printable-area', cvData.personalInfo.fullName);
-    setIsExporting(false);
-    if (success) {
-      setExportSuccess(true);
-      setTimeout(() => setExportSuccess(false), 3000);
-    }
-  };
-
-  // Browser Print Dialog (Ctrl + P)
-  const handlePrint = () => {
-    window.print();
-  };
-
-  // Copy shareable URL
-  const handleCopyShareLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2500);
   };
 
   const colorPresets: { id: ColorPreset; label: string; bgClass: string }[] = [
@@ -175,10 +224,24 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
                 {cvData.personalInfo.fullName}
               </span>
               {isOwner ? (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 inline-flex items-center gap-1">
-                  <Check className="w-2.5 h-2.5 text-teal-600 dark:text-teal-400" />
-                  CV Của Bạn
-                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextState = !cvData.isPublic;
+                    const updated = { ...cvData, isPublic: nextState };
+                    saveUserCV(updated, user?.uid);
+                    setCvData(updated);
+                  }}
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border inline-flex items-center gap-1 transition-colors cursor-pointer ${
+                    cvData.isPublic
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-200'
+                      : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-800 hover:bg-amber-200'
+                  }`}
+                  title="Nhấp để chuyển đổi giữa Công khai và Riêng tư"
+                >
+                  {cvData.isPublic ? <Globe className="w-2.5 h-2.5" /> : <Lock className="w-2.5 h-2.5" />}
+                  <span>{cvData.isPublic ? 'Công Khai (CV Của Bạn)' : 'Riêng Tư (CV Của Bạn)'}</span>
+                </button>
               ) : (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hidden md:inline-flex items-center gap-1">
                   <Globe className="w-2.5 h-2.5" />
@@ -293,59 +356,17 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
               </button>
             )}
 
-            {/* Share Link Button */}
-            <button
-              onClick={handleCopyShareLink}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white font-semibold text-xs border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
-              title="Sao chép đường dẫn CV để chia sẻ"
-            >
-              {copiedLink ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-emerald-600 dark:text-emerald-400">Đã chép link!</span>
-                </>
-              ) : (
-                <>
-                  <Share2 className="w-3.5 h-3.5" />
-                  <span>Chia sẻ</span>
-                </>
-              )}
-            </button>
-
-            {/* 1-Click Direct Download PDF */}
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isExporting}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 active:scale-95 text-white font-semibold text-xs shadow-md transition-all disabled:opacity-60 cursor-pointer"
-              title="Xuất trực tiếp file .pdf chuẩn A4 tải về máy tính"
-            >
-              {isExporting ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Đang xuất...</span>
-                </>
-              ) : exportSuccess ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-200" />
-                  <span>Đã tải PDF!</span>
-                </>
-              ) : (
-                <>
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Tải file PDF</span>
-                </>
-              )}
-            </button>
-
-            {/* Print / Ctrl + P */}
-            <button
-              onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 active:scale-95 text-white font-semibold text-xs shadow-sm transition-all cursor-pointer"
-              title="Mở hộp thoại in ấn trình duyệt (Ctrl + P)"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>In (Ctrl+P)</span>
-            </button>
+            {/* Share Dropdown: includes Copy Link, Email, and disabled PDF & Print options */}
+            <ShareDropdown
+              cv={cvData}
+              isOwner={isOwner}
+              onUpdateVisibility={(nextIsPublic) => {
+                const updated = { ...cvData, isPublic: nextIsPublic };
+                saveUserCV(updated, user?.uid);
+                setCvData(updated);
+              }}
+              variant="primary"
+            />
           </div>
         </div>
       </div>
