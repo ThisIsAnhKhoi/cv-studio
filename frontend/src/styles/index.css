@@ -3,68 +3,34 @@
 @tailwind utilities;
 
 /* ==========================================================================
-   LOCAL FONTS BUNDLE (Tích hợp sẵn trong public/fonts để deploy Vercel/Render)
+   FONT SYSTEM (Google Fonts WOFF2 with Vietnamese subsetting & Fallbacks)
    ========================================================================== */
 
-/* 1. iCiel Cubano - Font Display việt hóa đậm chất Retro & Hiện đại */
+/* Aliases for legacy font names to map seamlessly to verified Google Fonts */
 @font-face {
-  font-family: 'iCiel Cubano';
-  src: url('/fonts/iCielBCCubano-Normal.otf') format('opentype');
+  font-family: 'Gilroy';
+  src: local('Montserrat'), local('Be Vietnam Pro');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
-/* 2. SVN-Optima - Font Serif việt hóa cao cấp, sang trọng */
 @font-face {
-  font-family: 'SVN-Optima';
-  src: url('/fonts/SVN-Optima Bold.otf') format('opentype');
-  font-weight: 600 900;
+  font-family: 'iCiel Cubano';
+  src: local('Outfit'), local('Montserrat');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'SVN-Optima';
-  src: url('/fonts/SVN-Optima Regular.otf') format('opentype');
-  font-weight: 100 500;
+  src: local('Playfair Display'), local('Georgia');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
-/* 3. Gilroy - Font Sans-serif hình khối hiện đại chuẩn quốc tế */
-@font-face {
-  font-family: 'Gilroy';
-  src: url('/fonts/Gilroy-Bold1.otf') format('opentype');
-  font-weight: 600 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Gilroy';
-  src: url('/fonts/Gilroy-Regular1.otf') format('opentype');
-  font-weight: 100 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* 4. Montserrat */
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/fonts/Montserrat-Bold.otf') format('opentype');
-  font-weight: 600 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/fonts/Montserrat-Regular.otf') format('opentype');
-  font-weight: 100 500;
-  font-style: normal;
-  font-display: swap;
-}
 
 /* ==========================================================================
    BASE & THEME VARIABLES
