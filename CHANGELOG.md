@@ -3,6 +3,24 @@
 Toàn bộ các thay đổi đáng chú ý của dự án **CV Studio / MyPortfolio** được ghi lại tại tài liệu này.  
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/) và tuân thủ [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-10-16
+
+### Authentication & Cloud Persistence
+- **Tích hợp Firebase Auth & Cloud Firestore (`6bcd64b`)**: Hỗ trợ đăng nhập 1-click bằng Google và đăng ký/đăng nhập bằng Email & Mật khẩu. Tự động xử lý và ánh xạ lỗi tiếng Việt trực quan (`auth/unauthorized-domain`, `auth/email-already-in-use`, v.v.).
+- **Đồng bộ đám mây 2 chiều (`cvStorageService.ts`)**: Lưu trữ và truy vấn hồ sơ CV trực tiếp trên Firestore kết hợp bộ đệm `localStorage` mượt mà, sẵn sàng chạy ngay cả khi mất mạng.
+- **Trang Dashboard Quản Lý Hồ Sơ (`DashboardPage.tsx`)**: Liệt kê toàn bộ CV của người dùng, hỗ trợ tạo mới, chỉnh sửa, nhân bản (duplicate), xóa và chuyển đổi trạng thái Công khai / Riêng tư.
+
+### Features & User Experience
+- **Bộ Soạn Thảo Rich Text Chuyên Nghiệp**: Thanh công cụ định dạng trực quan cho đoạn Tóm tắt & Mục tiêu nghề nghiệp (In đậm, Nghiêng, Gạch chân, Gạch ngang, Chọn font chữ, Cỡ chữ, Căn lề, Danh sách gạch đầu dòng, Bảng màu chữ tùy chọn).
+- **Trình Quản Lý Kênh Mạng Xã Hội Động (Dynamic Social Links)**: Hỗ trợ 16 nền tảng & kênh liên hệ chuyên môn (GitHub, GitLab, LeetCode, LinkedIn, Facebook, X/Twitter, Behance, Dribbble, Figma, YouTube, TikTok, Zalo, Telegram, Medium, Website, Khác) với vector icon `currentColor` chuẩn màu và cơ chế `truncate` chống vỡ trang in A4.
+- **Dropdown 63 Tỉnh/Thành & Nút Mở Google Maps**: Chọn nhanh tỉnh/thành Việt Nam kèm liên kết mở định vị tức thì trên Google Maps trong tab mới.
+- **Form Date Picker Chọn Ngày Sinh**: Tích hợp ô chọn lịch native `YYYY-MM-DD`, tự động chuyển đổi sang định dạng chuẩn hồ sơ Việt Nam `DD/MM/YYYY`.
+- **Hộp Thoại Chia Sẻ Đa Kênh (ShareDropdown)**: Sao chép link CV 1-chạm, soạn email chia sẻ, nhận diện môi trường Localhost vs Production deploy, đặt nhãn "Đang phát triển" chuẩn UX cho PDF & In ấn.
+- **Cơ Chế Khám Phá Hồ Sơ Động (Dynamic Showcase Trang Chủ)**: Trang chủ tự động tải các CV đã được người dùng bật chế độ Công khai (Public), tích hợp bộ lọc tìm kiếm và tiện ích `stripHtml` bóc sạch mã tag HTML thô.
+
+### Quality & Testing
+- **Bộ Kiểm Thử Mở Rộng 102 Tests (17 Test Suites - 100% Pass)**: Bao phủ toàn diện RichTextRenderer, ShareDropdown, AuthModal, UserDropdown, PersonalInfoSection, URL sanitize và cvStorageService.
+
 ## [0.2.0] - 2026-10-16
 
 ### Performance

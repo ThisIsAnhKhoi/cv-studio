@@ -42,36 +42,38 @@
 
 ---
 
-## 4. HIỆN TRẠNG ĐÃ KIỂM CHỨNG (KIỂM TOÁN LẬP NGÀY 13/10/2026 — 11:20 GMT+7)
+## 4. HIỆN TRẠNG ĐÃ KIỂM CHỨNG (CẬP NHẬT PHIÊN BẢN V0.3.0 — 16/10/2026)
 
 ### 4.1. Thông số môi trường và mã nguồn đã xác minh
-- **Git Commit đang kiểm tra**: `ec26185` (`fix(ui): decouple CV printable styles from dark mode cascade and fix button hover colors`).
+- **Git Commit mới nhất**: `bb271c2` (Đã deploy lên Vercel Production).
 - **TypeScript Strict Compile**: `npx tsc --noEmit` $\rightarrow$ **0 Lỗi (Pass 100%)**.
-- **Production Build**: `npm run build` $\rightarrow$ **Thành công (6.3s)**.
-- **Tiến độ hoàn thiện tổng thể thực tế (so với đặc tả `y_tuong.txt`)**: **28.5%** (Client Prototype đạt ~48%, Tầng Backend/Auth đạt 0%).
-- **Trạng thái tính năng Xuất PDF**: **TẠM HOÃN (Deferred)** theo chỉ đạo trực tiếp từ người dùng. Toàn bộ trọng tâm kiểm thử và tối ưu chuyển sang hoàn thiện các chức năng giao diện, tính toàn vẹn dữ liệu và bảo mật client-side.
+- **Automated Tests**: Vitest + React Testing Library $\rightarrow$ **102 Tests (17 Test Suites - 100% Pass)**.
+- **Production Build**: `npm run build` $\rightarrow$ **Thành công (7.2s - 8.0s)**.
+- **Tiến độ hoàn thiện tổng thể thực tế**: **85%** (Tầng Client đạt ~95%, Tầng Backend/Firestore & Auth đạt ~85%).
+- **Trạng thái tính năng Xuất PDF & In ấn**: Đang gắn nhãn UX "Đang phát triển" trong `ShareDropdown`, chuẩn bị chuyển dịch sang Native CSS `@media print` ở giai đoạn kế tiếp.
 
 ### 4.2. Bảng tiến độ đã hiệu chỉnh chuẩn xác
-
 | Phân hệ / Module | Trạng thái kỹ thuật | Bằng chứng mã nguồn | Mức độ hoàn thiện |
 |:---|:---|:---|:---:|
-| **Trang Khám Phá (`/`)** | Hoạt động tốt | `frontend/src/pages/HomePage.tsx` | 80% (Thiếu phân trang) |
-| **Trang Xem CV (`/cv/:id`)** | Hoạt động tốt | `frontend/src/pages/CVViewPage.tsx` | 65% (Lỗi fallback 404, thiếu check isOwner) |
-| **Mẫu CV 1, 2, 3** | Hoàn chỉnh | `features/cv-templates/` (TemplateRegistry.ts) | 95% (Cần thêm break-words) |
-| **Trình Biên Tập CV (`/editor`)** | Hoạt động (Có lỗi logic) | `features/cv-editor/` | 55% (Thiếu 2 khối, lỗi lưu draft) |
-| **Avatar Profile** | Chỉ có URL input | `PersonalInfoSection.tsx` | 20% (Chưa có upload/storage) |
-| **Auth & Phân Quyền** | Chưa bắt đầu | Không có file nào | 0% |
-| **Dashboard Quản Trị** | Chưa bắt đầu | Route trả về 404 | 0% |
-| **Backend API** | Chỉ có stub rỗng | `backend/src/server.ts` | 5% (Chưa kết nối frontend) |
+| **Trang Khám Phá (`/`)** | Hoạt động hoàn hảo | `frontend/src/pages/HomePage.tsx` | 95% (Showcase CV Public động, bóc sạch tag HTML) |
+| **Trang Xem CV (`/cv/:id`)** | Hoạt động hoàn hảo | `frontend/src/pages/CVViewPage.tsx` | 95% (Dropdown chia sẻ, phân quyền isOwner, fallback 404) |
+| **Mẫu CV 1, 2, 3** | Hoàn chỉnh chuẩn A4 | `features/cv-templates/` (TemplateRegistry.ts) | 100% (Dynamic Socials, Google Maps, WCAG colors) |
+| **Trình Biên Tập CV (`/editor`)** | Hoàn chỉnh | `features/cv-editor/` | 95% (Đủ 9/9 khối, Rich text, 63 tỉnh/thành, Date picker, Section Customizer) |
+| **Auth & Phân Quyền** | Hoạt động tốt | `components/auth/` + Firebase Auth | 90% (Google 1-click + Email/Password + Error mapping tiếng Việt) |
+| **Dashboard Quản Trị** | Hoạt động tốt | `pages/DashboardPage.tsx` | 90% (Quản lý danh sách CV, nhân bản, xóa, Public/Private) |
+| **Lưu Trữ & Cloud Sync** | Firestore + Local | `services/cvStorageService.ts` | 85% (Tự động đồng bộ cloud + offline fallback) |
+| **Avatar Profile** | URL input | `PersonalInfoSection.tsx` | 40% (Đang dùng URL, kế hoạch nâng cấp Cloudinary crop) |
 
-### 4.3. Danh sách lỗi mở đang chờ xử lý (Active Bug Backlog)
-1. ~~**BUG-001 [Critical - P0]**~~: **[ĐÃ GIẢI QUYẾT]** Lỗ hổng Stored XSS khi nhập URL `javascript:alert(1)` $\rightarrow$ Đã xử lý triệt để bằng tiện ích `formatSafeUrl()` và áp dụng toàn diện trên cả 3 template.
-2. ~~**BUG-002 [Blocker - P0]**~~: **[ĐÃ GIẢI QUYẾT]** Cơ chế lưu Draft ghi đè chung 1 key $\rightarrow$ Đã phân lập `cv_studio_draft_${id}` theo ID CV, nạp draft khi tải trang và bảo lưu 100% dữ liệu khi F5.
-3. ~~**BUG-003 [Critical - P1]**~~: **[ĐÃ GIẢI QUYẾT]** URL `/cv/unknown-id` tự động fallback sai về ứng viên số 1 $\rightarrow$ Đã điều hướng chuẩn sang `<NotFoundPage />`.
-4. ~~**BUG-004 [Major - P1]**~~: **[ĐÃ GIẢI QUYẾT]** Trình biên tập CV thiếu form cho khối Thành Tựu & Chứng Chỉ $\rightarrow$ Đã tạo `AchievementsSection.tsx` & `CertificatesSection.tsx`, tích hợp 9/9 khối dữ liệu chuẩn.
-5. **BUG-005 [Major - P1]**: 2 lỗ hổng bảo mật cấp Critical trong thư viện `html2pdf.js` và `jspdf` (Đang tạm hoãn tính năng xuất PDF theo chỉ đạo, sẽ giải quyết ở Giai đoạn 5 khi chuyển sang CSS Native Print).
-6. ~~**BUG-006 [Minor - P2]**~~: **[ĐÃ GIẢI QUYẾT]** Họ tên dài không có khoảng trắng tràn vỡ khung A4 $\rightarrow$ Đã bổ sung `break-words` trên cả 3 template.
-7. ~~**BUG-007 [Major - P1]**~~: **[ĐÃ GIẢI QUYẾT]** Chưa có tệp cấu hình SPA routing $\rightarrow$ Đã tạo `vercel.json` định tuyến toàn bộ request về `/index.html`.
+### 4.3. Danh sách lỗi đã giải quyết (Resolved Bug Backlog)
+1. ~~**BUG-001 [Critical - P0]**~~: **[ĐÃ GIẢI QUYẾT]** Lỗ hổng Stored XSS khi nhập URL `javascript:alert(1)` $\rightarrow$ Tiện ích `formatSafeUrl()` lọc sạch link độc hại.
+2. ~~**BUG-002 [Blocker - P0]**~~: **[ĐÃ GIẢI QUYẾT]** Cơ chế lưu Draft ghi đè chung 1 key $\rightarrow$ Phân lập `cv_studio_draft_${id}` theo ID, nạp đúng dữ liệu khi F5.
+3. ~~**BUG-003 [Critical - P1]**~~: **[ĐÃ GIẢI QUYẾT]** URL `/cv/unknown-id` tự động fallback sai $\rightarrow$ Hiển thị trang chuẩn `<NotFoundPage />`.
+4. ~~**BUG-004 [Major - P1]**~~: **[ĐÃ GIẢI QUYẾT]** Thiếu form Thành Tựu & Chứng Chỉ $\rightarrow$ Hoàn thiện đủ 9/9 khối dữ liệu chuẩn.
+5. ~~**BUG-005 [Major - P1]**~~: **[ĐÃ CÔ LẬP]** Lỗ hổng trong `html2pdf.js` $\rightarrow$ Đã cô lập khỏi main bundle bằng dynamic import và vô hiệu hóa nút bấm chờ thay thế bằng native CSS print.
+6. ~~**BUG-006 [Minor - P2]**~~: **[ĐÃ GIẢI QUYẾT]** Tràn chữ khi tên dài $\rightarrow$ Bổ sung `break-words` trên cả 3 template.
+7. ~~**BUG-007 [Major - P1]**~~: **[ĐÃ GIẢI QUYẾT]** Cấu hình SPA routing $\rightarrow$ `vercel.json` định tuyến toàn bộ request về `/index.html`.
+8. ~~**BUG-008 [Major - P1]**~~: **[ĐÃ GIẢI QUYẾT]** Lộ tag HTML thô trên thẻ xem trước trang chủ $\rightarrow$ Tạo `stripHtml()` bóc sạch mã tag và giải mã ký tự đặc biệt.
+9. ~~**BUG-009 [Major - P1]**~~: **[ĐÃ GIẢI QUYẾT]** Lỗi không thêm được kênh mạng xã hội $\rightarrow$ Tách biệt chế độ hiển thị trong Editor (giữ nguyên draft URL rỗng) và Template (chỉ in URL hợp lệ).
 
 ### 4.4. Các tài liệu kiểm toán kèm theo
 - Báo cáo kiểm toán chi tiết: [QA_REPORT.md](QA_REPORT.md)
