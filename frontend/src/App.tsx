@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
-import { HomePage } from './pages/HomePage';
-import { CVViewPage } from './pages/CVViewPage';
-import { CVEditorPage } from './pages/CVEditorPage';
-import { NotFoundPage } from './pages/NotFoundPage';
+import { PageSkeleton } from './components/common/PageSkeleton';
+
+// Route-level code-splitting
+const HomePage = lazy(() => import('./pages/HomePage').then((m) => ({ default: m.HomePage })));
+const CVViewPage = lazy(() => import('./pages/CVViewPage').then((m) => ({ default: m.CVViewPage })));
+const CVEditorPage = lazy(() => import('./pages/CVEditorPage').then((m) => ({ default: m.CVEditorPage })));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
 
 const AppLayout: React.FC<{
   darkMode: boolean;
@@ -19,37 +22,39 @@ const AppLayout: React.FC<{
       {/* Hide marketing Navbar in dedicated fullscreen studio editor to prevent header duplication */}
       {!isEditor && <Navbar darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
 
-      {/* Dynamic Route Content */}
+      {/* Dynamic Route Content with Suspense boundary */}
       <div className="flex-1">
-        <Routes>
-          {/* Route 1: Home / Explore Directory */}
-          <Route path="/" element={<HomePage />} />
+        <Suspense fallback={<PageSkeleton />}>
+          <Routes>
+            {/* Route 1: Home / Explore Directory */}
+            <Route path="/" element={<HomePage />} />
 
-          {/* Route 2: Interactive CV Editor Dashboard */}
-          <Route
-            path="/editor"
-            element={<CVEditorPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
-          />
-          <Route
-            path="/editor/:id"
-            element={<CVEditorPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
-          />
+            {/* Route 2: Interactive CV Editor Dashboard */}
+            <Route
+              path="/editor"
+              element={<CVEditorPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
+            />
+            <Route
+              path="/editor/:id"
+              element={<CVEditorPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
+            />
 
-          {/* Route 3: Public CV View by id or slug */}
-          <Route
-            path="/cv/:id"
-            element={<CVViewPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
-          />
+            {/* Route 3: Public CV View by id or slug */}
+            <Route
+              path="/cv/:id"
+              element={<CVViewPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
+            />
 
-          {/* Route 3b: Alias /u/:id */}
-          <Route
-            path="/u/:id"
-            element={<CVViewPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
-          />
+            {/* Route 3b: Alias /u/:id */}
+            <Route
+              path="/u/:id"
+              element={<CVViewPage darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />}
+            />
 
-          {/* Route 4: 404 Fallback */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+            {/* Route 4: 404 Fallback */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
       </div>
 
       {/* Global Footer (hidden on editor and print) */}

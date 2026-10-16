@@ -1,5 +1,3 @@
-import html2pdf from 'html2pdf.js';
-
 export const exportCVToPDF = async (elementId: string, fullName: string): Promise<boolean> => {
   const element = document.getElementById(elementId);
   if (!element) {
@@ -37,6 +35,9 @@ export const exportCVToPDF = async (elementId: string, fullName: string): Promis
   };
 
   try {
+    // Dynamic import to keep html2pdf, jspdf, and html2canvas out of the initial entry chunk
+    const html2pdfModule = await import('html2pdf.js');
+    const html2pdf = html2pdfModule.default;
     await html2pdf().set(options).from(element).save();
     return true;
   } catch (error) {
@@ -44,3 +45,4 @@ export const exportCVToPDF = async (elementId: string, fullName: string): Promis
     return false;
   }
 };
+
