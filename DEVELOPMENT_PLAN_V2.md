@@ -250,3 +250,20 @@ Các tính năng sau đây **BỊ ĐÓNG BĂNG HOÀN TOÀN** trong toàn bộ qu
 - ❌ **Bình luận hoặc đánh giá CV công khai**: Không làm.
 
 *Điều kiện để mở lại*: Chỉ xem xét sau khi bản MVP đã phát hành và có ít nhất 50 người dùng thực tế yêu cầu.
+
+---
+
+## 8. KẾ HOẠCH MỞ RỘNG GIAI ĐOẠN 6: PHÂN HỆ ADMIN, TRANG DUYỆT CV NÂNG CAO & ĐỘNG CƠ ĐẾM VIEW
+*(Tham chiếu toàn bộ hồ sơ nghiên cứu chuyên sâu tại thư mục `docs/admin-research/`)*
+
+Hệ thống đã hoàn thành Giai đoạn 0 (Nghiên cứu khả thi, Kiểm toán hiện trạng và Lập kế hoạch). Toàn bộ tài liệu chi tiết đã được ban hành tại:
+- **00_HIEN_TRANG.md**: [docs/admin-research/00_HIEN_TRANG.md](docs/admin-research/00_HIEN_TRANG.md) — Kết quả kiểm toán hiện trạng, cảnh báo bảo mật P0 (thiếu `firestore.rules`), baseline kiểm thử (102 tests pass, tsc 0 lỗi, bundle entry 33.5 kB).
+- **01_NGHIEN_CUU_ADMIN_BAO_MAT.md**: [docs/admin-research/01_NGHIEN_CUU_ADMIN_BAO_MAT.md](docs/admin-research/01_NGHIEN_CUU_ADMIN_BAO_MAT.md) — Phân tích RBAC, so sánh 3 phương án lưu trữ vai trò, chống leo thang đặc quyền với `affectedKeys()`, nguyên tắc Soft Delete "xóa = tắt", và giải pháp 0 đồng trên gói Spark.
+- **02_NGHIEN_CUU_LUOT_XEM.md**: [docs/admin-research/02_NGHIEN_CUU_LUOT_XEM.md](docs/admin-research/02_NGHIEN_CUU_LUOT_XEM.md) — Động cơ tăng view atomic `increment(1)` không sửa `updatedAt`, khử trùng lặp 30 phút, loại trừ chủ sở hữu và kế hoạch backfill dữ liệu cũ.
+- **03_NGHIEN_CUU_TRANG_CHU_VA_DUYET_CV.md**: [docs/admin-research/03_NGHIEN_CUU_TRANG_CHU_VA_DUYET_CV.md](docs/admin-research/03_NGHIEN_CUU_TRANG_CHU_VA_DUYET_CV.md) — Tái cấu trúc Trang Chủ Top 6 (giảm 80% lượt đọc Firestore), trang duyệt `/explore` với phân trang Cursor `startAfter`, tìm kiếm tiếng Việt chuẩn hóa, và bảng 6 composite indexes bắt buộc.
+- **04_THIET_KE_UI_ADMIN.md**: [docs/admin-research/04_THIET_KE_UI_ADMIN.md](docs/admin-research/04_THIET_KE_UI_ADMIN.md) — Kiến trúc giao diện `/admin/*` code-split riêng biệt, Wireframes ASCII 4 màn hình, modal xác nhận bắt buộc lý do, chống double-click và responsive mobile.
+- **05_RISK_REGISTER.md**: [docs/admin-research/05_RISK_REGISTER.md](docs/admin-research/05_RISK_REGISTER.md) — Bảng quản trị 30 rủi ro toàn diện (Logic, UI, Dữ liệu, Chi phí, Hiệu năng, Bảo mật, Triển khai).
+- **06_KE_HOACH_KIEM_THU.md**: [docs/admin-research/06_KE_HOACH_KIEM_THU.md](docs/admin-research/06_KE_HOACH_KIEM_THU.md) — Kế hoạch kiểm thử tự động (mở rộng lên $\ge 147$ tests), kiểm thử Security Rules trên Emulator, ma trận responsive 5 màn hình.
+- **07_KE_HOACH_TRIEN_KHAI.md**: [docs/admin-research/07_KE_HOACH_TRIEN_KHAI.md](docs/admin-research/07_KE_HOACH_TRIEN_KHAI.md) — 7 Task Briefs chi tiết (TSK-6.1 đến TSK-6.7) với phạm vi rõ ràng, tiêu chí thoát, điểm demo và cách rollback.
+- **08_CAU_HOI_CAN_QUYET_DINH.md**: [docs/admin-research/08_CAU_HOI_CAN_QUYET_DINH.md](docs/admin-research/08_CAU_HOI_CAN_QUYET_DINH.md) — 8 câu hỏi thiết kế cần phê duyệt kèm phân tích và khuyến nghị của Kiến trúc sư giải pháp.
+- **Hồ sơ Quyết định Kiến trúc**: Xem [DECISIONS.md](DECISIONS.md) (ADR-017 đến ADR-021).
