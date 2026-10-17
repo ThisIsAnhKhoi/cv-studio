@@ -136,4 +136,56 @@ describe('PersonalInfoSection Component', () => {
     fireEvent.change(dateInput, { target: { value: '2000-05-20' } });
     expect(onChange).toHaveBeenCalledWith('birthday', '20/05/2000');
   });
+
+  describe('Avatar Upload & Customization features', () => {
+    it('renders avatar upload controls and action buttons', () => {
+      const onChange = vi.fn();
+      render(<PersonalInfoSection personalInfo={mockCVData.personalInfo} onChange={onChange} />);
+
+      expect(screen.getByRole('button', { name: /Tải Ảnh Từ Máy/i })).toBeDefined();
+      expect(screen.getByRole('button', { name: /Chọn Mẫu Có Sẵn/i })).toBeDefined();
+      expect(screen.getByRole('button', { name: /Dán Link URL/i })).toBeDefined();
+      expect(screen.getByRole('button', { name: /Xóa ảnh/i })).toBeDefined();
+    });
+
+    it('opens preset avatars gallery and triggers onChange on preset click', () => {
+      const onChange = vi.fn();
+      render(<PersonalInfoSection personalInfo={mockCVData.personalInfo} onChange={onChange} />);
+
+      const presetBtn = screen.getByRole('button', { name: /chọn mẫu có sẵn/i });
+      fireEvent.click(presetBtn);
+
+      expect(screen.getByText(/Chọn avatar mẫu chuyên nghiệp:/i)).toBeDefined();
+
+      const femalePreset = screen.getByTitle(/Nữ Doanh Nhân \/ Quản Lý/i);
+      fireEvent.click(femalePreset);
+
+      expect(onChange).toHaveBeenCalledWith('avatarUrl', expect.stringContaining('https://images.unsplash.com'));
+    });
+
+    it('clears avatar when clicking "Xóa ảnh"', () => {
+      const onChange = vi.fn();
+      render(<PersonalInfoSection personalInfo={mockCVData.personalInfo} onChange={onChange} />);
+
+      const removeBtn = screen.getByRole('button', { name: /xóa ảnh/i });
+      fireEvent.click(removeBtn);
+
+      expect(onChange).toHaveBeenCalledWith('avatarUrl', '');
+    });
+
+    it('toggles direct URL input when clicking "Dán Link URL"', () => {
+      const onChange = vi.fn();
+      render(<PersonalInfoSection personalInfo={mockCVData.personalInfo} onChange={onChange} />);
+
+      const urlToggleBtn = screen.getByRole('button', { name: /dán link url/i });
+      fireEvent.click(urlToggleBtn);
+
+      const urlInput = screen.getByPlaceholderText(/https:\/\/images.unsplash.com/i) as HTMLInputElement;
+      expect(urlInput).toBeDefined();
+
+      fireEvent.change(urlInput, { target: { value: 'https://mywebsite.com/new-avatar.png' } });
+      expect(onChange).toHaveBeenCalledWith('avatarUrl', 'https://mywebsite.com/new-avatar.png');
+    });
+  });
 });
+

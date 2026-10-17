@@ -13,7 +13,15 @@ import {
   ChevronDown,
   X,
   Share2,
+  Upload,
+  Camera,
+  Link2,
+  Sparkles,
+  AlertCircle,
+  Loader2,
+  Check,
 } from 'lucide-react';
+import { processAvatarFile, PRESET_AVATARS } from '../../../../utils/image';
 import {
   SOCIAL_PLATFORMS,
   SocialIcon,
@@ -64,6 +72,58 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [locationSearch, setLocationSearch] = useState('');
   const locationDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Quản lý upload ảnh đại diện
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [showPresets, setShowPresets] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Xử lý tệp ảnh được chọn (từ file picker hoặc drop)
+  const handleFileSelect = async (file?: File | null) => {
+    if (!file) return;
+    setUploadError(null);
+    setIsUploading(true);
+    try {
+      const dataUrl = await processAvatarFile(file, {
+        targetSize: 400,
+        quality: 0.88,
+      });
+      onChange('avatarUrl', dataUrl);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Lỗi khi xử lý ảnh đại diện.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+    if (e.target) e.target.value = '';
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
 
   // Social Links động (giữ nguyên các liên kết đang soạn thảo, không filter rỗng)
   const socialLinks: SocialLink[] = getNormalizedSocialLinks(personalInfo, false);
@@ -143,31 +203,229 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* 1. Avatar Preview & URL */}
-      <div className="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
-        <img
-          src={
-            personalInfo.avatarUrl ||
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
-          }
-          alt="Avatar Preview"
-          className="w-16 h-16 rounded-xl object-cover ring-2 ring-teal-500/30 shrink-0"
-        />
-        <div className="flex-1 min-w-0">
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Đường dẫn ảnh đại diện (URL)
-          </label>
-          <div className="relative">
-            <Image className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={personalInfo.avatarUrl}
-              onChange={(e) => onChange('avatarUrl', e.target.value)}
-              placeholder="https://example.com/avatar.jpg"
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-900 dark:text-white"
-            />
+      {/* 1. Avatar Preview & Upload Box */}
+      <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/80 space-y-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          {/* Avatar Thumbnail with Camera Hover & Click */}
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`relative group cursor-pointer w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 transition-all ${
+              isDragOver
+                ? 'border-teal-500 scale-105 shadow-lg shadow-teal-500/20'
+                : 'border-slate-200 dark:border-slate-700 hover:border-teal-500'
+            }`}
+            title="Nhấn để tải ảnh hoặc kéo thả ảnh vào đây"
+          >
+            {personalInfo.avatarUrl ? (
+              <img
+                src={personalInfo.avatarUrl}
+                alt={personalInfo.fullName || 'Avatar'}
+                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full bg-slate-200 dark:bg-slate-700 flex flex-col items-center justify-center text-slate-400">
+                <Camera className="w-6 h-6 mb-1 text-slate-400" />
+                <span className="text-[10px] font-medium">Chọn ảnh</span>
+              </div>
+            )}
+
+            {/* Overlay on hover or loading */}
+            <div
+              className={`absolute inset-0 bg-black/50 backdrop-blur-xs flex flex-col items-center justify-center transition-opacity ${
+                isUploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`}
+            >
+              {isUploading ? (
+                <Loader2 className="w-5 h-5 text-white animate-spin" />
+              ) : (
+                <>
+                  <Camera className="w-4 h-4 text-white mb-0.5" />
+                  <span className="text-[9px] text-white font-medium">Đổi ảnh</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Action buttons & Details */}
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                  Ảnh Đại Diện Cá Nhân
+                </label>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Tải ảnh từ máy (tự động crop vuông 1:1, nén nhẹ &lt; 40kB).
+                </p>
+              </div>
+
+              {personalInfo.avatarUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange('avatarUrl', '');
+                    setUploadError(null);
+                  }}
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  <span>Xóa ảnh</span>
+                </button>
+              )}
+            </div>
+
+            {/* Action buttons toolbar */}
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                onChange={handleInputChange}
+                className="hidden"
+              />
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>{isUploading ? 'Đang xử lý...' : 'Tải Ảnh Từ Máy'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPresets(!showPresets);
+                  setShowUrlInput(false);
+                }}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                  showPresets
+                    ? 'bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white'
+                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>Chọn Mẫu Có Sẵn</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowUrlInput(!showUrlInput);
+                  setShowPresets(false);
+                }}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                  showUrlInput
+                    ? 'bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white'
+                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                <Link2 className="w-3.5 h-3.5" />
+                <span>Dán Link URL</span>
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Error message banner */}
+        {uploadError && (
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+            <span className="flex-1">{uploadError}</span>
+            <button
+              type="button"
+              onClick={() => setUploadError(null)}
+              className="text-rose-400 hover:text-rose-600 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {/* Collapsible Presets Gallery */}
+        {showPresets && (
+          <div className="pt-2 border-t border-slate-200/80 dark:border-slate-700/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                Chọn avatar mẫu chuyên nghiệp:
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowPresets(false)}
+                className="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              {PRESET_AVATARS.map((preset) => {
+                const isSelected = personalInfo.avatarUrl === preset.url;
+                return (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    onClick={() => {
+                      onChange('avatarUrl', preset.url);
+                      setUploadError(null);
+                    }}
+                    className={`relative rounded-xl overflow-hidden aspect-square border-2 transition-all group cursor-pointer ${
+                      isSelected
+                        ? 'border-teal-500 ring-2 ring-teal-500/30'
+                        : 'border-slate-200 dark:border-slate-700 hover:border-teal-400'
+                    }`}
+                    title={preset.label}
+                  >
+                    <img
+                      src={preset.url}
+                      alt={preset.label}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                    />
+                    {isSelected && (
+                      <div className="absolute inset-0 bg-teal-600/40 backdrop-blur-[1px] flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white font-bold" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Collapsible URL Input Field */}
+        {showUrlInput && (
+          <div className="pt-2 border-t border-slate-200/80 dark:border-slate-700/80 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                Đường dẫn ảnh trực tiếp (Direct URL):
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowUrlInput(false)}
+                className="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
+            <div className="relative">
+              <Link2 className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={personalInfo.avatarUrl}
+                onChange={(e) => {
+                  onChange('avatarUrl', e.target.value);
+                  setUploadError(null);
+                }}
+                placeholder="https://images.unsplash.com/... hoặc link ảnh bất kỳ"
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-900 dark:text-white"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 2. Họ Tên & Chức Danh */}
