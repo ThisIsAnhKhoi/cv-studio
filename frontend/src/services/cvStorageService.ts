@@ -14,9 +14,7 @@ import {
   collection,
   query,
   where,
-  orderBy,
   limit,
-  startAfter,
   QueryDocumentSnapshot,
   DocumentData,
 } from 'firebase/firestore';
@@ -85,6 +83,11 @@ export function saveUserCV(cv: CVData, userId?: string): void {
   const updatedCV: CVData = {
     ...cv,
     userId: targetUserId,
+    status: cv.status || 'active',
+    ownerDisabled: cv.ownerDisabled ?? false,
+    viewCount: cv.viewCount || 0,
+    category: cv.category || 'tech',
+    slug: cv.slug || `cv-${cv.id}`,
     updatedAt: new Date().toISOString(),
   };
 
@@ -144,17 +147,37 @@ export function deleteUserCV(cvId: string, userId: string): void {
 }
 
 /**
- * Clones an existing CV into a brand new CV instance owned by target user.
+ * Clones an existing CV or Community Template into a brand new CV instance owned by target user.
  */
 export function cloneCV(source: CVData, newUserId?: string): CVData {
   const newId = generateId('cv');
   const now = new Date().toISOString();
 
+  // Increment cloneCount on source draft if stored locally
+  if (source?.id && typeof localStorage !== 'undefined') {
+    try {
+      const srcDraftKey = getDraftStorageKey(source.id);
+      const rawSrc = localStorage.getItem(srcDraftKey);
+      if (rawSrc) {
+        const parsedSrc: CVData = JSON.parse(rawSrc);
+        parsedSrc.cloneCount = (parsedSrc.cloneCount || 0) + 1;
+        localStorage.setItem(srcDraftKey, JSON.stringify(parsedSrc));
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   const cloned: CVData = {
     ...JSON.parse(JSON.stringify(source)),
     id: newId,
     userId: newUserId || 'anonymous',
-    slug: `${source.slug || 'cv'}-copy-${Math.random().toString(36).substring(2, 6)}`,
+    slug: `cv-${Math.random().toString(36).substring(2, 8)}`,
+    isCommunityTemplate: false,
+    status: 'active',
+    ownerDisabled: false,
+    viewCount: 0,
+    cloneCount: 0,
     createdAt: now,
     updatedAt: now,
   };
@@ -162,6 +185,57 @@ export function cloneCV(source: CVData, newUserId?: string): CVData {
   // Save the new clone
   saveUserCV(cloned, newUserId);
   return cloned;
+}
+
+export interface PublishCommunityTemplateMeta {
+  templateTitle: string;
+  templateDescription: string;
+  authorName: string;
+  category?: CVCategory;
+}
+
+/**
+ * Publishes/saves a CV as a shared Community Template so everyone can preview and clone it.
+ */
+export function publishCommunityTemplate(
+  cv: CVData,
+  meta: PublishCommunityTemplateMeta,
+  userId?: string
+): CVData {
+  const now = new Date().toISOString();
+  const publishedCV: CVData = {
+    ...JSON.parse(JSON.stringify(cv)),
+    userId: userId || cv.userId || 'anonymous',
+    isPublic: true,
+    isCommunityTemplate: true,
+    templateTitle: meta.templateTitle.trim() || `${cv.personalInfo.title} — Mẫu CV Cộng Đồng`,
+    templateDescription:
+      meta.templateDescription.trim() ||
+      `Mẫu CV chuyên nghiệp chia sẻ bởi ${meta.authorName.trim() || cv.personalInfo.fullName}.`,
+    authorName: meta.authorName.trim() || cv.personalInfo.fullName,
+    category: meta.category || cv.category || 'tech',
+    cloneCount: cv.cloneCount || 1,
+    status: 'active',
+    ownerDisabled: false,
+    updatedAt: now,
+  };
+
+  saveUserCV(publishedCV, userId || cv.userId);
+  return publishedCV;
+}
+
+/**
+ * Retrieves all Community Templates (public CVs marked with isCommunityTemplate === true).
+ */
+export async function getCommunityTemplates(): Promise<CVData[]> {
+  const allPublic = await getPublicCVs();
+  return allPublic
+    .filter((cv) => cv.isCommunityTemplate === true)
+    .sort((a, b) => {
+      const cloneDiff = (b.cloneCount || 0) - (a.cloneCount || 0);
+      if (cloneDiff !== 0) return cloneDiff;
+      return new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime();
+    });
 }
 
 /**
@@ -179,7 +253,14 @@ export function createNewCV(templateId = 'template-classic-teal', userId?: strin
     ...JSON.parse(JSON.stringify(baseProfile)),
     id: newId,
     userId: userId || 'anonymous',
-    slug: `cv-moi-${Math.random().toString(36).substring(2, 6)}`,
+    slug: `cv-${Math.random().toString(36).substring(2, 8)}`,
+    isPublic: false,
+    isCommunityTemplate: false,
+    status: 'active',
+    ownerDisabled: false,
+    viewCount: 0,
+    cloneCount: 0,
+    category: baseProfile.category || 'tech',
     personalInfo: {
       ...baseProfile.personalInfo,
       fullName: 'Họ Và Tên Của Bạn',
@@ -220,25 +301,31 @@ export async function deleteCVFromFirestore(cvId: string): Promise<void> {
 }
 
 /**
- * Retrieves public CVs for the Homepage community showcase.
- * Prioritizes user-published public CVs, falling back to mock profiles if none exist.
+ * Retrieves public CVs for Homepage & Explore community showcase.
+ * Merges Firestore public CVs, local public CVs, and mock profiles (deduplicated).
  */
 export async function getPublicCVs(): Promise<CVData[]> {
   const publicCVs: CVData[] = [];
   const seenIds = new Set<string>();
 
-  // 1. Fetch from Firestore
+  // 1. Fetch from Firestore (simple where on isPublic to avoid composite index failures)
   try {
     if (db) {
       const q = query(
         collection(db, 'cvs'),
         where('isPublic', '==', true),
-        limit(30)
+        limit(60)
       );
       const snapshot = await getDocs(q);
       snapshot.forEach((docSnap) => {
         const data = docSnap.data() as CVData;
-        if (data && data.id && !seenIds.has(data.id)) {
+        if (
+          data &&
+          data.id &&
+          data.status !== 'disabled' &&
+          data.ownerDisabled !== true &&
+          !seenIds.has(data.id)
+        ) {
           seenIds.add(data.id);
           publicCVs.push(data);
         }
@@ -258,9 +345,19 @@ export async function getPublicCVs(): Promise<CVData[]> {
           if (raw) {
             try {
               const parsed: CVData = JSON.parse(raw);
-              if (parsed.isPublic && parsed.id && !seenIds.has(parsed.id)) {
-                seenIds.add(parsed.id);
-                publicCVs.push(parsed);
+              if (
+                parsed.isPublic &&
+                parsed.id &&
+                parsed.status !== 'disabled' &&
+                parsed.ownerDisabled !== true
+              ) {
+                const existingIdx = publicCVs.findIndex((c) => c.id === parsed.id);
+                if (existingIdx >= 0) {
+                  publicCVs[existingIdx] = parsed;
+                } else if (!seenIds.has(parsed.id)) {
+                  seenIds.add(parsed.id);
+                  publicCVs.unshift(parsed);
+                }
               }
             } catch {
               // ignore
@@ -273,9 +370,12 @@ export async function getPublicCVs(): Promise<CVData[]> {
     }
   }
 
-  // 3. If no public CVs exist yet, fallback to mockProfilesList so the gallery is never empty
-  if (publicCVs.length === 0) {
-    return mockProfilesList;
+  // 3. Fallback / supplementary mock profiles so the directory is never empty
+  for (const mock of mockProfilesList) {
+    if (!seenIds.has(mock.id)) {
+      seenIds.add(mock.id);
+      publicCVs.push(mock);
+    }
   }
 
   // Return public CVs sorted newest first
@@ -290,11 +390,7 @@ export async function getPublicCVs(): Promise<CVData[]> {
 export async function getCVById(targetId: string): Promise<CVData | null> {
   if (!targetId) return null;
 
-  // 1. Mock profiles
-  const mock = getCVByIdOrSlug(targetId);
-  if (mock) return mock;
-
-  // 2. Local storage draft
+  // 1. Local storage draft first (so user customizations on any CV or template take immediate priority)
   if (typeof localStorage !== 'undefined') {
     const key = getDraftStorageKey(targetId);
     const raw = localStorage.getItem(key);
@@ -303,15 +399,44 @@ export async function getCVById(targetId: string): Promise<CVData | null> {
         return JSON.parse(raw);
       } catch {}
     }
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('cv_studio_draft_') && k !== 'cv_studio_draft_cv') {
+        const item = localStorage.getItem(k);
+        if (item) {
+          try {
+            const parsed: CVData = JSON.parse(item);
+            if (parsed.id === targetId || parsed.slug === targetId) {
+              return parsed;
+            }
+          } catch {}
+        }
+      }
+    }
   }
 
-  // 3. Firestore
+  // 2. Mock profiles
+  const mock = getCVByIdOrSlug(targetId);
+  if (mock) return mock;
+
+  // 3. Firestore (by ID document, or query by slug)
   try {
     if (db) {
       const cvRef = doc(db, 'cvs', targetId);
       const snap = await getDoc(cvRef);
       if (snap.exists()) {
         return snap.data() as CVData;
+      }
+
+      const qSlug = query(
+        collection(db, 'cvs'),
+        where('slug', '==', targetId),
+        limit(1)
+      );
+      const snapSlug = await getDocs(qSlug);
+      if (!snapSlug.empty) {
+        return snapSlug.docs[0].data() as CVData;
       }
     }
   } catch (err) {
@@ -358,37 +483,10 @@ export async function incrementCVViewCount(cvId: string): Promise<void> {
 
 /**
  * Retrieves the Top N most viewed public CVs for the Homepage showcase.
- * Only fetches active, public CVs whose owners are not disabled.
  */
 export async function getTopViewedCVs(limitCount = 6): Promise<CVData[]> {
-  const result: CVData[] = [];
-
-  try {
-    if (db) {
-      const q = query(
-        collection(db, 'cvs'),
-        where('isPublic', '==', true),
-        where('status', '==', 'active'),
-        where('ownerDisabled', '==', false),
-        orderBy('viewCount', 'desc'),
-        orderBy('updatedAt', 'desc'),
-        limit(limitCount)
-      );
-      const snapshot = await getDocs(q);
-      snapshot.forEach((docSnap) => {
-        result.push(docSnap.data() as CVData);
-      });
-    }
-  } catch (err) {
-    console.warn('Không thể truy vấn Top CV xem nhiều nhất từ Firestore:', err);
-  }
-
-  if (result.length > 0) {
-    return result;
-  }
-
-  // Fallback to mock profiles sorted by viewCount if offline or empty
-  return [...mockProfilesList]
+  const allPublic = await getPublicCVs();
+  return [...allPublic]
     .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
     .slice(0, limitCount);
 }
@@ -407,75 +505,31 @@ export interface ExploreCVsResult {
 }
 
 /**
- * Retrieves paginated public CVs for the Explore Directory page using Cursor pagination.
+ * Retrieves public CVs for the Explore Directory page.
  */
 export async function getExploreCVs(
   options: ExploreFilterOptions = {}
 ): Promise<ExploreCVsResult> {
-  const { category = 'all', sort = 'views', cursor = null, limitCount = 24 } = options;
-  const cvs: CVData[] = [];
-  let lastVisible: QueryDocumentSnapshot<DocumentData> | null = null;
-  let hasMore = false;
+  const { category = 'all', sort = 'views', limitCount = 24 } = options;
 
-  try {
-    if (db) {
-      const constraints: any[] = [
-        where('isPublic', '==', true),
-        where('status', '==', 'active'),
-        where('ownerDisabled', '==', false),
-      ];
+  const allPublic = await getPublicCVs();
+  let filtered = allPublic;
 
-      if (category && category !== 'all') {
-        constraints.push(where('category', '==', category));
-      }
-
-      if (sort === 'views') {
-        constraints.push(orderBy('viewCount', 'desc'));
-        constraints.push(orderBy('updatedAt', 'desc'));
-      } else {
-        constraints.push(orderBy('updatedAt', 'desc'));
-      }
-
-      if (cursor) {
-        constraints.push(startAfter(cursor));
-      }
-
-      constraints.push(limit(limitCount));
-
-      const q = query(collection(db, 'cvs'), ...constraints);
-      const snapshot = await getDocs(q);
-
-      snapshot.forEach((docSnap) => {
-        cvs.push(docSnap.data() as CVData);
-      });
-
-      if (snapshot.docs.length > 0) {
-        lastVisible = snapshot.docs[snapshot.docs.length - 1];
-        hasMore = snapshot.docs.length === limitCount;
-      }
-    }
-  } catch (err) {
-    console.warn('Lỗi khi tải danh sách Explore CVs từ Firestore:', err);
+  if (category && category !== 'all') {
+    filtered = filtered.filter((p) => p.category === category);
   }
 
-  // Fallback if offline / empty and no cursor
-  if (cvs.length === 0 && !cursor) {
-    let filtered = [...mockProfilesList];
-    if (category && category !== 'all') {
-      filtered = filtered.filter((p) => p.category === category);
-    }
-    if (sort === 'views') {
-      filtered.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
-    } else {
-      filtered.sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime());
-    }
-    return {
-      cvs: filtered.slice(0, limitCount),
-      lastVisible: null,
-      hasMore: filtered.length > limitCount,
-    };
+  if (sort === 'views') {
+    filtered.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+  } else {
+    filtered.sort(
+      (a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime()
+    );
   }
 
-  return { cvs, lastVisible, hasMore };
+  return {
+    cvs: filtered.slice(0, limitCount),
+    lastVisible: null,
+    hasMore: filtered.length > limitCount,
+  };
 }
-

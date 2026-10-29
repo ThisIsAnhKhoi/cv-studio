@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { CVTemplateProps } from '../../../types/template';
+import { SectionId } from '../../../types/cv';
 import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import { getSectionStyleProperties } from '../../cv-editor/utils/styleHelpers';
+import {
+  resolveLayoutConfig,
+  getSectionTitle,
+  isSectionVisible,
+} from '../../cv-editor/utils/layoutHelpers';
 import { RichTextRenderer } from '../../../components/common/RichTextRenderer';
 import { SocialIcon, getNormalizedSocialLinks } from '../../cv-editor/utils/socialPlatforms';
 import {
@@ -10,8 +16,6 @@ import {
   MapPin,
   Calendar,
   Globe,
-  Github,
-  Linkedin,
   GraduationCap,
   Briefcase,
   Code2,
@@ -21,12 +25,24 @@ import {
   Check,
   Sparkles,
   ChevronRight,
+  Layers,
 } from 'lucide-react';
 
 export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) => {
-  const { personalInfo, summary, experiences, educations, skillCategories, projects, achievements, certificates } = data;
+  const {
+    personalInfo,
+    summary,
+    experiences = [],
+    educations = [],
+    skillCategories = [],
+    projects = [],
+    achievements = [],
+    certificates = [],
+    customSections = [],
+  } = data;
   const isDark = Boolean(theme.darkMode);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  const layout = resolveLayoutConfig(theme);
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -145,6 +161,471 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
 
   const headingFontFamily = `'${theme.fontHeading}', 'Be Vietnam Pro', sans-serif`;
 
+  const renderSection = (sectionId: SectionId, column: 'sidebar' | 'main', indexInColumn: number) => {
+    if (!isSectionVisible(sectionId, layout)) return null;
+    const isSidebar = column === 'sidebar';
+    const sidebarTopBorder = isSidebar && indexInColumn > 0 ? `pt-3 border-t ${tc.border}` : '';
+
+    switch (sectionId) {
+      case 'contact':
+        return (
+          <section
+            key="contact"
+            className={`space-y-3 ${sidebarTopBorder}`}
+            style={getSectionStyleProperties('contact', theme.sectionStyles)}
+          >
+            <div className={!isSidebar ? `flex items-center gap-2 pb-1.5 border-b ${tc.border}` : ''}>
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${
+                  isSidebar ? colors.accent : tc.title
+                } flex items-center gap-1.5`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                <Globe className={`w-3.5 h-3.5 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+                <span>{getSectionTitle('contact', theme.sectionStyles, 'Liên Kết Mạng Xã Hội')}</span>
+              </h2>
+            </div>
+
+            <div className="space-y-2 text-[11.5px]" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {getNormalizedSocialLinks(personalInfo, true).map((link) => (
+                <a
+                  key={link.id}
+                  href={formatSafeUrl(link.url)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
+                  title={link.url}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <SocialIcon
+                      platform={link.platform}
+                      className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current"
+                    />
+                    <span className="truncate">{cleanDisplayUrl(link.url)}</span>
+                  </div>
+                  <ChevronRight className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'summary':
+        if (!summary) return null;
+        return (
+          <section
+            key="summary"
+            className={`space-y-2 ${sidebarTopBorder}`}
+            style={getSectionStyleProperties('summary', theme.sectionStyles)}
+          >
+            <div className={`flex items-center gap-2 ${!isSidebar ? `pb-1.5 border-b ${tc.border}` : ''}`}>
+              <Sparkles className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${isSidebar ? colors.accent : tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('summary', theme.sectionStyles, 'Giới Thiệu Bản Thân')}
+              </h2>
+            </div>
+            <RichTextRenderer
+              content={summary}
+              className={`text-[12.5px] leading-relaxed ${tc.body} text-justify`}
+              style={{
+                color: 'var(--sec-text-color, inherit)',
+                fontFamily: 'var(--sec-body-font, inherit)',
+              }}
+            />
+          </section>
+        );
+
+      case 'experience':
+        if (!experiences || experiences.length === 0) return null;
+        return (
+          <section
+            key="experience"
+            className={`space-y-3 ${sidebarTopBorder}`}
+            style={getSectionStyleProperties('experience', theme.sectionStyles)}
+          >
+            <div className={`flex items-center gap-2 ${!isSidebar ? `pb-1.5 border-b ${tc.border}` : ''}`}>
+              <Briefcase className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${isSidebar ? colors.accent : tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('experience', theme.sectionStyles, 'Kinh Nghiệm Làm Việc')}
+              </h2>
+            </div>
+
+            <div className="space-y-4" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {experiences.map((exp) => (
+                <div
+                  key={exp.id}
+                  className={`relative pl-4 border-l-2 ${tc.borderTimeline} space-y-1.5 group p-2 -ml-2 rounded-xl ${tc.hoverRow} transition-all duration-200 cursor-default`}
+                >
+                  {/* Timeline dot */}
+                  <div
+                    className={`absolute -left-[5px] top-[14px] w-2 h-2 rounded-full transition-transform duration-200 group-hover:scale-150 ${colors.dot}`}
+                    style={{ backgroundColor: 'var(--sec-accent-color)' }}
+                  />
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <h3
+                      className={`font-bold text-[13px] ${tc.title} transition-colors`}
+                      style={{
+                        fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                        color: 'var(--sec-heading-color, inherit)',
+                      }}
+                    >
+                      {exp.position}
+                    </h3>
+                    <span className={`text-[11px] font-semibold ${tc.meta} shrink-0`}>
+                      {exp.startDate} – {exp.endDate}
+                    </span>
+                  </div>
+
+                  <div
+                    className={`text-[12px] font-semibold ${tc.body}`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
+                    {exp.company}
+                    {exp.location && <span className={`${tc.meta} font-normal`}> • {exp.location}</span>}
+                  </div>
+
+                  <ul
+                    className={`space-y-1 text-[12px] ${tc.bodyMuted} list-disc list-outside pl-4 leading-relaxed`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
+                    {(exp.descriptions || []).map((desc, idx) => (
+                      <li key={idx}>{desc}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'projects':
+        if (!projects || projects.length === 0) return null;
+        return (
+          <section
+            key="projects"
+            className={`space-y-3 ${sidebarTopBorder}`}
+            style={getSectionStyleProperties('projects', theme.sectionStyles)}
+          >
+            <div className={`flex items-center gap-2 ${!isSidebar ? `pb-1.5 border-b ${tc.border}` : ''}`}>
+              <Code2 className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${isSidebar ? colors.accent : tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('projects', theme.sectionStyles, 'Dự Án Tiêu Biểu')}
+              </h2>
+            </div>
+
+            <div className="space-y-3.5" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {projects.map((proj) => (
+                <div
+                  key={proj.id}
+                  className={`p-3.5 rounded-xl border transition-all duration-200 space-y-2 group hover:-translate-y-0.5 hover:shadow-md ${tc.cardBg} ${colors.cardHover}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <h3
+                        className={`font-bold text-[13px] ${tc.title} truncate`}
+                        style={{
+                          fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                          color: 'var(--sec-heading-color, inherit)',
+                        }}
+                      >
+                        {proj.name}
+                      </h3>
+                      {proj.link && (
+                        <a
+                          href={formatSafeUrl(proj.link)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-flex items-center p-1 rounded ${tc.hoverLink} text-slate-400 hover:${colors.accent} transition-colors shrink-0`}
+                          title="Xem dự án"
+                          style={{ color: 'var(--sec-accent-color, inherit)' }}
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                        </a>
+                      )}
+                    </div>
+                    <span className={`text-[11px] font-medium ${tc.meta} italic shrink-0`}>
+                      {proj.role}
+                    </span>
+                  </div>
+
+                  <p
+                    className={`text-[11.5px] ${tc.bodyMuted} leading-relaxed`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
+                    {proj.description}
+                  </p>
+
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    {(proj.techStack || []).map((tech, idx) => (
+                      <span
+                        key={idx}
+                        className={`text-[10px] px-2 py-0.5 font-medium rounded-md ${tc.tagBg}`}
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'education':
+        if (!educations || educations.length === 0) return null;
+        return (
+          <section
+            key="education"
+            className={`space-y-3 ${sidebarTopBorder}`}
+            style={getSectionStyleProperties('education', theme.sectionStyles)}
+          >
+            <div className={`flex items-center gap-2 ${!isSidebar ? `pb-1.5 border-b ${tc.border}` : ''}`}>
+              <GraduationCap className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${isSidebar ? colors.accent : tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('education', theme.sectionStyles, 'Học Vấn')}
+              </h2>
+            </div>
+
+            <div className="space-y-3" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {educations.map((edu) => (
+                <div key={edu.id} className="space-y-1 group hover:translate-x-1 transition-transform">
+                  <div
+                    className={`font-bold text-[12px] ${tc.title} leading-tight`}
+                    style={{
+                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                      color: 'var(--sec-heading-color, inherit)',
+                    }}
+                  >
+                    {edu.school}
+                  </div>
+                  <div className={`text-[11.5px] font-medium ${tc.body}`}>
+                    {edu.degree}
+                  </div>
+                  <div className={`text-[10.5px] ${tc.meta} flex justify-between`}>
+                    <span>{edu.startDate} – {edu.endDate}</span>
+                  </div>
+                  {edu.gpa && (
+                    <div
+                      className={`text-[10.5px] font-semibold ${tc.gpaColor}`}
+                      style={{ color: 'var(--sec-accent-color, inherit)' }}
+                    >
+                      GPA: {edu.gpa}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'skills':
+        if (!skillCategories || skillCategories.length === 0) return null;
+        return (
+          <section
+            key="skills"
+            className={`space-y-3 ${sidebarTopBorder}`}
+            style={getSectionStyleProperties('skills', theme.sectionStyles)}
+          >
+            <div className={`flex items-center gap-2 ${!isSidebar ? `pb-1.5 border-b ${tc.border}` : ''}`}>
+              <Code2 className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${isSidebar ? colors.accent : tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('skills', theme.sectionStyles, 'Kỹ Năng')}
+              </h2>
+            </div>
+
+            <div className="space-y-3.5" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {skillCategories.map((cat) => (
+                <div key={cat.id} className="space-y-1.5">
+                  <div
+                    className={`font-semibold text-[11px] ${tc.subtitle}`}
+                    style={{
+                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                      color: 'var(--sec-heading-color, inherit)',
+                    }}
+                  >
+                    {cat.categoryName}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(cat.skills || []).map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className={`inline-block px-2.5 py-0.5 text-[10.5px] font-medium rounded-md border transition-all duration-150 hover:scale-105 cursor-default ${colors.accentLight}`}
+                      >
+                        {skill.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'certificates':
+        if (!certificates || certificates.length === 0) return null;
+        return (
+          <section
+            key="certificates"
+            className={`space-y-3 ${sidebarTopBorder}`}
+            style={getSectionStyleProperties('certificates', theme.sectionStyles)}
+          >
+            <div className={`flex items-center gap-2 ${!isSidebar ? `pb-1.5 border-b ${tc.border}` : ''}`}>
+              <Award className={`w-3.5 h-3.5 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${isSidebar ? colors.accent : tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('certificates', theme.sectionStyles, 'Chứng Chỉ')}
+              </h2>
+            </div>
+
+            <div className="space-y-2.5 text-[11px]" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {certificates.map((cert) => (
+                <div key={cert.id} className="space-y-0.5 group hover:translate-x-1 transition-transform">
+                  <div
+                    className={`font-semibold ${tc.subtitle} leading-snug`}
+                    style={{ color: 'var(--sec-heading-color, inherit)' }}
+                  >
+                    {cert.name}
+                  </div>
+                  <div className={`text-[10px] ${tc.meta} flex justify-between`}>
+                    <span>{cert.issuer}</span>
+                    <span>{cert.issueDate}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'achievements':
+        if (!achievements || achievements.length === 0) return null;
+        return (
+          <section
+            key="achievements"
+            className={`space-y-3 ${sidebarTopBorder}`}
+            style={getSectionStyleProperties('achievements', theme.sectionStyles)}
+          >
+            <div className={`flex items-center gap-2 ${!isSidebar ? `pb-1.5 border-b ${tc.border}` : ''}`}>
+              <Award className={`w-3.5 h-3.5 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${isSidebar ? colors.accent : tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('achievements', theme.sectionStyles, 'Giải Thưởng & Thành Tựu')}
+              </h2>
+            </div>
+
+            <div className="space-y-1.5 text-[11px]" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {achievements.map((ach) => (
+                <div key={ach.id} className="text-[11px]">
+                  <span
+                    className={`font-bold ${tc.title}`}
+                    style={{
+                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                      color: 'var(--sec-heading-color, inherit)',
+                    }}
+                  >
+                    ★ {ach.title}
+                  </span>
+                  <span className={tc.meta}>
+                    {' '}
+                    ({ach.issuer}
+                    {ach.year ? `, ${ach.year}` : ''})
+                  </span>
+                  {ach.description && (
+                    <p className={`text-[10.5px] ${tc.bodyMuted} mt-0.5`}>{ach.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const renderCustomSections = (column: 'sidebar' | 'main') => {
+    const matching = (customSections || []).filter((s) => s.column === column);
+    if (matching.length === 0) return null;
+
+    return matching.map((sec) => (
+      <section
+        key={sec.id}
+        className={`space-y-2.5 ${column === 'sidebar' ? `pt-3 border-t ${tc.border}` : ''}`}
+      >
+        <div className={`flex items-center gap-2 ${column === 'main' ? `pb-1.5 border-b ${tc.border}` : ''}`}>
+          <Layers className={`w-3.5 h-3.5 shrink-0 ${colors.accent}`} />
+          <h2
+            className={`text-xs font-bold uppercase tracking-wider ${column === 'sidebar' ? colors.accent : tc.title}`}
+            style={{ fontFamily: headingFontFamily }}
+          >
+            {sec.title}
+          </h2>
+        </div>
+
+        <div className="space-y-2.5 text-[11.5px]">
+          {(sec.items || []).map((item) => (
+            <div key={item.id} className="space-y-0.5">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className={`font-bold ${tc.title}`}>{item.title}</span>
+                {item.date && <span className={`text-[10.5px] ${tc.meta} shrink-0`}>{item.date}</span>}
+              </div>
+              {item.subtitle && (
+                <div className={`text-[11px] font-medium ${tc.body}`}>{item.subtitle}</div>
+              )}
+              {item.description && (
+                <p className={`text-[11px] ${tc.bodyMuted} leading-relaxed`}>{item.description}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    ));
+  };
+
   return (
     <div
       className={`page-a4 mx-auto w-full max-w-[210mm] min-h-[297mm] transition-all duration-300 ${
@@ -253,366 +734,18 @@ export const CVTemplateWarmBold: React.FC<CVTemplateProps> = ({ data, theme }) =
       <div className="flex flex-col md:flex-row print:flex-row min-h-[calc(297mm-125px)]">
         {/* ================= LEFT MAIN CONTENT (1fr) ================= */}
         <main className="flex-1 px-8 py-6 space-y-6">
-          {/* Summary / Profile */}
-          <section
-            className="space-y-2"
-            style={getSectionStyleProperties('summary', theme.sectionStyles)}
-          >
-            <div className={`flex items-center gap-2 pb-1.5 border-b ${tc.border}`}>
-              <Sparkles className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <h2
-                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{
-                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                  color: 'var(--sec-heading-color, inherit)',
-                }}
-              >
-                Giới Thiệu Bản Thân
-              </h2>
-            </div>
-            <RichTextRenderer
-              content={summary}
-              className={`text-[12.5px] leading-relaxed ${tc.body} text-justify`}
-              style={{
-                color: 'var(--sec-text-color, inherit)',
-                fontFamily: 'var(--sec-body-font, inherit)',
-              }}
-            />
-          </section>
-
-          {/* Work Experience */}
-          <section
-            className="space-y-3"
-            style={getSectionStyleProperties('experience', theme.sectionStyles)}
-          >
-            <div className={`flex items-center gap-2 pb-1.5 border-b ${tc.border}`}>
-              <Briefcase className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <h2
-                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{
-                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                  color: 'var(--sec-heading-color, inherit)',
-                }}
-              >
-                Kinh Nghiệm Làm Việc
-              </h2>
-            </div>
-
-            <div className="space-y-4" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {experiences.map((exp) => (
-                <div
-                  key={exp.id}
-                  className={`relative pl-4 border-l-2 ${tc.borderTimeline} space-y-1.5 group p-2 -ml-2 rounded-xl ${tc.hoverRow} transition-all duration-200 cursor-default`}
-                >
-                  {/* Timeline dot */}
-                  <div
-                    className={`absolute -left-[5px] top-[14px] w-2 h-2 rounded-full transition-transform duration-200 group-hover:scale-150 ${colors.dot}`}
-                    style={{ backgroundColor: 'var(--sec-accent-color)' }}
-                  />
-
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                    <h3
-                      className={`font-bold text-[13px] ${tc.title} transition-colors`}
-                      style={{
-                        fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                        color: 'var(--sec-heading-color, inherit)',
-                      }}
-                    >
-                      {exp.position}
-                    </h3>
-                    <span className={`text-[11px] font-semibold ${tc.meta} shrink-0`}>
-                      {exp.startDate} – {exp.endDate}
-                    </span>
-                  </div>
-
-                  <div
-                    className={`text-[12px] font-semibold ${tc.body}`}
-                    style={{ color: 'var(--sec-text-color, inherit)' }}
-                  >
-                    {exp.company}
-                    {exp.location && <span className={`${tc.meta} font-normal`}> • {exp.location}</span>}
-                  </div>
-
-                  <ul
-                    className={`space-y-1 text-[12px] ${tc.bodyMuted} list-disc list-outside pl-4 leading-relaxed`}
-                    style={{ color: 'var(--sec-text-color, inherit)' }}
-                  >
-                    {exp.descriptions.map((desc, idx) => (
-                      <li key={idx}>{desc}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Featured Projects with warm cards */}
-          <section
-            className="space-y-3"
-            style={getSectionStyleProperties('projects', theme.sectionStyles)}
-          >
-            <div className={`flex items-center gap-2 pb-1.5 border-b ${tc.border}`}>
-              <Code2 className={`w-4 h-4 shrink-0 ${colors.accent}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <h2
-                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{
-                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                  color: 'var(--sec-heading-color, inherit)',
-                }}
-              >
-                Dự Án Tiêu Biểu
-              </h2>
-            </div>
-
-            <div className="space-y-3.5" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {projects.map((proj) => (
-                <div
-                  key={proj.id}
-                  className={`p-3.5 rounded-xl border transition-all duration-200 space-y-2 group hover:-translate-y-0.5 hover:shadow-md ${tc.cardBg} ${colors.cardHover}`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <h3
-                        className={`font-bold text-[13px] ${tc.title} truncate`}
-                        style={{
-                          fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                          color: 'var(--sec-heading-color, inherit)',
-                        }}
-                      >
-                        {proj.name}
-                      </h3>
-                      {proj.link && (
-                        <a
-                          href={formatSafeUrl(proj.link)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-flex items-center p-1 rounded ${tc.hoverLink} text-slate-400 hover:${colors.accent} transition-colors shrink-0`}
-                          title="Xem dự án"
-                          style={{ color: 'var(--sec-accent-color, inherit)' }}
-                        >
-                          <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                        </a>
-                      )}
-                    </div>
-                    <span className={`text-[11px] font-medium ${tc.meta} italic shrink-0`}>
-                      {proj.role}
-                    </span>
-                  </div>
-
-                  <p
-                    className={`text-[11.5px] ${tc.bodyMuted} leading-relaxed`}
-                    style={{ color: 'var(--sec-text-color, inherit)' }}
-                  >
-                    {proj.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-1.5 pt-0.5">
-                    {proj.techStack.map((tech, idx) => (
-                      <span
-                        key={idx}
-                        className={`text-[10px] px-2 py-0.5 font-medium rounded-md ${tc.tagBg}`}
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+          {layout.mainSections.map((secId, idx) => renderSection(secId, 'main', idx))}
+          {renderCustomSections('main')}
         </main>
 
-        {/* ================= RIGHT SIDEBAR (Warm Sand Background, 240px) ================= */}
+        {/* ================= RIGHT SIDEBAR (Warm Sand Background, 245px) ================= */}
         <aside
           className={`w-full md:w-[245px] print:w-[235px] shrink-0 px-6 py-6 space-y-6 text-xs border-l ${
             isDark ? 'border-slate-800' : 'border-slate-200/80'
           } ${colors.sidebarBg}`}
         >
-          {/* Social Links & Web */}
-          <section
-            className="space-y-3"
-            style={getSectionStyleProperties('contact', theme.sectionStyles)}
-          >
-            <h2
-              className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
-              style={{
-                fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                color: 'var(--sec-heading-color, inherit)',
-              }}
-            >
-              <Globe className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <span>Liên Kết Mạng Xã Hội</span>
-            </h2>
-
-            <div className="space-y-2 text-[11.5px]" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {getNormalizedSocialLinks(personalInfo, true).map((link) => (
-                <a
-                  key={link.id}
-                  href={formatSafeUrl(link.url)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center justify-between p-1.5 rounded-lg ${tc.hoverLink} transition-colors group`}
-                  title={link.url}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <SocialIcon
-                      platform={link.platform}
-                      className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-current"
-                    />
-                    <span className="truncate">{cleanDisplayUrl(link.url)}</span>
-                  </div>
-                  <ChevronRight className="w-3 h-3 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-              ))}
-            </div>
-          </section>
-
-          {/* Education */}
-          <section
-            className={`space-y-3 pt-3 border-t ${tc.border}`}
-            style={getSectionStyleProperties('education', theme.sectionStyles)}
-          >
-            <h2
-              className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
-              style={{
-                fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                color: 'var(--sec-heading-color, inherit)',
-              }}
-            >
-              <GraduationCap className="w-4 h-4 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <span>Học Vấn</span>
-            </h2>
-
-            <div className="space-y-3" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {educations.map((edu) => (
-                <div key={edu.id} className="space-y-1 group hover:translate-x-1 transition-transform">
-                  <div
-                    className={`font-bold text-[12px] ${tc.title} leading-tight`}
-                    style={{
-                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                      color: 'var(--sec-heading-color, inherit)',
-                    }}
-                  >
-                    {edu.school}
-                  </div>
-                  <div className={`text-[11.5px] font-medium ${tc.body}`}>
-                    {edu.degree}
-                  </div>
-                  <div className={`text-[10.5px] ${tc.meta} flex justify-between`}>
-                    <span>{edu.startDate} – {edu.endDate}</span>
-                  </div>
-                  {edu.gpa && (
-                    <div
-                      className={`text-[10.5px] font-semibold ${tc.gpaColor}`}
-                      style={{ color: 'var(--sec-accent-color, inherit)' }}
-                    >
-                      GPA: {edu.gpa}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Skills Breakdown */}
-          <section
-            className={`space-y-3 pt-3 border-t ${tc.border}`}
-            style={getSectionStyleProperties('skills', theme.sectionStyles)}
-          >
-            <h2
-              className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
-              style={{
-                fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                color: 'var(--sec-heading-color, inherit)',
-              }}
-            >
-              <Code2 className="w-4 h-4 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <span>Kỹ Năng</span>
-            </h2>
-
-            <div className="space-y-3.5" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {skillCategories.map((cat) => (
-                <div key={cat.id} className="space-y-1.5">
-                  <div
-                    className={`font-semibold text-[11px] ${tc.subtitle}`}
-                    style={{
-                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                      color: 'var(--sec-heading-color, inherit)',
-                    }}
-                  >
-                    {cat.categoryName}
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {cat.skills.map((skill, idx) => (
-                      <span
-                        key={idx}
-                        className={`inline-block px-2.5 py-0.5 text-[10.5px] font-medium rounded-md border transition-all duration-150 hover:scale-105 cursor-default ${colors.accentLight}`}
-                      >
-                        {skill.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Certifications & Achievements */}
-          {((certificates && certificates.length > 0) || (achievements && achievements.length > 0)) && (
-            <section
-              className={`space-y-3 pt-3 border-t ${tc.border}`}
-              style={getSectionStyleProperties('certificates', theme.sectionStyles)}
-            >
-              <h2
-                className={`text-xs font-bold uppercase tracking-wider ${colors.accent} flex items-center gap-1.5`}
-                style={{
-                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                  color: 'var(--sec-heading-color, inherit)',
-                }}
-              >
-                <Award className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
-                <span>Chứng Chỉ & Giải Thưởng</span>
-              </h2>
-
-              <div className="space-y-2.5 text-[11px]" style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}>
-                {certificates && certificates.map((cert) => (
-                  <div key={cert.id} className="space-y-0.5 group hover:translate-x-1 transition-transform">
-                    <div
-                      className={`font-semibold ${tc.subtitle} leading-snug`}
-                      style={{ color: 'var(--sec-heading-color, inherit)' }}
-                    >
-                      {cert.name}
-                    </div>
-                    <div className={`text-[10px] ${tc.meta} flex justify-between`}>
-                      <span>{cert.issuer}</span>
-                      <span>{cert.issueDate}</span>
-                    </div>
-                  </div>
-                ))}
-
-                {achievements && achievements.length > 0 && (
-                  <div
-                    className={`pt-2 border-t border-dashed ${tc.border} space-y-1.5`}
-                    style={getSectionStyleProperties('achievements', theme.sectionStyles)}
-                  >
-                    {achievements.map((ach) => (
-                      <div key={ach.id} className="text-[10.5px]">
-                        <span
-                          className={`font-bold ${tc.title}`}
-                          style={{
-                            fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                            color: 'var(--sec-heading-color, inherit)',
-                          }}
-                        >
-                          ★ {ach.title}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
+          {layout.sidebarSections.map((secId, idx) => renderSection(secId, 'sidebar', idx))}
+          {renderCustomSections('sidebar')}
         </aside>
       </div>
     </div>

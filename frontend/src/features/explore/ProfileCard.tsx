@@ -1,30 +1,70 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { MapPin, ArrowUpRight, CheckCircle, Sparkles, Eye } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { MapPin, ArrowUpRight, CheckCircle, Sparkles, Eye, Copy } from 'lucide-react';
 import { CVData, CV_CATEGORIES } from '../../types/cv';
 import { TEMPLATES_REGISTRY } from '../cv-templates/TemplateRegistry';
 import { stripHtml } from '../../utils/text';
+import { cloneCV } from '../../services/cvStorageService';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 interface ProfileCardProps {
   cv: CVData;
 }
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({ cv }) => {
-  const { personalInfo, summary, skillCategories, themeConfig, id, category, viewCount } = cv;
+  const {
+    personalInfo,
+    summary,
+    skillCategories,
+    themeConfig,
+    id,
+    category,
+    viewCount,
+    isCommunityTemplate,
+    templateTitle,
+    templateDescription,
+    cloneCount,
+  } = cv;
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   // Flatten top skills for preview
-  const topSkills = skillCategories.flatMap((c) => c.skills.map((s) => s.name)).slice(0, 4);
+  const topSkills = (skillCategories || [])
+    .flatMap((c) => (c.skills || []).map((s) => s.name))
+    .slice(0, 4);
 
   // Template metadata
-  const templateMeta = TEMPLATES_REGISTRY[themeConfig.templateId] || TEMPLATES_REGISTRY['template-classic-teal'];
+  const templateMeta =
+    TEMPLATES_REGISTRY[themeConfig.templateId] || TEMPLATES_REGISTRY['template-classic-teal'];
 
   // Category metadata
   const categoryMeta = CV_CATEGORIES.find((c) => c.id === category);
+
+  const handleUseTemplate = () => {
+    const cloned = cloneCV(cv, user?.uid);
+    navigate(`/editor/${cloned.id}`);
+  };
 
   return (
     <div className="group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-6 shadow-xs hover:shadow-xl hover:shadow-teal-500/10 hover:-translate-y-1 hover:border-teal-500/40 dark:hover:border-teal-500/40 transition-all duration-300 flex flex-col justify-between">
       {/* Top Header: Avatar + Name + Title + Category Badge */}
       <div>
+        {isCommunityTemplate && (
+          <div className="mb-3 flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="text-[11px] font-bold text-amber-800 dark:text-amber-300 truncate">
+                {templateTitle || 'Mẫu CV Cộng Đồng'}
+              </span>
+            </div>
+            {typeof cloneCount === 'number' && cloneCount > 0 && (
+              <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 shrink-0">
+                {cloneCount} lượt dùng
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3.5 min-w-0">
             {/* Avatar with status indicator */}
@@ -72,9 +112,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ cv }) => {
           )}
         </div>
 
-        {/* Bio Summary Snippet */}
+        {/* Bio Summary or Template Description Snippet */}
         <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed mt-3.5">
-          {stripHtml(summary)}
+          {isCommunityTemplate && templateDescription
+            ? templateDescription
+            : stripHtml(summary)}
         </p>
 
         {/* Skill Badges */}
@@ -91,28 +133,45 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ cv }) => {
         </div>
       </div>
 
-      {/* Bottom Footer: Template info + Views + Action button */}
-      <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3">
+      {/* Bottom Footer: Template info + Views + Action buttons */}
+      <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
         {/* Template Badge & Views */}
-        <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 min-w-0">
-          <div className="flex items-center gap-1.5 font-medium truncate">
+        <div className="flex items-center gap-2.5 text-[11px] text-slate-500 dark:text-slate-400 min-w-0">
+          <div className="flex items-center gap-1 font-medium truncate">
             <Sparkles className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-            <span className="truncate max-w-[85px] sm:max-w-[105px]">{templateMeta?.name.split(':')[0]}</span>
+            <span className="truncate max-w-[75px] sm:max-w-[95px]">
+              {templateMeta?.name.split(':')[0]}
+            </span>
           </div>
-          <div className="flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-300 shrink-0" title="Tổng lượt xem hồ sơ">
+          <div
+            className="flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-300 shrink-0"
+            title="Tổng lượt xem hồ sơ"
+          >
             <Eye className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />
             <span>{viewCount || 0}</span>
           </div>
         </div>
 
-        {/* CTA Button */}
-        <Link
-          to={`/cv/${id}`}
-          className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-teal-600 hover:text-white dark:hover:bg-teal-500 dark:hover:text-white text-slate-800 dark:text-slate-200 text-xs font-semibold transition-all group/btn shadow-xs cursor-pointer shrink-0"
-        >
-          <span>Xem CV</span>
-          <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-        </Link>
+        {/* CTA Buttons */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={handleUseTemplate}
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-teal-50 dark:bg-teal-950/70 hover:bg-teal-600 hover:text-white dark:hover:bg-teal-500 dark:hover:text-white text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 text-[11px] font-bold transition-all cursor-pointer"
+            title="Nhân bản mẫu CV này để tự chỉnh sửa và dùng thử ngay"
+          >
+            <Copy className="w-3 h-3" />
+            <span>Dùng Mẫu</span>
+          </button>
+
+          <Link
+            to={`/cv/${id}`}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-teal-600 hover:text-white dark:hover:bg-teal-500 dark:hover:text-white text-slate-800 dark:text-slate-200 text-xs font-semibold transition-all group/btn shadow-xs cursor-pointer"
+          >
+            <span>Xem CV</span>
+            <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+          </Link>
+        </div>
       </div>
     </div>
   );

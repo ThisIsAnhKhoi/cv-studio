@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import {
   Compass,
   Search,
@@ -8,9 +8,9 @@ import {
   Loader2,
   TrendingUp,
   Clock,
-  ArrowUpDown,
   RotateCcw,
   Layers,
+  Users,
 } from 'lucide-react';
 import { ProfileCard } from '../features/explore/ProfileCard';
 import { getExploreCVs } from '../services/cvStorageService';
@@ -25,10 +25,12 @@ export const ExplorePage: React.FC = () => {
   const initialCategory = (searchParams.get('category') as CVCategory | 'all') || 'all';
   const initialSort = (searchParams.get('sort') as 'views' | 'newest') || 'views';
   const initialQuery = searchParams.get('q') || '';
+  const initialTab = searchParams.get('tab') === 'templates' ? 'templates' : 'all';
 
   const [selectedCategory, setSelectedCategory] = useState<CVCategory | 'all'>(initialCategory);
   const [selectedSort, setSelectedSort] = useState<'views' | 'newest'>(initialSort);
   const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
+  const [activeTab, setActiveTab] = useState<'all' | 'templates'>(initialTab);
 
   const [profiles, setProfiles] = useState<CVData[]>([]);
   const [cursor, setCursor] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
@@ -38,11 +40,12 @@ export const ExplorePage: React.FC = () => {
 
   // Sync state to URL search params
   const updateUrlParams = useCallback(
-    (cat: string, sort: string, q: string) => {
+    (cat: string, sort: string, q: string, tab: 'all' | 'templates') => {
       const params = new URLSearchParams();
       if (cat && cat !== 'all') params.set('category', cat);
       if (sort && sort !== 'views') params.set('sort', sort);
       if (q && q.trim()) params.set('q', q.trim());
+      if (tab === 'templates') params.set('tab', 'templates');
       setSearchParams(params, { replace: true });
     },
     [setSearchParams]
@@ -99,17 +102,23 @@ export const ExplorePage: React.FC = () => {
     }
   };
 
-  // Instant filter using removeVietnameseTones
+  // Instant filter using removeVietnameseTones & activeTab
   const filteredProfiles = useMemo(() => {
-    if (!searchQuery.trim()) return profiles;
+    let baseList = profiles;
+    if (activeTab === 'templates') {
+      baseList = baseList.filter((p) => p.isCommunityTemplate === true);
+    }
+
+    if (!searchQuery.trim()) return baseList;
 
     const queryNormalized = removeVietnameseTones(searchQuery);
 
-    return profiles.filter((p) => {
+    return baseList.filter((p) => {
       const nameNorm = removeVietnameseTones(p.personalInfo.fullName);
       const titleNorm = removeVietnameseTones(p.personalInfo.title);
       const locationNorm = removeVietnameseTones(p.personalInfo.location);
       const summaryNorm = removeVietnameseTones(stripHtml(p.summary));
+      const templateTitleNorm = removeVietnameseTones(p.templateTitle || '');
       const skillsNorm = removeVietnameseTones(
         p.skillCategories.flatMap((c) => c.skills.map((s) => s.name)).join(' ')
       );
@@ -119,48 +128,91 @@ export const ExplorePage: React.FC = () => {
         titleNorm.includes(queryNormalized) ||
         locationNorm.includes(queryNormalized) ||
         skillsNorm.includes(queryNormalized) ||
-        summaryNorm.includes(queryNormalized)
+        summaryNorm.includes(queryNormalized) ||
+        templateTitleNorm.includes(queryNormalized)
       );
     });
-  }, [profiles, searchQuery]);
+  }, [profiles, searchQuery, activeTab]);
 
   const handleCategoryChange = (cat: CVCategory | 'all') => {
     setSelectedCategory(cat);
-    updateUrlParams(cat, selectedSort, searchQuery);
+    updateUrlParams(cat, selectedSort, searchQuery, activeTab);
   };
 
   const handleSortChange = (sort: 'views' | 'newest') => {
     setSelectedSort(sort);
-    updateUrlParams(selectedCategory, sort, searchQuery);
+    updateUrlParams(selectedCategory, sort, searchQuery, activeTab);
   };
 
   const handleSearchChange = (val: string) => {
     setSearchQuery(val);
-    updateUrlParams(selectedCategory, selectedSort, val);
+    updateUrlParams(selectedCategory, selectedSort, val, activeTab);
+  };
+
+  const handleTabChange = (tab: 'all' | 'templates') => {
+    setActiveTab(tab);
+    updateUrlParams(selectedCategory, selectedSort, searchQuery, tab);
   };
 
   const handleResetFilters = () => {
     setSelectedCategory('all');
     setSelectedSort('views');
     setSearchQuery('');
+    setActiveTab('all');
     setSearchParams(new URLSearchParams(), { replace: true });
   };
+
+  const communityTemplateCount = useMemo(
+    () => profiles.filter((p) => p.isCommunityTemplate === true).length,
+    [profiles]
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Page Header */}
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100/80 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 text-xs font-semibold">
-            <Compass className="w-3.5 h-3.5" />
-            <span>Danh Bạ Ứng Viên Công Khai</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100/80 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 text-xs font-semibold">
+              <Compass className="w-3.5 h-3.5" />
+              <span>Danh Bạ Ứng Viên & Thư Viện Mẫu CV Cộng Đồng</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-display tracking-tight">
+              Khám Phá Hồ Sơ & Portfolio
+            </h1>
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+              Tìm kiếm ứng viên tài năng theo chuyên ngành, trải nghiệm xem CV trực tuyến chuẩn A4,
+              hoặc nhấn <strong>"Dùng Mẫu"</strong> để nhân bản bất kỳ thiết kế nào về tùy chỉnh riêng.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-display tracking-tight">
-            Khám Phá Hồ Sơ & Portfolio
-          </h1>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
-            Tìm kiếm ứng viên tài năng theo chuyên ngành, trải nghiệm xem CV trực tuyến chuẩn A4, và học hỏi cách trình bày hồ sơ chuyên nghiệp.
-          </p>
+
+          {/* Mode Tabs: All Profiles vs Community Templates */}
+          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs self-start">
+            <button
+              type="button"
+              onClick={() => handleTabChange('all')}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'all'
+                  ? 'bg-teal-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Tất Cả Hồ Sơ ({profiles.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTabChange('templates')}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'templates'
+                  ? 'bg-amber-500 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Mẫu CV Cộng Đồng ({communityTemplateCount})</span>
+            </button>
+          </div>
         </div>
 
         {/* Filter & Search Toolbar */}

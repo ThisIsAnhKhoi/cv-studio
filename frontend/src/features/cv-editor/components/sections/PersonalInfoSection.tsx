@@ -20,8 +20,13 @@ import {
   AlertCircle,
   Loader2,
   Check,
+  Crop,
+  ChevronUp,
+  GripVertical,
 } from 'lucide-react';
-import { processAvatarFile, PRESET_AVATARS } from '../../../../utils/image';
+import { reorderArray } from '../../utils/layoutHelpers';
+import { processAvatarFile, validateImageFile, PRESET_AVATARS } from '../../../../utils/image';
+import { ImageCropModal } from '../ImageCropModal';
 import {
   SOCIAL_PLATFORMS,
   SocialIcon,
@@ -73,30 +78,37 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   const [locationSearch, setLocationSearch] = useState('');
   const locationDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Quản lý upload ảnh đại diện
+  // Quản lý upload & crop ảnh đại diện
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [showPresets, setShowPresets] = useState(false);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Xử lý tệp ảnh được chọn (từ file picker hoặc drop)
-  const handleFileSelect = async (file?: File | null) => {
+  // Xử lý tệp ảnh được chọn (từ file picker hoặc drop) -> Mở modal crop tương tác
+  const handleFileSelect = (file?: File | null) => {
     if (!file) return;
     setUploadError(null);
-    setIsUploading(true);
-    try {
-      const dataUrl = await processAvatarFile(file, {
-        targetSize: 400,
-        quality: 0.88,
-      });
-      onChange('avatarUrl', dataUrl);
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : 'Lỗi khi xử lý ảnh đại diện.');
-    } finally {
-      setIsUploading(false);
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      setUploadError(validation.error || 'Ảnh không hợp lệ.');
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onerror = () => {
+      setUploadError('Không thể đọc dữ liệu tệp ảnh. Vui lòng thử lại.');
+    };
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setCropImageSrc(reader.result);
+        setIsCropModalOpen(true);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,6 +213,13 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     commitSocialLinks(updated);
   };
 
+  // Sắp xếp thứ tự liên kết mạng xã hội
+  const handleReorderSocialLink = (startIndex: number, endIndex: number) => {
+    const updated = reorderArray(socialLinks, startIndex, endIndex);
+    commitSocialLinks(updated);
+  };
+  const [draggedSocialIdx, setDraggedSocialIdx] = useState<number | null>(null);
+
   return (
     <div className="space-y-4">
       {/* 1. Avatar Preview & Upload Box */}
@@ -257,22 +276,37 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                   Ảnh Đại Diện Cá Nhân
                 </label>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Tải ảnh từ máy (tự động crop vuông 1:1, nén nhẹ &lt; 40kB).
+                  Tải ảnh từ máy (hỗ trợ phóng to, xoay và cắt góc tùy chỉnh chuẩn 1:1).
                 </p>
               </div>
 
               {personalInfo.avatarUrl && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    onChange('avatarUrl', '');
-                    setUploadError(null);
-                  }}
-                  className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  <span>Xóa ảnh</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCropImageSrc(personalInfo.avatarUrl);
+                      setIsCropModalOpen(true);
+                    }}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors cursor-pointer"
+                    title="Mở bảng cắt và chỉnh góc ảnh"
+                  >
+                    <Crop className="w-3 h-3" />
+                    <span>Cắt lại</span>
+                  </button>
+                  <span className="text-slate-300 dark:text-slate-700">•</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onChange('avatarUrl', '');
+                      setUploadError(null);
+                    }}
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>Xóa ảnh</span>
+                  </button>
+                </div>
               )}
             </div>
 
@@ -642,8 +676,33 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
               return (
                 <div
                   key={link.id || idx}
-                  className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/70"
+                  draggable
+                  onDragStart={(e) => {
+                    setDraggedSocialIdx(idx);
+                    e.dataTransfer.effectAllowed = 'move';
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (draggedSocialIdx !== null && draggedSocialIdx !== idx) {
+                      handleReorderSocialLink(draggedSocialIdx, idx);
+                    }
+                    setDraggedSocialIdx(null);
+                  }}
+                  onDragEnd={() => setDraggedSocialIdx(null)}
+                  className={`flex items-center gap-1.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border transition-all ${
+                    draggedSocialIdx === idx
+                      ? 'opacity-50 border-teal-500'
+                      : 'border-slate-200/70 dark:border-slate-700/70'
+                  }`}
                 >
+                  <span title="Kéo thả để đổi thứ tự kênh" className="shrink-0 flex items-center">
+                    <GripVertical className="w-3.5 h-3.5 text-slate-400 hover:text-teal-600 cursor-grab active:cursor-grabbing" />
+                  </span>
+
                   {/* Platform selector */}
                   <div className="relative shrink-0">
                     <select
@@ -680,6 +739,29 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                     />
                   </div>
 
+                  {socialLinks.length > 1 && (
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => handleReorderSocialLink(idx, idx - 1)}
+                        className="p-1 rounded text-slate-400 hover:text-teal-600 disabled:opacity-30 cursor-pointer"
+                        title="Lên trên"
+                      >
+                        <ChevronUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === socialLinks.length - 1}
+                        onClick={() => handleReorderSocialLink(idx, idx + 1)}
+                        className="p-1 rounded text-slate-400 hover:text-teal-600 disabled:opacity-30 cursor-pointer"
+                        title="Xuống dưới"
+                      >
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+
                   {/* Remove button */}
                   <button
                     type="button"
@@ -701,6 +783,19 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
           </div>
         )}
       </div>
+
+      {/* Interactive Crop Modal */}
+      {isCropModalOpen && (
+        <ImageCropModal
+          isOpen={isCropModalOpen}
+          imageSrc={cropImageSrc}
+          onClose={() => setIsCropModalOpen(false)}
+          onApply={(croppedDataUrl) => {
+            onChange('avatarUrl', croppedDataUrl);
+            setUploadError(null);
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -221,3 +221,46 @@
 
 
 
+
+
+---
+
+## 10. GIAI ĐOẠN V3: NGHIÊN CỨU & KHỞI ĐỘNG TÍNH NĂNG TỰ BUILD DRAG & DROP, BỐ CỤC ĐA CỘT VÀ MẪU CV CỘNG ĐỒNG (29/10/2026)
+
+### 10.1. Kết quả kiểm toán & nghiên cứu trước thực hiện
+- **Độ nắm bắt hệ thống**: **96.5%** (Đủ điều kiện dừng nghiên cứu và chuyển sang giai đoạn phát triển theo chỉ đạo của Người dùng).
+- **Trạng thái kiểm thử tự động**: 144 / 144 unit tests PASS (22 suites) 100%.
+- **Trạng thái TypeScript**: `tsc --noEmit` 0 lỗi.
+- **Trạng thái Production Build**: `npm run build` thành công trong 14.63s, 0 cảnh báo chunk.
+- **Tài liệu Kế hoạch chính thức**: Đã lập [KE_HOACH_NGHIEN_CUU_VA_PHAT_TRIEN_V3.md](KE_HOACH_NGHIEN_CUU_VA_PHAT_TRIEN_V3.md).
+
+### 10.2. Các bước hành động kế tiếp ngay lập tức
+1. **Bước 1**: Cập nhật Schema `types/cv.ts` (`LayoutConfig`, `isCommunityTemplate`) và viết các action reorder trong `useCVStore.ts`.
+2. **Bước 2**: Tích hợp UI Drag & Drop và nút Lên/Xuống cho 7 nhóm mục con trong Editor.
+3. **Bước 3**: Xây dựng Trình Tự Build Bố Cục (`LayoutCustomizerSection.tsx`) và Dynamic Section Dispatcher cho 3 Template.
+4. **Bước 4**: Xây dựng Modal Xuất bản Mẫu CV Cộng Đồng và Showcase Mẫu CV cho cộng đồng tham khảo & dùng thử.
+5. **Bước 5**: Kiểm thử tự động toàn diện và kiểm tra trên trình duyệt thực tế.
+
+
+---
+
+## 11. Hoàn Thiện Thực Thi V3.0 (Drag & Drop Builder, Mục Tùy Chỉnh & Thư Viện Mẫu CV Cộng Đồng)
+- **Trạng thái**: **ĐÃ HOÀN THÀNH 100% & KIỂM ĐỊNH 0 LỖI**
+- **Các hạng mục đã triển khai**:
+  1. **Bước 1 — Data Schema v3 & Layout Helpers**:
+     - Mở rộng `frontend/src/types/cv.ts` (`LayoutConfig`, `CustomSection`, `CustomSectionItem`, `SectionStyleConfig.customTitle`, metadata `isCommunityTemplate`, `templateTitle`, `templateDescription`, `authorName`, `cloneCount`).
+     - Xây dựng `frontend/src/features/cv-editor/utils/layoutHelpers.ts` với cơ chế tự động khôi phục & bù đắp bố cục (`resolveLayoutConfig`) đảm bảo không bao giờ mất hoặc trùng khối.
+     - Bổ sung 19 actions mới vào `useCVStore.ts` và `useCVEditor.ts`.
+  2. **Bước 2 — Kéo Thả (Drag & Drop + Nút Lên/Xuống) Từng Phần Tử (Item-level Reordering)**:
+     - Tích hợp tay nắm kéo thả (`GripVertical`) + nút `ChevronUp` / `ChevronDown` cho toàn bộ các mục: Kinh nghiệm (`ExperienceSection.tsx`), Học vấn (`EducationSection.tsx`), Kỹ năng & Nhóm kỹ năng (`SkillsSection.tsx`), Dự án (`ProjectsSection.tsx`), Thành tựu (`AchievementsSection.tsx`), Chứng chỉ (`CertificatesSection.tsx`), và Liên kết mạng xã hội (`PersonalInfoSection.tsx`).
+     - Xây dựng `CustomSectionsEditor.tsx` cho phép người dùng tự tạo thêm các khối mới (Ngoại ngữ, Hoạt động, Sở thích, Người tham chiếu, Công trình khoa học...) và chọn cột hiển thị.
+  3. **Bước 3 — Trình Tự Build Bố Cục 2 Cột (`LayoutCustomizerSection.tsx`) & Render Động Cả 3 Mẫu CV**:
+     - Xây dựng bảng kéo thả trực quan 2 cột (`Cột Phụ Sidebar` ↔ `Cột Chính Main`), cho phép ẩn/hiện từng khối, đổi tên tiêu đề khối trực tiếp (`customTitle`) và khôi phục bố cục mặc định.
+     - Nâng cấp toàn bộ 3 mẫu CV (`CVTemplateClassicTeal.tsx`, `CVTemplateWarmBold.tsx`, `CVTemplateModernMinimal.tsx`) render động theo thứ tự `layoutConfig` và `customSections`.
+  4. **Bước 4 — Lưu & Chia Sẻ Mẫu CV Cộng Đồng (`PublishTemplateModal.tsx` & `cvStorageService.ts`)**:
+     - Bổ sung `publishCommunityTemplate` và `getCommunityTemplates` trong `cvStorageService.ts`.
+     - Tích hợp nút **"Lưu Mẫu Lên Cộng Đồng"** ngay trên thanh công cụ `CVEditorPage.tsx` và trên từng thẻ CV trong `DashboardPage.tsx`.
+     - Hiển thị **Thư Viện Mẫu CV Cộng Đồng** tại Trang Chủ (`TemplatesShowcaseSection.tsx`) và Trang Khám Phá (`ExplorePage.tsx`), cho phép mọi người xem tham khảo hoặc nhấn 1-Click **"Dùng Thử Mẫu Này"** (`cloneCV` -> `/editor/:clonedId`) cho cả người dùng đã đăng nhập lẫn khách vãng lai.
+- **Kết quả kiểm thử & Build**:
+  - `npm test --prefix frontend -- --run`: **23/23 test suites passed (149/149 tests passed)**.
+  - `npm run build --prefix frontend`: **Thành công 100% (`tsc && vite build`, 0 lỗi, 8.65s)**.

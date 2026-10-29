@@ -118,6 +118,22 @@ export const mockProfilesList: CVData[] = [
         issueDate: '2021',
       },
     ],
+    customSections: [
+      {
+        id: 'csec-tt-1',
+        title: 'Ngoại Ngữ & Giao Tiếp Quốc Tế',
+        column: 'sidebar',
+        items: [
+          {
+            id: 'citem-tt-1',
+            title: 'Tiếng Anh Chuyên Ngành UX',
+            subtitle: 'IELTS 8.0 Overall',
+            date: '2022',
+            description: 'Thuyết trình sản phẩm & điều phối Design Sprint với đội ngũ đa quốc gia.',
+          },
+        ],
+      },
+    ],
     themeConfig: {
       templateId: 'template-warm-bold',
       primaryColor: '#D97706',
@@ -126,6 +142,11 @@ export const mockProfilesList: CVData[] = [
       fontHeading: 'Gilroy',
       fontBody: 'Be Vietnam Pro',
       darkMode: false,
+      layoutConfig: {
+        sidebarSections: ['contact', 'skills', 'education', 'certificates'],
+        mainSections: ['summary', 'projects', 'experience', 'achievements'],
+        hiddenSections: [],
+      },
     },
     createdAt: '2024-03-01T08:00:00.000Z',
     updatedAt: '2024-04-12T10:00:00.000Z',
@@ -133,6 +154,12 @@ export const mockProfilesList: CVData[] = [
     status: 'active',
     ownerDisabled: false,
     category: 'design',
+    isCommunityTemplate: true,
+    templateTitle: 'Portfolio UX/UI Lead — Ưu Tiên Dự Án Lên Đầu',
+    templateDescription:
+      'Bố cục tùy chỉnh đẩy mục Dự Án Tiêu Biểu lên ngay dưới phần Giới thiệu để gây ấn tượng thị giác lập tức với Hiring Manager ngành Product Design.',
+    authorName: 'Nguyễn Lê Thanh Trúc',
+    cloneCount: 342,
   },
 
   // Profile 3: Lê Hoàng Nam (Data Scientist & AI Specialist) - Template 3 Modern Minimal
@@ -238,6 +265,22 @@ export const mockProfilesList: CVData[] = [
         issueDate: '2022',
       },
     ],
+    customSections: [
+      {
+        id: 'csec-hn-1',
+        title: 'Công Trình Khoa Học & Ấn Phẩm',
+        column: 'main',
+        items: [
+          {
+            id: 'citem-hn-1',
+            title: 'Vietnamese Legal RAG with Hybrid Dense-Sparse Retrieval',
+            subtitle: 'Tác giả chính • Hội nghị IEEE RIVF',
+            date: '2023',
+            description: 'Đề xuất kiến trúc truy xuất ngữ nghĩa kết hợp từ khóa cho văn bản pháp luật tiếng Việt.',
+          },
+        ],
+      },
+    ],
     themeConfig: {
       templateId: 'template-modern-minimal',
       primaryColor: '#B91C1C',
@@ -246,6 +289,11 @@ export const mockProfilesList: CVData[] = [
       fontHeading: 'Montserrat',
       fontBody: 'Be Vietnam Pro',
       darkMode: false,
+      layoutConfig: {
+        sidebarSections: ['skills', 'education', 'achievements', 'certificates'],
+        mainSections: ['summary', 'experience', 'projects', 'contact'],
+        hiddenSections: [],
+      },
     },
     createdAt: '2024-02-15T08:00:00.000Z',
     updatedAt: '2024-04-10T10:00:00.000Z',
@@ -253,6 +301,12 @@ export const mockProfilesList: CVData[] = [
     status: 'active',
     ownerDisabled: false,
     category: 'data-ai',
+    isCommunityTemplate: true,
+    templateTitle: 'CV Nghiên Cứu AI & Khoa Học Dữ Liệu (Chuẩn Học Thuật + Công Nghiệp)',
+    templateDescription:
+      'Mẫu CV tối giản tích hợp mục tùy chỉnh Công Trình Khoa Học & Ấn Phẩm, rất phù hợp cho kỹ sư AI/ML, Data Scientist và R&D.',
+    authorName: 'Lê Hoàng Nam',
+    cloneCount: 289,
   },
 
   // Profile 4: Đỗ Minh Trang (Digital Marketing Lead & Brand Strategist) - Template 1 Classic Teal
@@ -350,12 +404,17 @@ export const mockProfilesList: CVData[] = [
     ],
     themeConfig: {
       templateId: 'template-classic-teal',
-      primaryColor: '#0E7C6B',
-      primaryColorPreset: 'teal',
-      accentColor: '#0A5C4F',
+      primaryColor: '#7C3AED',
+      primaryColorPreset: 'purple',
+      accentColor: '#6D28D9',
       fontHeading: 'Gilroy',
       fontBody: 'Be Vietnam Pro',
       darkMode: false,
+      layoutConfig: {
+        sidebarSections: ['contact', 'skills', 'achievements', 'education', 'certificates'],
+        mainSections: ['summary', 'experience', 'projects'],
+        hiddenSections: [],
+      },
     },
     createdAt: '2024-03-10T08:00:00.000Z',
     updatedAt: '2024-04-11T10:00:00.000Z',
@@ -363,6 +422,12 @@ export const mockProfilesList: CVData[] = [
     status: 'active',
     ownerDisabled: false,
     category: 'marketing',
+    isCommunityTemplate: true,
+    templateTitle: 'Growth Marketing & Brand Lead — Tông Tím Sáng Tạo',
+    templateDescription:
+      'Biến thể Classic Teal phối tông Tím Royal và sắp xếp Thành Tựu lên cột trái để làm nổi bật các giải thưởng chiến dịch Marketing.',
+    authorName: 'Đỗ Minh Trang',
+    cloneCount: 215,
   },
 
   // Profile 5: Phạm Quốc Bảo (Mobile Flutter & React Native Engineer) - Template 2 Warm Bold
@@ -449,12 +514,12 @@ export const mockProfilesList: CVData[] = [
     ],
     themeConfig: {
       templateId: 'template-warm-bold',
-      primaryColor: '#D97706',
-      primaryColorPreset: 'orange',
-      accentColor: '#B45309',
+      primaryColor: '#2563EB',
+      primaryColorPreset: 'blue',
+      accentColor: '#1D4ED8',
       fontHeading: 'Gilroy',
       fontBody: 'Be Vietnam Pro',
-      darkMode: false,
+      darkMode: true,
     },
     createdAt: '2024-01-20T08:00:00.000Z',
     updatedAt: '2024-04-12T10:00:00.000Z',
@@ -462,6 +527,12 @@ export const mockProfilesList: CVData[] = [
     status: 'active',
     ownerDisabled: false,
     category: 'tech',
+    isCommunityTemplate: true,
+    templateTitle: 'Senior Mobile Developer — Dark Mode Tech Edition',
+    templateDescription:
+      'Mẫu CV chế độ nền tối (Dark Mode) kết hợp sắc xanh Ocean Blue hiện đại dành riêng cho lập trình viên Mobile & Full-stack.',
+    authorName: 'Phạm Quốc Bảo',
+    cloneCount: 198,
   },
 
   // Profile 6: Hoàng Thảo My (HR Manager & Talent Partner) - Template 3 Modern Minimal
@@ -779,4 +850,3 @@ export function searchProfiles(keyword: string): CVData[] {
     return fullName.includes(q) || title.includes(q) || skills.includes(q);
   });
 }
-

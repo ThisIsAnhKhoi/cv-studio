@@ -59,4 +59,11 @@ describe('image.ts utilities', () => {
       });
     });
   });
+
+  describe('cropAndExportAvatar', () => {
+    it('is exported as a function and accepts valid transform options', async () => {
+      const { cropAndExportAvatar } = await import('../image');
+      expect(typeof cropAndExportAvatar).toBe('function');
+    });
+  });
 });

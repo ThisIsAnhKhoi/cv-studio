@@ -116,6 +116,29 @@ export interface SectionStyleConfig {
   accentColor?: string;
   headingFont?: string;
   bodyFont?: string;
+  customTitle?: string;
+}
+
+export interface LayoutConfig {
+  sidebarSections: SectionId[];
+  mainSections: SectionId[];
+  hiddenSections: SectionId[];
+  generalOrder?: SectionId[];
+}
+
+export interface CustomSectionItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  date?: string;
+  description?: string;
+}
+
+export interface CustomSection {
+  id: string;
+  title: string;
+  column: 'sidebar' | 'main';
+  items: CustomSectionItem[];
 }
 
 export interface ThemeConfig {
@@ -128,6 +151,7 @@ export interface ThemeConfig {
   darkMode: boolean;
   schemaVersion?: number;
   sectionStyles?: Partial<Record<SectionId, SectionStyleConfig>>;
+  layoutConfig?: LayoutConfig;
 }
 
 export type CVCategory =
@@ -268,4 +292,12 @@ export interface CVData {
   disabledReason?: string;
   disabledAt?: string;
   disabledBy?: string;
+
+  // Trường mở rộng v3.0 (Tự Build Custom Sections & Mẫu CV Cộng Đồng)
+  customSections?: CustomSection[];
+  isCommunityTemplate?: boolean;
+  templateTitle?: string;
+  templateDescription?: string;
+  authorName?: string;
+  cloneCount?: number;
 }

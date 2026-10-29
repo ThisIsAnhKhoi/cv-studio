@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AchievementItem } from '../../../../types/cv';
-import { Plus, Trash2, Trophy } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Trophy,
+  GripVertical,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react';
 
 interface AchievementsSectionProps {
   achievements: AchievementItem[];
   onAdd: () => void;
   onUpdate: (id: string, field: keyof AchievementItem, value: any) => void;
   onRemove: (id: string) => void;
+  onReorder?: (startIndex: number, endIndex: number) => void;
 }
 
 export const AchievementsSection: React.FC<AchievementsSectionProps> = ({
@@ -14,12 +22,47 @@ export const AchievementsSection: React.FC<AchievementsSectionProps> = ({
   onAdd,
   onUpdate,
   onRemove,
+  onReorder,
 }) => {
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [dragEnabledIndex, setDragEnabledIndex] = useState<number | null>(null);
+
+  const handleDragStart = (index: number, e: React.DragEvent<HTMLDivElement>) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(index));
+  };
+
+  const handleDragOver = (index: number, e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = (targetIndex: number, e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== targetIndex && onReorder) {
+      onReorder(draggedIndex, targetIndex);
+    }
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+    setDragEnabledIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+    setDragEnabledIndex(null);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-          {achievements.length} thành tích / giải thưởng
+          {achievements.length} thành tích / giải thưởng (Kéo thả để sắp xếp)
         </span>
         <button
           type="button"
@@ -40,82 +83,133 @@ export const AchievementsSection: React.FC<AchievementsSectionProps> = ({
         </div>
       ) : (
         <div className="space-y-3">
-          {achievements.map((ach, idx) => (
-            <div
-              key={ach.id}
-              className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/80 space-y-3"
-            >
-              <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
-                <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                  {idx + 1}. {ach.title || 'Giải thưởng / Thành tích'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => onRemove(ach.id)}
-                  className="p-1 rounded text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-                  title="Xóa thành tích này"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+          {achievements.map((ach, idx) => {
+            const isDragging = draggedIndex === idx;
+            const isDragOver = dragOverIndex === idx && draggedIndex !== idx;
+
+            return (
+              <div
+                key={ach.id}
+                draggable={dragEnabledIndex === idx}
+                onDragStart={(e) => handleDragStart(idx, e)}
+                onDragOver={(e) => handleDragOver(idx, e)}
+                onDrop={(e) => handleDrop(idx, e)}
+                onDragEnd={handleDragEnd}
+                className={`p-4 rounded-xl border transition-all space-y-3 ${
+                  isDragging
+                    ? 'opacity-50 scale-[0.99] border-teal-500 bg-teal-50/20 dark:bg-teal-950/20'
+                    : isDragOver
+                    ? 'border-teal-500 ring-2 ring-teal-500/30 bg-white dark:bg-slate-900'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/80'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
+                  <div
+                    className="flex items-center gap-2 min-w-0 flex-1 cursor-grab active:cursor-grabbing"
+                    onMouseEnter={() => setDragEnabledIndex(idx)}
+                    onMouseLeave={() => {
+                      if (draggedIndex === null) setDragEnabledIndex(null);
+                    }}
+                    title="Giữ và kéo để sắp xếp thành tích"
+                  >
+                    <GripVertical className="w-4 h-4 text-slate-400 hover:text-teal-600 shrink-0" />
+                    <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                      {idx + 1}. {ach.title || 'Giải thưởng / Thành tích'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    {onReorder && achievements.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          disabled={idx === 0}
+                          onClick={() => onReorder(idx, idx - 1)}
+                          className="p-1 rounded text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors cursor-pointer"
+                          title="Chuyển lên trên"
+                        >
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={idx === achievements.length - 1}
+                          onClick={() => onReorder(idx, idx + 1)}
+                          className="p-1 rounded text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors cursor-pointer"
+                          title="Chuyển xuống dưới"
+                        >
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => onRemove(ach.id)}
+                      className="p-1 rounded text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                      title="Xóa thành tích này"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                      Tên Giải Thưởng / Danh Hiệu *
+                    </label>
+                    <input
+                      type="text"
+                      value={ach.title}
+                      onChange={(e) => onUpdate(ach.id, 'title', e.target.value)}
+                      placeholder="vd: Quán quân Hackathon Quốc Gia"
+                      className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 font-semibold text-slate-900 dark:text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                      Đơn Vị Trao Giải / Tổ Chức *
+                    </label>
+                    <input
+                      type="text"
+                      value={ach.issuer}
+                      onChange={(e) => onUpdate(ach.id, 'issuer', e.target.value)}
+                      placeholder="vd: Bộ TT&TT / Google Developer Group"
+                      className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                      Năm Đạt Được
+                    </label>
+                    <input
+                      type="text"
+                      value={ach.year}
+                      onChange={(e) => onUpdate(ach.id, 'year', e.target.value)}
+                      placeholder="vd: 2023"
+                      className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-900 dark:text-white"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                      Mô Tả Chi Tiết / Ý Nghĩa Thành Tích
+                    </label>
+                    <input
+                      type="text"
+                      value={ach.description || ''}
+                      onChange={(e) => onUpdate(ach.id, 'description', e.target.value)}
+                      placeholder="vd: Dự án vượt qua 120 đội thi, ứng dụng AI hỗ trợ xử lý dữ liệu..."
+                      className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-900 dark:text-white"
+                    />
+                  </div>
+                </div>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                    Tên Giải Thưởng / Danh Hiệu *
-                  </label>
-                  <input
-                    type="text"
-                    value={ach.title}
-                    onChange={(e) => onUpdate(ach.id, 'title', e.target.value)}
-                    placeholder="vd: Quán quân Hackathon Quốc Gia"
-                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 font-semibold text-slate-900 dark:text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                    Đơn Vị Trao Giải / Tổ Chức *
-                  </label>
-                  <input
-                    type="text"
-                    value={ach.issuer}
-                    onChange={(e) => onUpdate(ach.id, 'issuer', e.target.value)}
-                    placeholder="vd: Bộ TT&TT / Google Developer Group"
-                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-900 dark:text-white"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                    Năm Đạt Được
-                  </label>
-                  <input
-                    type="text"
-                    value={ach.year}
-                    onChange={(e) => onUpdate(ach.id, 'year', e.target.value)}
-                    placeholder="vd: 2023"
-                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-900 dark:text-white"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                    Mô Tả Chi Tiết / Ý Nghĩa Thành Tích
-                  </label>
-                  <input
-                    type="text"
-                    value={ach.description || ''}
-                    onChange={(e) => onUpdate(ach.id, 'description', e.target.value)}
-                    placeholder="vd: Dự án vượt qua 120 đội thi, ứng dụng AI hỗ trợ xử lý dữ liệu..."
-                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-900 dark:text-white"
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

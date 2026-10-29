@@ -13,8 +13,15 @@ import {
   HeadingFontOption,
   SectionId,
   SectionStyleConfig,
+  CustomSection,
+  CustomSectionItem,
 } from '../types/cv';
 import { mockCVData } from '../data/mockCVData';
+import {
+  reorderArray,
+  resolveLayoutConfig,
+  getDefaultLayoutConfig,
+} from '../features/cv-editor/utils/layoutHelpers';
 
 export type SaveStatus = 'saved' | 'saving' | 'unsaved';
 export type { SectionId, SectionStyleConfig };
@@ -48,6 +55,7 @@ export interface CVState {
   addExperience: () => void;
   updateExperience: (id: string, field: keyof ExperienceItem, value: any) => void;
   removeExperience: (id: string) => void;
+  reorderExperiences: (startIndex: number, endIndex: number) => void;
   addExperienceDescription: (expId: string) => void;
   updateExperienceDescription: (expId: string, descIndex: number, text: string) => void;
   removeExperienceDescription: (expId: string, descIndex: number) => void;
@@ -56,35 +64,68 @@ export interface CVState {
   addEducation: () => void;
   updateEducation: (id: string, field: keyof EducationItem, value: any) => void;
   removeEducation: (id: string) => void;
+  reorderEducations: (startIndex: number, endIndex: number) => void;
 
   // Skills
   addSkillCategory: () => void;
   updateSkillCategoryName: (catId: string, name: string) => void;
   removeSkillCategory: (catId: string) => void;
+  reorderSkillCategories: (startIndex: number, endIndex: number) => void;
   addSkillToCategory: (catId: string, skillName: string) => void;
   removeSkillFromCategory: (catId: string, skillIndex: number) => void;
+  reorderSkillsInCategory: (catId: string, startIndex: number, endIndex: number) => void;
 
   // Projects
   addProject: () => void;
   updateProject: (id: string, field: keyof ProjectItem, value: any) => void;
   removeProject: (id: string) => void;
+  reorderProjects: (startIndex: number, endIndex: number) => void;
 
   // Achievements
   addAchievement: () => void;
   updateAchievement: (id: string, field: keyof AchievementItem, value: any) => void;
   removeAchievement: (id: string) => void;
+  reorderAchievements: (startIndex: number, endIndex: number) => void;
 
   // Certificates
   addCertificate: () => void;
   updateCertificate: (id: string, field: keyof CertificateItem, value: any) => void;
   removeCertificate: (id: string) => void;
+  reorderCertificates: (startIndex: number, endIndex: number) => void;
 
-  // Theme & Section Customization
+  // Custom Sections (Tự Build Khối Tùy Chỉnh)
+  addCustomSection: (title?: string, column?: 'sidebar' | 'main') => void;
+  updateCustomSection: (sectionId: string, updates: Partial<CustomSection>) => void;
+  removeCustomSection: (sectionId: string) => void;
+  reorderCustomSections: (startIndex: number, endIndex: number) => void;
+  addCustomSectionItem: (sectionId: string) => void;
+  updateCustomSectionItem: (
+    sectionId: string,
+    itemId: string,
+    field: keyof CustomSectionItem,
+    value: string
+  ) => void;
+  removeCustomSectionItem: (sectionId: string, itemId: string) => void;
+  reorderCustomSectionItems: (sectionId: string, startIndex: number, endIndex: number) => void;
+
+  // Theme, Section Customization & Layout Reorder
   updateTheme: (updates: Partial<ThemeConfig>) => void;
   updateSectionStyle: (sectionId: SectionId, style: Partial<SectionStyleConfig>) => void;
   resetSectionStyle: (sectionId: SectionId) => void;
   resetAllSectionStyles: () => void;
   applyStyleToAllSections: (style: SectionStyleConfig) => void;
+  reorderSectionInColumn: (
+    column: 'sidebar' | 'main',
+    startIndex: number,
+    endIndex: number
+  ) => void;
+  moveSectionToColumn: (
+    sectionId: SectionId,
+    targetColumn: 'sidebar' | 'main',
+    targetIndex?: number
+  ) => void;
+  toggleSectionVisibility: (sectionId: SectionId) => void;
+  resetLayoutConfig: () => void;
 
   // Reset
   resetToDefault: (presetData?: CVData) => void;
@@ -127,7 +168,10 @@ export function migrateDraftData(raw: any): CVData {
 /**
  * Trigger debounced auto-save to localStorage
  */
-function triggerDebouncedAutoSave(get: () => CVState, set: (fn: (prev: CVState) => Partial<CVState>) => void) {
+function triggerDebouncedAutoSave(
+  get: () => CVState,
+  set: (fn: (prev: CVState) => Partial<CVState>) => void
+) {
   clearAutoSaveTimers();
   set(() => ({ saveStatus: 'unsaved' }));
 
@@ -254,6 +298,16 @@ export const useCVStore = create<CVState>((set, get) => ({
     triggerDebouncedAutoSave(get, set);
   },
 
+  reorderExperiences: (startIndex: number, endIndex: number) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        experiences: reorderArray(prev.cvData.experiences || [], startIndex, endIndex),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
   addExperienceDescription: (expId: string) => {
     set((prev) => ({
       cvData: {
@@ -339,6 +393,16 @@ export const useCVStore = create<CVState>((set, get) => ({
     triggerDebouncedAutoSave(get, set);
   },
 
+  reorderEducations: (startIndex: number, endIndex: number) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        educations: reorderArray(prev.cvData.educations || [], startIndex, endIndex),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
   addSkillCategory: () => {
     const newCat: SkillCategory = {
       id: generateId('skillcat'),
@@ -376,6 +440,16 @@ export const useCVStore = create<CVState>((set, get) => ({
     triggerDebouncedAutoSave(get, set);
   },
 
+  reorderSkillCategories: (startIndex: number, endIndex: number) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        skillCategories: reorderArray(prev.cvData.skillCategories || [], startIndex, endIndex),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
   addSkillToCategory: (catId: string, skillName: string) => {
     if (!skillName.trim()) return;
     set((prev) => ({
@@ -402,6 +476,22 @@ export const useCVStore = create<CVState>((set, get) => ({
           return {
             ...c,
             skills: c.skills.filter((_, i) => i !== skillIndex),
+          };
+        }),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  reorderSkillsInCategory: (catId: string, startIndex: number, endIndex: number) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        skillCategories: prev.cvData.skillCategories.map((c) => {
+          if (c.id !== catId) return c;
+          return {
+            ...c,
+            skills: reorderArray(c.skills || [], startIndex, endIndex),
           };
         }),
       },
@@ -447,6 +537,16 @@ export const useCVStore = create<CVState>((set, get) => ({
     triggerDebouncedAutoSave(get, set);
   },
 
+  reorderProjects: (startIndex: number, endIndex: number) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        projects: reorderArray(prev.cvData.projects || [], startIndex, endIndex),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
   addAchievement: () => {
     const newItem: AchievementItem = {
       id: generateId('achieve'),
@@ -486,6 +586,16 @@ export const useCVStore = create<CVState>((set, get) => ({
     triggerDebouncedAutoSave(get, set);
   },
 
+  reorderAchievements: (startIndex: number, endIndex: number) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        achievements: reorderArray(prev.cvData.achievements || [], startIndex, endIndex),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
   addCertificate: () => {
     const newItem: CertificateItem = {
       id: generateId('cert'),
@@ -520,6 +630,147 @@ export const useCVStore = create<CVState>((set, get) => ({
       cvData: {
         ...prev.cvData,
         certificates: (prev.cvData.certificates || []).filter((item) => item.id !== id),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  reorderCertificates: (startIndex: number, endIndex: number) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        certificates: reorderArray(prev.cvData.certificates || [], startIndex, endIndex),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  // Custom Sections (Tự Build Khối Tùy Chỉnh)
+  addCustomSection: (title = 'Hoạt Động & Sở Thích', column = 'main') => {
+    const newSection: CustomSection = {
+      id: generateId('customsec'),
+      title,
+      column,
+      items: [
+        {
+          id: generateId('customitem'),
+          title: 'Tiêu đề mục (vd: Câu lạc bộ / Ngoại ngữ / Tình nguyện)',
+          subtitle: 'Vai trò hoặc tổ chức',
+          date: '2024 – Hiện tại',
+          description: 'Mô tả chi tiết hoạt động hoặc thông tin bổ sung...',
+        },
+      ],
+    };
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        customSections: [...(prev.cvData.customSections || []), newSection],
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  updateCustomSection: (sectionId: string, updates: Partial<CustomSection>) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        customSections: (prev.cvData.customSections || []).map((sec) =>
+          sec.id === sectionId ? { ...sec, ...updates } : sec
+        ),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  removeCustomSection: (sectionId: string) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        customSections: (prev.cvData.customSections || []).filter((sec) => sec.id !== sectionId),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  reorderCustomSections: (startIndex: number, endIndex: number) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        customSections: reorderArray(prev.cvData.customSections || [], startIndex, endIndex),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  addCustomSectionItem: (sectionId: string) => {
+    const newItem: CustomSectionItem = {
+      id: generateId('customitem'),
+      title: 'Mục thông tin mới',
+      subtitle: 'Đơn vị / Ghi chú phụ',
+      date: '2025',
+      description: 'Nội dung chi tiết...',
+    };
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        customSections: (prev.cvData.customSections || []).map((sec) =>
+          sec.id === sectionId ? { ...sec, items: [...(sec.items || []), newItem] } : sec
+        ),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  updateCustomSectionItem: (
+    sectionId: string,
+    itemId: string,
+    field: keyof CustomSectionItem,
+    value: string
+  ) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        customSections: (prev.cvData.customSections || []).map((sec) => {
+          if (sec.id !== sectionId) return sec;
+          return {
+            ...sec,
+            items: (sec.items || []).map((it) =>
+              it.id === itemId ? { ...it, [field]: value } : it
+            ),
+          };
+        }),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  removeCustomSectionItem: (sectionId: string, itemId: string) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        customSections: (prev.cvData.customSections || []).map((sec) => {
+          if (sec.id !== sectionId) return sec;
+          return {
+            ...sec,
+            items: (sec.items || []).filter((it) => it.id !== itemId),
+          };
+        }),
+      },
+    }));
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  reorderCustomSectionItems: (sectionId: string, startIndex: number, endIndex: number) => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        customSections: (prev.cvData.customSections || []).map((sec) => {
+          if (sec.id !== sectionId) return sec;
+          return {
+            ...sec,
+            items: reorderArray(sec.items || [], startIndex, endIndex),
+          };
+        }),
       },
     }));
     triggerDebouncedAutoSave(get, set);
@@ -618,6 +869,117 @@ export const useCVStore = create<CVState>((set, get) => ({
         },
       };
     });
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  reorderSectionInColumn: (
+    column: 'sidebar' | 'main',
+    startIndex: number,
+    endIndex: number
+  ) => {
+    set((prev) => {
+      const currentLayout = resolveLayoutConfig(prev.cvData.themeConfig);
+      const updatedLayout = {
+        ...currentLayout,
+        sidebarSections:
+          column === 'sidebar'
+            ? reorderArray(currentLayout.sidebarSections, startIndex, endIndex)
+            : currentLayout.sidebarSections,
+        mainSections:
+          column === 'main'
+            ? reorderArray(currentLayout.mainSections, startIndex, endIndex)
+            : currentLayout.mainSections,
+      };
+      return {
+        cvData: {
+          ...prev.cvData,
+          themeConfig: {
+            ...prev.cvData.themeConfig,
+            layoutConfig: updatedLayout,
+          },
+        },
+      };
+    });
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  moveSectionToColumn: (
+    sectionId: SectionId,
+    targetColumn: 'sidebar' | 'main',
+    targetIndex?: number
+  ) => {
+    if (sectionId === 'header') return;
+    set((prev) => {
+      const currentLayout = resolveLayoutConfig(prev.cvData.themeConfig);
+      const nextSidebar = currentLayout.sidebarSections.filter((s) => s !== sectionId);
+      const nextMain = currentLayout.mainSections.filter((s) => s !== sectionId);
+
+      if (targetColumn === 'sidebar') {
+        const idx =
+          typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex <= nextSidebar.length
+            ? targetIndex
+            : nextSidebar.length;
+        nextSidebar.splice(idx, 0, sectionId);
+      } else {
+        const idx =
+          typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex <= nextMain.length
+            ? targetIndex
+            : nextMain.length;
+        nextMain.splice(idx, 0, sectionId);
+      }
+
+      return {
+        cvData: {
+          ...prev.cvData,
+          themeConfig: {
+            ...prev.cvData.themeConfig,
+            layoutConfig: {
+              ...currentLayout,
+              sidebarSections: nextSidebar,
+              mainSections: nextMain,
+            },
+          },
+        },
+      };
+    });
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  toggleSectionVisibility: (sectionId: SectionId) => {
+    if (sectionId === 'header') return;
+    set((prev) => {
+      const currentLayout = resolveLayoutConfig(prev.cvData.themeConfig);
+      const isHidden = currentLayout.hiddenSections.includes(sectionId);
+      const nextHidden = isHidden
+        ? currentLayout.hiddenSections.filter((s) => s !== sectionId)
+        : [...currentLayout.hiddenSections, sectionId];
+
+      return {
+        cvData: {
+          ...prev.cvData,
+          themeConfig: {
+            ...prev.cvData.themeConfig,
+            layoutConfig: {
+              ...currentLayout,
+              hiddenSections: nextHidden,
+            },
+          },
+        },
+      };
+    });
+    triggerDebouncedAutoSave(get, set);
+  },
+
+  resetLayoutConfig: () => {
+    set((prev) => ({
+      cvData: {
+        ...prev.cvData,
+        themeConfig: {
+          ...prev.cvData.themeConfig,
+          layoutConfig: getDefaultLayoutConfig(prev.cvData.themeConfig.templateId),
+        },
+      },
+    }));
     triggerDebouncedAutoSave(get, set);
   },
 

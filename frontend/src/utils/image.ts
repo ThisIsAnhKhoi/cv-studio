@@ -10,6 +10,13 @@ export interface ImageProcessingOptions {
   format?: 'image/jpeg' | 'image/webp';
 }
 
+export interface CropTransform {
+  zoom: number; // 1.0 to 3.0
+  offsetX: number; // pan X in px relative to crop frame
+  offsetY: number; // pan Y in px relative to crop frame
+  rotation?: number; // degrees: 0, 90, 180, 270
+}
+
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 export const MAX_UPLOAD_FILE_SIZE_MB = 8;
 
@@ -115,6 +122,56 @@ export async function processAvatarFile(
 
     reader.readAsDataURL(file);
   });
+}
+
+/**
+ * Cắt ảnh theo tọa độ zoom, pan, rotate do người dùng tương tác và xuất Data URL 1:1
+ */
+export function cropAndExportAvatar(
+  img: HTMLImageElement,
+  transform: CropTransform,
+  cropFrameSize = 260,
+  targetSize = 400,
+  quality = 0.88,
+  format: 'image/jpeg' | 'image/webp' = 'image/jpeg'
+): string {
+  const canvas = document.createElement('canvas');
+  canvas.width = targetSize;
+  canvas.height = targetSize;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Không thể khởi tạo Canvas 2D để cắt ảnh.');
+
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  // Điền nền trắng dự phòng
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, targetSize, targetSize);
+
+  const ratio = targetSize / cropFrameSize;
+
+  // Dịch tâm tới giữa canvas
+  ctx.translate(targetSize / 2, targetSize / 2);
+
+  if (transform.rotation) {
+    ctx.rotate((transform.rotation * Math.PI) / 180);
+  }
+
+  const naturalW = img.naturalWidth || img.width;
+  const naturalH = img.naturalHeight || img.height;
+  const minSide = Math.min(naturalW, naturalH);
+  const baseScale = cropFrameSize / minSide;
+  const currentScale = baseScale * transform.zoom * ratio;
+
+  const drawW = naturalW * currentScale;
+  const drawH = naturalH * currentScale;
+
+  const drawX = -drawW / 2 + transform.offsetX * ratio;
+  const drawY = -drawH / 2 + transform.offsetY * ratio;
+
+  ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+  return canvas.toDataURL(format, quality);
 }
 
 /**

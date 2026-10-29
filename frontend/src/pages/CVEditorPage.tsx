@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useCVEditor } from '../features/cv-editor/hooks/useCVEditor';
 import { getCVByIdOrSlug } from '../data/mockProfiles';
 import { getTemplateComponent } from '../features/cv-templates/TemplateRegistry';
@@ -7,8 +7,6 @@ import { exportCVToPDF } from '../services/exportPdfService';
 import {
   ArrowLeft,
   Eye,
-  Download,
-  Printer,
   RotateCcw,
   Check,
   Loader2,
@@ -29,9 +27,11 @@ import {
   Sun,
   LogIn,
   BookmarkPlus,
-  LayoutDashboard,
   Globe,
   Lock,
+  LayoutGrid,
+  Layers,
+  Share2,
 } from 'lucide-react';
 import { PersonalInfoSection } from '../features/cv-editor/components/sections/PersonalInfoSection';
 import { SummarySection } from '../features/cv-editor/components/sections/SummarySection';
@@ -42,11 +42,15 @@ import { ProjectsSection } from '../features/cv-editor/components/sections/Proje
 import { AchievementsSection } from '../features/cv-editor/components/sections/AchievementsSection';
 import { CertificatesSection } from '../features/cv-editor/components/sections/CertificatesSection';
 import { ThemeCustomizerSection } from '../features/cv-editor/components/sections/ThemeCustomizerSection';
+import { LayoutCustomizerSection } from '../features/cv-editor/components/sections/LayoutCustomizerSection';
+import { CustomSectionsEditor } from '../features/cv-editor/components/sections/CustomSectionsEditor';
+import { PublishTemplateModal } from '../features/cv-editor/components/PublishTemplateModal';
 import { NotFoundPage } from './NotFoundPage';
 import { useAuthStore } from '../stores/useAuthStore';
 import { UserDropdown } from '../components/auth/UserDropdown';
 import { ShareDropdown } from '../components/common/ShareDropdown';
-import { saveUserCV, isCVOwner } from '../services/cvStorageService';
+import { saveUserCV, createNewCV, getCVById } from '../services/cvStorageService';
+import { useCVStore } from '../stores/useCVStore';
 import { CVData } from '../types/cv';
 
 type ActiveTabMobile = 'editor' | 'preview';
@@ -58,13 +62,13 @@ interface CVEditorPageProps {
 
 export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDarkMode }) => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { user, openAuthModal } = useAuthStore();
   const [saveToast, setSaveToast] = useState<string | null>(null);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState<boolean>(false);
 
   const resolvePreset = (targetId?: string): CVData | undefined => {
     if (!targetId) return undefined;
-    const mock = getCVByIdOrSlug(targetId);
-    if (mock) return mock;
     if (typeof localStorage !== 'undefined') {
       const draft = localStorage.getItem(`cv_studio_draft_${targetId}`);
       if (draft) {
@@ -74,12 +78,61 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
           // ignore corrupted JSON
         }
       }
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('cv_studio_draft_') && k !== 'cv_studio_draft_cv') {
+          const item = localStorage.getItem(k);
+          if (item) {
+            try {
+              const parsed: CVData = JSON.parse(item);
+              if (parsed.id === targetId || parsed.slug === targetId) {
+                return parsed;
+              }
+            } catch {}
+          }
+        }
+      }
     }
+    const mock = getCVByIdOrSlug(targetId);
+    if (mock) return mock;
     return undefined;
   };
 
+  // If navigating to /editor directly without id, create a unique CV and navigate to /editor/:id
+  useEffect(() => {
+    if (!id) {
+      const fresh = createNewCV('template-classic-teal', user?.uid);
+      navigate(`/editor/${fresh.id}`, { replace: true });
+    }
+  }, [id, user?.uid, navigate]);
+
+  const [asyncLoading, setAsyncLoading] = useState<boolean>(Boolean(id && !resolvePreset(id)));
+  const [asyncNotFound, setAsyncNotFound] = useState<boolean>(false);
+
+  // Fetch from Firestore if not found locally
+  useEffect(() => {
+    if (!id) return;
+    const local = resolvePreset(id);
+    if (!local) {
+      setAsyncLoading(true);
+      getCVById(id)
+        .then((found) => {
+          if (found) {
+            useCVStore.getState().loadCV(found);
+            setAsyncNotFound(false);
+          } else {
+            setAsyncNotFound(true);
+          }
+          setAsyncLoading(false);
+        })
+        .catch(() => {
+          setAsyncNotFound(true);
+          setAsyncLoading(false);
+        });
+    }
+  }, [id]);
+
   const initialPreset = id ? resolvePreset(id) : undefined;
-  const isNotFound = Boolean(id && !initialPreset);
 
   const {
     cvData,
@@ -90,26 +143,45 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
     addExperience,
     updateExperience,
     removeExperience,
+    reorderExperiences,
     addExperienceDescription,
     updateExperienceDescription,
     removeExperienceDescription,
     addEducation,
     updateEducation,
     removeEducation,
+    reorderEducations,
     addSkillCategory,
     updateSkillCategoryName,
     removeSkillCategory,
+    reorderSkillCategories,
     addSkillToCategory,
     removeSkillFromCategory,
+    reorderSkillsInCategory,
     addProject,
     updateProject,
     removeProject,
+    reorderProjects,
     addAchievement,
     updateAchievement,
     removeAchievement,
+    reorderAchievements,
     addCertificate,
     updateCertificate,
     removeCertificate,
+    reorderCertificates,
+    addCustomSection,
+    updateCustomSection,
+    removeCustomSection,
+    reorderCustomSections,
+    addCustomSectionItem,
+    updateCustomSectionItem,
+    removeCustomSectionItem,
+    reorderCustomSectionItems,
+    reorderSectionInColumn,
+    moveSectionToColumn,
+    toggleSectionVisibility,
+    resetLayoutConfig,
     updateTheme,
     updateSectionStyle,
     resetSectionStyle,
@@ -120,6 +192,8 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
 
   // Accordion open/close states
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
+    layout: true,
+    theme: false,
     personal: true,
     summary: true,
     experience: true,
@@ -128,7 +202,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
     projects: false,
     achievements: false,
     certificates: false,
-    theme: false,
+    customSections: false,
   });
 
   const toggleSection = (sectionKey: string) => {
@@ -161,7 +235,53 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
     }
   };
 
-  if (isNotFound) {
+  // Auto-associate CV with logged-in user if it was anonymous
+  useEffect(() => {
+    if (user && cvData && cvData.userId !== user.uid) {
+      if (cvData.userId === 'anonymous') {
+        const updated: CVData = {
+          ...cvData,
+          userId: user.uid,
+          status: 'active',
+          ownerDisabled: false,
+        };
+        useCVStore.getState().loadCV(updated);
+      }
+    }
+  }, [user, cvData?.userId]);
+
+  // Tự động đồng bộ draft cá nhân và Firestore khi lưu tự động
+  useEffect(() => {
+    if (saveStatus === 'saved' && cvData && cvData.id && cvData.id !== 'cv-thanhtruc-01') {
+      saveUserCV(cvData, user?.uid);
+    }
+  }, [saveStatus]);
+
+  const handleVisibilityChange = (nextPublic: boolean) => {
+    updateVisibility(nextPublic);
+    saveUserCV({ ...cvData, isPublic: nextPublic }, user?.uid);
+    setSaveToast(
+      nextPublic
+        ? 'Đã bật Công khai! CV của bạn có thể xem qua đường dẫn và xuất hiện tại Trang chủ.'
+        : 'Đã chuyển sang Riêng tư!'
+    );
+    setTimeout(() => setSaveToast(null), 3500);
+  };
+
+  if (asyncLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
+          <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+            Đang tải dữ liệu hồ sơ CV...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (asyncNotFound) {
     return <NotFoundPage />;
   }
 
@@ -226,7 +346,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
               <button
                 type="button"
                 id="btn-header-toggle-visibility"
-                onClick={() => updateVisibility(!cvData.isPublic)}
+                onClick={() => handleVisibilityChange(!cvData.isPublic)}
                 className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors cursor-pointer ${
                   cvData.isPublic
                     ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100'
@@ -249,7 +369,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
             </div>
           </div>
 
-          {/* Right: Actions (Theme Toggle, Reset, View Fullscreen, Share Dropdown) */}
+          {/* Right: Actions (Theme Toggle, Reset, Publish Template, View Fullscreen, Share Dropdown) */}
           <div className="flex items-center gap-2">
             {/* Website Dark Mode Toggle */}
             {onToggleDarkMode && (
@@ -279,6 +399,21 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
 
+            {/* Publish Community Template Button */}
+            <button
+              id="btn-publish-community-template"
+              type="button"
+              onClick={() => setIsPublishModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-bold transition-colors cursor-pointer"
+              title="Lưu & chia sẻ thiết kế CV này lên Thư viện Mẫu CV Cộng Đồng cho mọi người tham khảo dùng thử"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden xl:inline">
+                {cvData.isCommunityTemplate ? 'Đã Lưu Mẫu Cộng Đồng' : 'Lưu Mẫu Lên Cộng Đồng'}
+              </span>
+              <span className="xl:hidden">Lưu Mẫu</span>
+            </button>
+
             {/* View Fullscreen Page */}
             <Link
               id="btn-view-public"
@@ -290,11 +425,11 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
               <span className="hidden md:inline">Xem Trực Tuyến</span>
             </Link>
 
-            {/* Share Dropdown: Copy link, Email, disabled PDF & disabled Print */}
+            {/* Share Dropdown */}
             <ShareDropdown
               cv={cvData}
               isOwner={true}
-              onUpdateVisibility={updateVisibility}
+              onUpdateVisibility={handleVisibilityChange}
               variant="primary"
             />
 
@@ -353,7 +488,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              ✏️ Điền Thông Tin
+              ✏️ Điền Thông Tin & Kéo Thả
             </button>
             <button
               type="button"
@@ -378,6 +513,44 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
             activeMobileTab === 'preview' ? 'hidden lg:block' : 'block'
           }`}
         >
+          {/* 0. Drag & Drop Section Layout Builder Accordion */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-teal-500/30 dark:border-teal-500/30 overflow-hidden shadow-xs">
+            <button
+              type="button"
+              onClick={() => toggleSection('layout')}
+              className="w-full px-5 py-3.5 flex items-center justify-between text-left bg-gradient-to-r from-teal-50/70 via-emerald-50/40 to-transparent dark:from-teal-950/40 dark:via-slate-900 dark:to-slate-900 hover:from-teal-50 dark:hover:from-teal-950/60 transition-colors group cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <LayoutGrid className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                <div>
+                  <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+                    Tự Build Bố Cục & Kéo Thả Thứ Tự Khối
+                  </span>
+                  <span className="ml-2 px-2 py-0.5 text-[10px] font-bold rounded-full bg-teal-600 text-white">
+                    Drag & Drop
+                  </span>
+                </div>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-transform duration-200 ${
+                  openSections.layout ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+            {openSections.layout && (
+              <div className="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/30">
+                <LayoutCustomizerSection
+                  themeConfig={cvData.themeConfig}
+                  onReorderInColumn={reorderSectionInColumn}
+                  onMoveToColumn={moveSectionToColumn}
+                  onToggleVisibility={toggleSectionVisibility}
+                  onResetLayout={resetLayoutConfig}
+                  onUpdateSectionStyle={updateSectionStyle}
+                />
+              </div>
+            )}
+          </div>
+
           {/* 1. Theme Customizer Accordion */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
             <button
@@ -492,6 +665,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                   onAdd={addExperience}
                   onUpdate={updateExperience}
                   onRemove={removeExperience}
+                  onReorder={reorderExperiences}
                   onAddDesc={addExperienceDescription}
                   onUpdateDesc={updateExperienceDescription}
                   onRemoveDesc={removeExperienceDescription}
@@ -526,6 +700,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                   onAdd={addEducation}
                   onUpdate={updateEducation}
                   onRemove={removeEducation}
+                  onReorder={reorderEducations}
                 />
               </div>
             )}
@@ -557,8 +732,10 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                   onAddCategory={addSkillCategory}
                   onUpdateCategoryName={updateSkillCategoryName}
                   onRemoveCategory={removeSkillCategory}
+                  onReorderCategories={reorderSkillCategories}
                   onAddSkill={addSkillToCategory}
                   onRemoveSkill={removeSkillFromCategory}
+                  onReorderSkills={reorderSkillsInCategory}
                 />
               </div>
             )}
@@ -590,6 +767,7 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                   onAdd={addProject}
                   onUpdate={updateProject}
                   onRemove={removeProject}
+                  onReorder={reorderProjects}
                 />
               </div>
             )}
@@ -621,13 +799,14 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                   onAdd={addAchievement}
                   onUpdate={updateAchievement}
                   onRemove={removeAchievement}
+                  onReorder={reorderAchievements}
                 />
               </div>
             )}
           </div>
 
           {/* 9. Certificates Accordion */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs mb-8">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
             <button
               type="button"
               onClick={() => toggleSection('certificates')}
@@ -652,6 +831,46 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
                   onAdd={addCertificate}
                   onUpdate={updateCertificate}
                   onRemove={removeCertificate}
+                  onReorder={reorderCertificates}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* 10. Custom Sections Accordion */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs mb-8">
+            <button
+              type="button"
+              onClick={() => toggleSection('customSections')}
+              className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors group cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <Layers className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+                  Mục Tùy Chỉnh Tự Tạo ({cvData.customSections?.length || 0})
+                </span>
+                <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">
+                  Mới
+                </span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-transform duration-200 ${
+                  openSections.customSections ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+            {openSections.customSections && (
+              <div className="p-5 border-t border-slate-100 dark:border-slate-800">
+                <CustomSectionsEditor
+                  customSections={cvData.customSections || []}
+                  onAddSection={addCustomSection}
+                  onUpdateSection={updateCustomSection}
+                  onRemoveSection={removeCustomSection}
+                  onReorderSections={reorderCustomSections}
+                  onAddItem={addCustomSectionItem}
+                  onUpdateItem={updateCustomSectionItem}
+                  onRemoveItem={removeCustomSectionItem}
+                  onReorderItems={reorderCustomSectionItems}
                 />
               </div>
             )}
@@ -735,6 +954,19 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
           </div>
         </div>
       </main>
+
+      {/* Publish Community Template Modal */}
+      <PublishTemplateModal
+        isOpen={isPublishModalOpen}
+        onClose={() => setIsPublishModalOpen(false)}
+        cvData={cvData}
+        userId={user?.uid}
+        onPublished={(published) => {
+          useCVStore.getState().loadCV(published);
+          setSaveToast('Đã lưu và chia sẻ Mẫu CV của bạn lên Cộng Đồng!');
+          setTimeout(() => setSaveToast(null), 4000);
+        }}
+      />
     </div>
   );
 };

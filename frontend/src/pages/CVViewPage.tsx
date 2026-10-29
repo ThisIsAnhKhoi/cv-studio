@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getCVByIdOrSlug, mockProfilesList } from '../data/mockProfiles';
 import { TEMPLATES_REGISTRY, getTemplateComponent } from '../features/cv-templates/TemplateRegistry';
 import { ColorPreset, HeadingFontOption, ThemeConfig, CVData } from '../types/cv';
-import { exportCVToPDF } from '../services/exportPdfService';
 import { useAuthStore } from '../stores/useAuthStore';
 import { isCVOwner, cloneCV, saveUserCV, getCVById } from '../services/cvStorageService';
 import { NotFoundPage } from './NotFoundPage';
@@ -11,21 +10,15 @@ import { ShareDropdown } from '../components/common/ShareDropdown';
 import { useCVViewCount } from '../features/view-counter/useCVViewCount';
 import {
   ArrowLeft,
-  Share2,
-  Download,
-  Printer,
-  Sparkles,
   Palette,
   Type,
   ZoomIn,
   ZoomOut,
   RotateCcw,
   Loader2,
-  Check,
   Layout,
   Globe,
   Lock,
-  ExternalLink,
   Edit3,
   Copy,
   LogIn,
@@ -37,17 +30,13 @@ interface CVViewPageProps {
   onToggleDarkMode: () => void;
 }
 
-export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
+export const CVViewPage: React.FC<CVViewPageProps> = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, openAuthModal } = useAuthStore();
-  const [isLoading, setIsLoading] = useState<boolean>(Boolean(id));
-  const [notFound, setNotFound] = useState<boolean>(false);
 
-  const getInitialCV = (): CVData => {
+  const getInitialCV = (): CVData | null => {
     if (!id) return mockProfilesList[0];
-    const mock = getCVByIdOrSlug(id);
-    if (mock) return mock;
     if (typeof localStorage !== 'undefined') {
       const draft = localStorage.getItem(`cv_studio_draft_${id}`);
       if (draft) {
@@ -57,12 +46,33 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
           // ignore
         }
       }
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('cv_studio_draft_') && k !== 'cv_studio_draft_cv') {
+          const item = localStorage.getItem(k);
+          if (item) {
+            try {
+              const parsed: CVData = JSON.parse(item);
+              if (parsed.id === id || parsed.slug === id) {
+                return parsed;
+              }
+            } catch {}
+          }
+        }
+      }
     }
-    return mockProfilesList[0];
+    const mock = getCVByIdOrSlug(id);
+    if (mock) return mock;
+    return null;
   };
 
-  const [cvData, setCvData] = useState<CVData>(getInitialCV());
-  const [theme, setTheme] = useState<ThemeConfig>(cvData.themeConfig);
+  const initialCV = getInitialCV();
+  const [cvData, setCvData] = useState<CVData | null>(initialCV);
+  const [theme, setTheme] = useState<ThemeConfig>(
+    initialCV?.themeConfig || mockProfilesList[0].themeConfig
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(!initialCV && Boolean(id));
+  const [notFound, setNotFound] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
 
   // Fetch CV asynchronously (Mock, LocalStorage, or Firestore cloud)
@@ -73,7 +83,9 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
     }
 
     let isMounted = true;
-    setIsLoading(true);
+    if (!cvData) {
+      setIsLoading(true);
+    }
 
     getCVById(id)
       .then((found) => {
@@ -100,16 +112,16 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
     };
   }, [id]);
 
-  const isOwner = isCVOwner(cvData, user);
+  const isOwner = cvData ? isCVOwner(cvData, user) : false;
 
   // Ghi nhận lượt xem hợp lệ với cơ chế khử trùng lặp 30 phút, loại trừ chủ sở hữu
   useCVViewCount({
-    cvId: cvData.id,
+    cvId: cvData?.id || '',
     isOwner,
-    isPublic: Boolean(cvData.isPublic && cvData.status !== 'disabled'),
+    isPublic: Boolean(cvData?.isPublic && cvData?.status !== 'disabled'),
   });
 
-  if (isLoading) {
+  if (isLoading || (!cvData && !notFound)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
         <div className="flex flex-col items-center gap-3">
@@ -122,7 +134,7 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
     );
   }
 
-  if (notFound) {
+  if (notFound || !cvData) {
     return <NotFoundPage />;
   }
 
@@ -362,7 +374,7 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
               <button
                 type="button"
                 onClick={() => {
-                  const cloned = cloneCV(cvData, user?.uid);
+                  const cloned = cloneCV({ ...cvData, themeConfig: theme }, user?.uid);
                   navigate(`/editor/${cloned.id}`);
                 }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
@@ -373,7 +385,7 @@ export const CVViewPage: React.FC<CVViewPageProps> = ({ darkMode }) => {
               </button>
             )}
 
-            {/* Share Dropdown: includes Copy Link, Email, and disabled PDF & Print options */}
+            {/* Share Dropdown */}
             <ShareDropdown
               cv={cvData}
               isOwner={isOwner}

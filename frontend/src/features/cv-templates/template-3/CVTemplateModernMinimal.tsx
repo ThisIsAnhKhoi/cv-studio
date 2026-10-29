@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { CVTemplateProps } from '../../../types/template';
+import { SectionId } from '../../../types/cv';
 import { formatSafeUrl, cleanDisplayUrl } from '../../../utils/url';
 import { getSectionStyleProperties } from '../../cv-editor/utils/styleHelpers';
+import {
+  resolveLayoutConfig,
+  getSectionTitle,
+  isSectionVisible,
+} from '../../cv-editor/utils/layoutHelpers';
 import { RichTextRenderer } from '../../../components/common/RichTextRenderer';
 import { SocialIcon, getNormalizedSocialLinks } from '../../cv-editor/utils/socialPlatforms';
 import {
   Mail,
   Phone,
-  MapPin,
-  Calendar,
-  Globe,
-  Github,
-  Linkedin,
   GraduationCap,
   Briefcase,
   Code2,
@@ -20,12 +21,26 @@ import {
   Copy,
   Check,
   Star,
+  Sparkles,
+  Globe,
+  Layers,
 } from 'lucide-react';
 
 export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme }) => {
-  const { personalInfo, summary, experiences, educations, skillCategories, projects, achievements, certificates } = data;
+  const {
+    personalInfo,
+    summary,
+    experiences = [],
+    educations = [],
+    skillCategories = [],
+    projects = [],
+    achievements = [],
+    certificates = [],
+    customSections = [],
+  } = data;
   const isDark = Boolean(theme.darkMode);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  const layout = resolveLayoutConfig(theme);
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -131,6 +146,414 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
 
   const headingFontFamily = `'${theme.fontHeading}', 'Be Vietnam Pro', sans-serif`;
 
+  const renderSection = (sectionId: SectionId) => {
+    if (!isSectionVisible(sectionId, layout)) return null;
+
+    switch (sectionId) {
+      case 'summary':
+        // In ModernMinimal, summary is already shown in the header if visible, or can be rendered as a block if customized
+        return null;
+
+      case 'contact':
+        // Contact strip is in header; if user reorders it into columns, we only render if they explicitly hid header or want extra contact block
+        return null;
+
+      case 'experience':
+        if (!experiences || experiences.length === 0) return null;
+        return (
+          <section
+            key="experience"
+            className="space-y-3.5"
+            style={getSectionStyleProperties('experience', theme.sectionStyles)}
+          >
+            <div
+              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
+              style={{ borderColor: 'var(--sec-accent-color)' }}
+            >
+              <Briefcase className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('experience', theme.sectionStyles, 'Kinh Nghiệm Làm Việc')}
+              </h2>
+            </div>
+
+            <div className="space-y-4" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {experiences.map((exp) => (
+                <div
+                  key={exp.id}
+                  className={`space-y-1.5 p-2 -mx-2 rounded-xl ${tc.hoverRow} transition-colors`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
+                    <h3
+                      className={`font-bold text-[13px] ${tc.title}`}
+                      style={{
+                        fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                        color: 'var(--sec-heading-color, inherit)',
+                      }}
+                    >
+                      {exp.position}
+                    </h3>
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${tc.tagPill} shrink-0`}>
+                      {exp.startDate} – {exp.endDate}
+                    </span>
+                  </div>
+
+                  <div
+                    className={`text-[12px] font-semibold ${tc.body} flex items-center gap-2`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
+                    <span>{exp.company}</span>
+                    {exp.location && <span className={`${tc.meta} font-normal`}>• {exp.location}</span>}
+                  </div>
+
+                  <ul
+                    className={`space-y-1 text-[11.5px] ${tc.bodyMuted} list-disc list-outside pl-4 leading-relaxed`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
+                    {(exp.descriptions || []).map((desc, idx) => (
+                      <li key={idx}>{desc}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'projects':
+        if (!projects || projects.length === 0) return null;
+        return (
+          <section
+            key="projects"
+            className="space-y-3.5"
+            style={getSectionStyleProperties('projects', theme.sectionStyles)}
+          >
+            <div
+              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
+              style={{ borderColor: 'var(--sec-accent-color)' }}
+            >
+              <Code2 className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('projects', theme.sectionStyles, 'Dự Án Nổi Bật')}
+              </h2>
+            </div>
+
+            <div className="space-y-3" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {projects.map((proj) => (
+                <div
+                  key={proj.id}
+                  className={`p-3 rounded-xl border ${tc.cardBorder} hover:shadow-sm transition-all space-y-1.5 ${colors.hoverBorder}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <h3
+                        className={`font-bold text-[12.5px] ${tc.title} truncate`}
+                        style={{
+                          fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                          color: 'var(--sec-heading-color, inherit)',
+                        }}
+                      >
+                        {proj.name}
+                      </h3>
+                      {proj.link && (
+                        <a
+                          href={formatSafeUrl(proj.link)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-flex items-center text-slate-400 hover:${colors.primary} transition-colors`}
+                          style={{ color: 'var(--sec-accent-color, inherit)' }}
+                        >
+                          <ExternalLink className="w-3 h-3 shrink-0" />
+                        </a>
+                      )}
+                    </div>
+                    <span className={`text-[10.5px] font-medium ${tc.meta} italic shrink-0`}>
+                      {proj.role}
+                    </span>
+                  </div>
+
+                  <p
+                    className={`text-[11.5px] ${tc.bodyMuted} leading-relaxed`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
+                    {proj.description}
+                  </p>
+
+                  <div className="flex flex-wrap gap-1 pt-0.5">
+                    {(proj.techStack || []).map((tech, idx) => (
+                      <span
+                        key={idx}
+                        className={`text-[10px] px-2 py-0.5 font-medium rounded-full ${colors.tagBg}`}
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'skills':
+        if (!skillCategories || skillCategories.length === 0) return null;
+        return (
+          <section
+            key="skills"
+            className="space-y-3.5"
+            style={getSectionStyleProperties('skills', theme.sectionStyles)}
+          >
+            <div
+              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
+              style={{ borderColor: 'var(--sec-accent-color)' }}
+            >
+              <Code2 className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('skills', theme.sectionStyles, 'Kỹ Năng Chuyên Môn')}
+              </h2>
+            </div>
+
+            <div className="space-y-3" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {skillCategories.map((cat) => (
+                <div key={cat.id} className="space-y-1.5">
+                  <div
+                    className={`font-semibold text-[11px] ${tc.subtitle}`}
+                    style={{
+                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                      color: 'var(--sec-heading-color, inherit)',
+                    }}
+                  >
+                    {cat.categoryName}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(cat.skills || []).map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className={`inline-block px-2.5 py-0.5 text-[11px] font-medium rounded-full border transition-all hover:scale-105 cursor-default ${colors.lightBadge}`}
+                      >
+                        {skill.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'education':
+        if (!educations || educations.length === 0) return null;
+        return (
+          <section
+            key="education"
+            className="space-y-3.5"
+            style={getSectionStyleProperties('education', theme.sectionStyles)}
+          >
+            <div
+              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
+              style={{ borderColor: 'var(--sec-accent-color)' }}
+            >
+              <GraduationCap className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('education', theme.sectionStyles, 'Học Vấn & Bằng Cấp')}
+              </h2>
+            </div>
+
+            <div className="space-y-3" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {educations.map((edu) => (
+                <div key={edu.id} className={`space-y-1 p-2 -mx-2 rounded-lg ${tc.hoverRow} transition-colors`}>
+                  <div
+                    className={`font-bold text-[12.5px] ${tc.title} leading-tight`}
+                    style={{
+                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                      color: 'var(--sec-heading-color, inherit)',
+                    }}
+                  >
+                    {edu.school}
+                  </div>
+                  <div
+                    className={`text-[11.5px] font-medium ${tc.body}`}
+                    style={{ color: 'var(--sec-text-color, inherit)' }}
+                  >
+                    {edu.degree}
+                  </div>
+                  <div className={`text-[10.5px] ${tc.meta} flex justify-between`}>
+                    <span>{edu.startDate} – {edu.endDate}</span>
+                    {edu.gpa && (
+                      <span
+                        className={`font-semibold ${tc.gpaColor}`}
+                        style={{ color: 'var(--sec-accent-color, inherit)' }}
+                      >
+                        GPA: {edu.gpa}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'achievements':
+        if (!achievements || achievements.length === 0) return null;
+        return (
+          <section
+            key="achievements"
+            className="space-y-3.5"
+            style={getSectionStyleProperties('achievements', theme.sectionStyles)}
+          >
+            <div
+              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
+              style={{ borderColor: 'var(--sec-accent-color)' }}
+            >
+              <Star className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('achievements', theme.sectionStyles, 'Thành Tựu Nổi Bật')}
+              </h2>
+            </div>
+
+            <div className="space-y-2 text-[11px]" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {achievements.map((ach) => (
+                <div
+                  key={ach.id}
+                  className={`flex items-start gap-2 p-1.5 rounded-lg ${tc.hoverRow} transition-colors`}
+                >
+                  <Star className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+                  <div>
+                    <div
+                      className={`font-bold ${tc.title}`}
+                      style={{ color: 'var(--sec-heading-color, inherit)' }}
+                    >
+                      {ach.title}
+                    </div>
+                    <div className={`text-[10px] ${tc.meta}`}>
+                      {ach.issuer} {ach.year ? `(${ach.year})` : ''}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'certificates':
+        if (!certificates || certificates.length === 0) return null;
+        return (
+          <section
+            key="certificates"
+            className="space-y-3.5"
+            style={getSectionStyleProperties('certificates', theme.sectionStyles)}
+          >
+            <div
+              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
+              style={{ borderColor: 'var(--sec-accent-color)' }}
+            >
+              <Award className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
+                style={{
+                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
+                  color: 'var(--sec-heading-color, inherit)',
+                }}
+              >
+                {getSectionTitle('certificates', theme.sectionStyles, 'Chứng Chỉ')}
+              </h2>
+            </div>
+
+            <div className="space-y-2 text-[11px]" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
+              {certificates.map((cert) => (
+                <div key={cert.id} className={`flex items-start gap-2 p-1.5 rounded-lg ${tc.hoverRow} transition-colors`}>
+                  <Award className="w-3.5 h-3.5 mt-0.5 shrink-0 text-slate-400" style={{ color: 'var(--sec-accent-color, inherit)' }} />
+                  <div>
+                    <div
+                      className={`font-semibold ${tc.subtitle}`}
+                      style={{ color: 'var(--sec-heading-color, inherit)' }}
+                    >
+                      {cert.name}
+                    </div>
+                    <div
+                      className={`text-[10px] ${tc.meta}`}
+                      style={{ color: 'var(--sec-text-color, inherit)' }}
+                    >
+                      {cert.issuer} ({cert.issueDate})
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const renderCustomSections = (column: 'sidebar' | 'main') => {
+    const matching = (customSections || []).filter((s) => s.column === column);
+    if (matching.length === 0) return null;
+
+    return matching.map((sec) => (
+      <section key={sec.id} className="space-y-3.5">
+        <div className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}>
+          <Layers className={`w-4 h-4 shrink-0 ${colors.primary}`} />
+          <h2
+            className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
+            style={{ fontFamily: headingFontFamily }}
+          >
+            {sec.title}
+          </h2>
+        </div>
+
+        <div className="space-y-2.5 text-[11.5px]">
+          {(sec.items || []).map((item) => (
+            <div key={item.id} className="space-y-0.5">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className={`font-bold ${tc.title}`}>{item.title}</span>
+                {item.date && <span className={`text-[10.5px] ${tc.meta} shrink-0`}>{item.date}</span>}
+              </div>
+              {item.subtitle && (
+                <div className={`text-[11px] font-medium ${tc.body}`}>{item.subtitle}</div>
+              )}
+              {item.description && (
+                <p className={`text-[11px] ${tc.bodyMuted} leading-relaxed`}>{item.description}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    ));
+  };
+
   return (
     <div
       className={`page-a4 mx-auto w-full max-w-[210mm] min-h-[297mm] transition-all duration-300 ${
@@ -197,403 +620,103 @@ export const CVTemplateModernMinimal: React.FC<CVTemplateProps> = ({ data, theme
               </div>
 
               {/* Bio summary crisp */}
-              <RichTextRenderer
-                content={summary}
-                className={`text-[12px] ${tc.bodyMuted} mt-2 max-w-xl leading-relaxed`}
-                style={{
-                  ...getSectionStyleProperties('summary', theme.sectionStyles),
-                  color: 'var(--sec-text-color, inherit)',
-                  fontFamily: 'var(--sec-body-font, inherit)',
-                }}
-              />
+              {isSectionVisible('summary', layout) && summary && (
+                <RichTextRenderer
+                  content={summary}
+                  className={`text-[12px] ${tc.bodyMuted} mt-2 max-w-xl leading-relaxed`}
+                  style={{
+                    ...getSectionStyleProperties('summary', theme.sectionStyles),
+                    color: 'var(--sec-text-color, inherit)',
+                    fontFamily: 'var(--sec-body-font, inherit)',
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
 
         {/* Contact Strip Banner */}
-        <div
-          className={`mt-5 pt-4 border-t border-dashed ${tc.border} flex flex-wrap items-center justify-between gap-3 text-xs`}
-          style={getSectionStyleProperties('contact', theme.sectionStyles)}
-        >
+        {isSectionVisible('contact', layout) && (
           <div
-            onClick={() => copyToClipboard(personalInfo.email, 'min-email')}
-            className={`flex items-center gap-2 group cursor-pointer hover:${colors.primary} transition-colors`}
-            title="Nhấn để sao chép email"
+            className={`mt-5 pt-4 border-t border-dashed ${tc.border} flex flex-wrap items-center justify-between gap-3 text-xs`}
+            style={getSectionStyleProperties('contact', theme.sectionStyles)}
           >
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
-              <Mail className="w-3 h-3 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
-            </div>
-            <span
-              className={`font-medium text-[11.5px] ${tc.body}`}
-              style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}
-            >
-              {personalInfo.email}
-            </span>
-            {copiedItem === 'min-email' ? (
-              <Check className="w-3 h-3 text-emerald-500" />
-            ) : (
-              <Copy className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-            )}
-          </div>
-
-          <a
-            href={`tel:${personalInfo.phone}`}
-            className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
-          >
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
-              <Phone className="w-3 h-3 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
-            </div>
-            <span
-              className={`font-medium text-[11.5px] ${tc.body}`}
-              style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}
-            >
-              {personalInfo.phone}
-            </span>
-          </a>
-
-          {getNormalizedSocialLinks(personalInfo, true).map((link) => (
-            <a
-              key={link.id}
-              href={formatSafeUrl(link.url)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
-              title={link.url}
+            <div
+              onClick={() => copyToClipboard(personalInfo.email, 'min-email')}
+              className={`flex items-center gap-2 group cursor-pointer hover:${colors.primary} transition-colors`}
+              title="Nhấn để sao chép email"
             >
               <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
-                <SocialIcon
-                  platform={link.platform}
-                  className="w-3 h-3 shrink-0"
-                  style={{ color: 'var(--sec-accent-color, inherit)' }}
-                />
+                <Mail className="w-3 h-3 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
               </div>
               <span
                 className={`font-medium text-[11.5px] ${tc.body}`}
                 style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}
               >
-                {cleanDisplayUrl(link.url)}
+                {personalInfo.email}
+              </span>
+              {copiedItem === 'min-email' ? (
+                <Check className="w-3 h-3 text-emerald-500" />
+              ) : (
+                <Copy className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+              )}
+            </div>
+
+            <a
+              href={`tel:${personalInfo.phone}`}
+              className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
+            >
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
+                <Phone className="w-3 h-3 shrink-0" style={{ color: 'var(--sec-accent-color, inherit)' }} />
+              </div>
+              <span
+                className={`font-medium text-[11.5px] ${tc.body}`}
+                style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}
+              >
+                {personalInfo.phone}
               </span>
             </a>
-          ))}
-        </div>
+
+            {getNormalizedSocialLinks(personalInfo, true).map((link) => (
+              <a
+                key={link.id}
+                href={formatSafeUrl(link.url)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center gap-2 hover:${colors.primary} transition-colors`}
+                title={link.url}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.iconBg}`}>
+                  <SocialIcon
+                    platform={link.platform}
+                    className="w-3 h-3 shrink-0"
+                    style={{ color: 'var(--sec-accent-color, inherit)' }}
+                  />
+                </div>
+                <span
+                  className={`font-medium text-[11.5px] ${tc.body}`}
+                  style={{ color: 'var(--sec-text-color, inherit)', fontFamily: 'var(--sec-body-font, inherit)' }}
+                >
+                  {cleanDisplayUrl(link.url)}
+                </span>
+              </a>
+            ))}
+          </div>
+        )}
       </header>
 
       {/* ================= 2-COLUMN BALANCED BODY ================= */}
       <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] print:grid-cols-[1.1fr_0.9fr] gap-7 p-8 py-6 min-h-[calc(297mm-165px)]">
-        {/* ================= COLUMN 1: EXPERIENCES & PROJECTS ================= */}
+        {/* ================= COLUMN 1 (MAIN SECTIONS) ================= */}
         <div className="space-y-6">
-          {/* Work Experience */}
-          <section
-            className="space-y-3.5"
-            style={getSectionStyleProperties('experience', theme.sectionStyles)}
-          >
-            <div
-              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
-              style={{ borderColor: 'var(--sec-accent-color)' }}
-            >
-              <Briefcase className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <h2
-                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{
-                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                  color: 'var(--sec-heading-color, inherit)',
-                }}
-              >
-                Kinh Nghiệm Làm Việc
-              </h2>
-            </div>
-
-            <div className="space-y-4" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {experiences.map((exp) => (
-                <div
-                  key={exp.id}
-                  className={`space-y-1.5 p-2 -mx-2 rounded-xl ${tc.hoverRow} transition-colors`}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
-                    <h3
-                      className={`font-bold text-[13px] ${tc.title}`}
-                      style={{
-                        fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                        color: 'var(--sec-heading-color, inherit)',
-                      }}
-                    >
-                      {exp.position}
-                    </h3>
-                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${tc.tagPill} shrink-0`}>
-                      {exp.startDate} – {exp.endDate}
-                    </span>
-                  </div>
-
-                  <div
-                    className={`text-[12px] font-semibold ${tc.body} flex items-center gap-2`}
-                    style={{ color: 'var(--sec-text-color, inherit)' }}
-                  >
-                    <span>{exp.company}</span>
-                    {exp.location && <span className={`${tc.meta} font-normal`}>• {exp.location}</span>}
-                  </div>
-
-                  <ul
-                    className={`space-y-1 text-[11.5px] ${tc.bodyMuted} list-disc list-outside pl-4 leading-relaxed`}
-                    style={{ color: 'var(--sec-text-color, inherit)' }}
-                  >
-                    {exp.descriptions.map((desc, idx) => (
-                      <li key={idx}>{desc}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Featured Projects */}
-          <section
-            className="space-y-3.5"
-            style={getSectionStyleProperties('projects', theme.sectionStyles)}
-          >
-            <div
-              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
-              style={{ borderColor: 'var(--sec-accent-color)' }}
-            >
-              <Code2 className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <h2
-                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{
-                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                  color: 'var(--sec-heading-color, inherit)',
-                }}
-              >
-                Dự Án Nổi Bật
-              </h2>
-            </div>
-
-            <div className="space-y-3" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {projects.map((proj) => (
-                <div
-                  key={proj.id}
-                  className={`p-3 rounded-xl border ${tc.cardBorder} hover:shadow-sm transition-all space-y-1.5 ${colors.hoverBorder}`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <h3
-                        className={`font-bold text-[12.5px] ${tc.title} truncate`}
-                        style={{
-                          fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                          color: 'var(--sec-heading-color, inherit)',
-                        }}
-                      >
-                        {proj.name}
-                      </h3>
-                      {proj.link && (
-                        <a
-                          href={formatSafeUrl(proj.link)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-flex items-center text-slate-400 hover:${colors.primary} transition-colors`}
-                          style={{ color: 'var(--sec-accent-color, inherit)' }}
-                        >
-                          <ExternalLink className="w-3 h-3 shrink-0" />
-                        </a>
-                      )}
-                    </div>
-                    <span className={`text-[10.5px] font-medium ${tc.meta} italic shrink-0`}>
-                      {proj.role}
-                    </span>
-                  </div>
-
-                  <p
-                    className={`text-[11.5px] ${tc.bodyMuted} leading-relaxed`}
-                    style={{ color: 'var(--sec-text-color, inherit)' }}
-                  >
-                    {proj.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-1 pt-0.5">
-                    {proj.techStack.map((tech, idx) => (
-                      <span
-                        key={idx}
-                        className={`text-[10px] px-2 py-0.5 font-medium rounded-full ${colors.tagBg}`}
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+          {layout.mainSections.map((secId) => renderSection(secId))}
+          {renderCustomSections('main')}
         </div>
 
-        {/* ================= COLUMN 2: SKILLS, EDUCATION, AWARDS ================= */}
+        {/* ================= COLUMN 2 (SIDEBAR SECTIONS) ================= */}
         <div className="space-y-6">
-          {/* Skills Breakdown */}
-          <section
-            className="space-y-3.5"
-            style={getSectionStyleProperties('skills', theme.sectionStyles)}
-          >
-            <div
-              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
-              style={{ borderColor: 'var(--sec-accent-color)' }}
-            >
-              <Code2 className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <h2
-                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{
-                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                  color: 'var(--sec-heading-color, inherit)',
-                }}
-              >
-                Kỹ Năng Chuyên Môn
-              </h2>
-            </div>
-
-            <div className="space-y-3" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {skillCategories.map((cat) => (
-                <div key={cat.id} className="space-y-1.5">
-                  <div
-                    className={`font-semibold text-[11px] ${tc.subtitle}`}
-                    style={{
-                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                      color: 'var(--sec-heading-color, inherit)',
-                    }}
-                  >
-                    {cat.categoryName}
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {cat.skills.map((skill, idx) => (
-                      <span
-                        key={idx}
-                        className={`inline-block px-2.5 py-0.5 text-[11px] font-medium rounded-full border transition-all hover:scale-105 cursor-default ${colors.lightBadge}`}
-                      >
-                        {skill.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Education */}
-          <section
-            className="space-y-3.5"
-            style={getSectionStyleProperties('education', theme.sectionStyles)}
-          >
-            <div
-              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
-              style={{ borderColor: 'var(--sec-accent-color)' }}
-            >
-              <GraduationCap className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <h2
-                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{
-                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                  color: 'var(--sec-heading-color, inherit)',
-                }}
-              >
-                Học Vấn & Bằng Cấp
-              </h2>
-            </div>
-
-            <div className="space-y-3" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {educations.map((edu) => (
-                <div key={edu.id} className={`space-y-1 p-2 -mx-2 rounded-lg ${tc.hoverRow} transition-colors`}>
-                  <div
-                    className={`font-bold text-[12.5px] ${tc.title} leading-tight`}
-                    style={{
-                      fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                      color: 'var(--sec-heading-color, inherit)',
-                    }}
-                  >
-                    {edu.school}
-                  </div>
-                  <div
-                    className={`text-[11.5px] font-medium ${tc.body}`}
-                    style={{ color: 'var(--sec-text-color, inherit)' }}
-                  >
-                    {edu.degree}
-                  </div>
-                  <div className={`text-[10.5px] ${tc.meta} flex justify-between`}>
-                    <span>{edu.startDate} – {edu.endDate}</span>
-                    {edu.gpa && (
-                      <span
-                        className={`font-semibold ${tc.gpaColor}`}
-                        style={{ color: 'var(--sec-accent-color, inherit)' }}
-                      >
-                        GPA: {edu.gpa}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Awards & Certifications */}
-          <section
-            className="space-y-3.5"
-            style={getSectionStyleProperties('certificates', theme.sectionStyles)}
-          >
-            <div
-              className={`flex items-center gap-2 pb-1.5 border-b-2 ${tc.borderStrong}`}
-              style={{ borderColor: 'var(--sec-accent-color)' }}
-            >
-              <Award className={`w-4 h-4 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
-              <h2
-                className={`text-xs font-bold uppercase tracking-wider ${tc.title}`}
-                style={{
-                  fontFamily: 'var(--sec-heading-font, ' + headingFontFamily + ')',
-                  color: 'var(--sec-heading-color, inherit)',
-                }}
-              >
-                Thành Tựu & Chứng Chỉ
-              </h2>
-            </div>
-
-            <div className="space-y-2 text-[11px]" style={{ fontFamily: 'var(--sec-body-font, inherit)' }}>
-              {achievements &&
-                achievements.map((ach) => (
-                  <div
-                    key={ach.id}
-                    className={`flex items-start gap-2 p-1.5 rounded-lg ${tc.hoverRow} transition-colors`}
-                    style={getSectionStyleProperties('achievements', theme.sectionStyles)}
-                  >
-                    <Star className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${colors.primary}`} style={{ color: 'var(--sec-accent-color, inherit)' }} />
-                    <div>
-                      <div
-                        className={`font-bold ${tc.title}`}
-                        style={{ color: 'var(--sec-heading-color, inherit)' }}
-                      >
-                        {ach.title}
-                      </div>
-                      <div className={`text-[10px] ${tc.meta}`}>
-                        {ach.issuer} ({ach.year})
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-              {certificates &&
-                certificates.map((cert) => (
-                  <div key={cert.id} className={`flex items-start gap-2 p-1.5 rounded-lg ${tc.hoverRow} transition-colors`}>
-                    <Award className="w-3.5 h-3.5 mt-0.5 shrink-0 text-slate-400" style={{ color: 'var(--sec-accent-color, inherit)' }} />
-                    <div>
-                      <div
-                        className={`font-semibold ${tc.subtitle}`}
-                        style={{ color: 'var(--sec-heading-color, inherit)' }}
-                      >
-                        {cert.name}
-                      </div>
-                      <div
-                        className={`text-[10px] ${tc.meta}`}
-                        style={{ color: 'var(--sec-text-color, inherit)' }}
-                      >
-                        {cert.issuer} ({cert.issueDate})
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </section>
+          {layout.sidebarSections.map((secId) => renderSection(secId))}
+          {renderCustomSections('sidebar')}
         </div>
       </div>
     </div>

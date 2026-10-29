@@ -8,6 +8,8 @@ import {
   createNewCV,
   getPublicCVs,
   getCVById,
+  publishCommunityTemplate,
+  getCommunityTemplates,
 } from '../cvStorageService';
 import { mockCVData } from '../../data/mockCVData';
 
@@ -83,6 +85,7 @@ describe('cvStorageService', () => {
       expect(clone.id.startsWith('cv-')).toBe(true);
       expect(clone.userId).toBe('user-cloner');
       expect(clone.personalInfo.fullName).toBe(mockCVData.personalInfo.fullName);
+      expect(clone.isCommunityTemplate).toBe(false);
 
       const userCVs = getUserCVs('user-cloner');
       expect(userCVs.some((c) => c.id === clone.id)).toBe(true);
@@ -150,6 +153,72 @@ describe('cvStorageService', () => {
     it('should return null when CV does not exist', async () => {
       const notFound = await getCVById('non-existent-id-9999');
       expect(notFound).toBeNull();
+    });
+  });
+
+  describe('getTopViewedCVs and getExploreCVs', () => {
+    it('should include user created public CVs in getTopViewedCVs', async () => {
+      const customCV = {
+        ...mockCVData,
+        id: 'cv-custom-top-1',
+        isPublic: true,
+        viewCount: 99999,
+        updatedAt: new Date().toISOString(),
+      };
+      saveUserCV(customCV, 'u-top');
+
+      const topList = await (await import('../cvStorageService')).getTopViewedCVs(6);
+      expect(topList.some((c) => c.id === 'cv-custom-top-1')).toBe(true);
+      expect(topList[0].id).toBe('cv-custom-top-1'); // highest view count should be first
+    });
+
+    it('should filter by category and sort in getExploreCVs', async () => {
+      const customDesignCV = {
+        ...mockCVData,
+        id: 'cv-custom-design-1',
+        isPublic: true,
+        category: 'design' as const,
+        viewCount: 5000,
+        updatedAt: new Date().toISOString(),
+      };
+      saveUserCV(customDesignCV, 'u-design');
+
+      const exploreResult = await (await import('../cvStorageService')).getExploreCVs({
+        category: 'design',
+        sort: 'views',
+      });
+      expect(exploreResult.cvs.some((c) => c.id === 'cv-custom-design-1')).toBe(true);
+      expect(exploreResult.cvs.every((c) => c.category === 'design')).toBe(true);
+    });
+  });
+
+  describe('publishCommunityTemplate and getCommunityTemplates', () => {
+    it('should publish a CV as a community template and retrieve it in getCommunityTemplates', async () => {
+      const baseCV = {
+        ...mockCVData,
+        id: 'cv-my-template-1',
+        userId: 'user-author-1',
+        isPublic: false,
+      };
+
+      const published = publishCommunityTemplate(
+        baseCV,
+        {
+          templateTitle: 'Mẫu CV Full-stack 2026',
+          templateDescription: 'Bố cục kéo thả ưu tiên Dự Án và Kỹ Năng',
+          authorName: 'Trần Anh Khôi',
+          category: 'tech',
+        },
+        'user-author-1'
+      );
+
+      expect(published.isPublic).toBe(true);
+      expect(published.isCommunityTemplate).toBe(true);
+      expect(published.templateTitle).toBe('Mẫu CV Full-stack 2026');
+      expect(published.authorName).toBe('Trần Anh Khôi');
+
+      const templates = await getCommunityTemplates();
+      expect(templates.some((t) => t.id === 'cv-my-template-1')).toBe(true);
     });
   });
 });

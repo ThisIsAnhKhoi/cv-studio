@@ -80,11 +80,11 @@ export const ShareDropdown: React.FC<ShareDropdownProps> = ({
     const nextState = !isPublicState;
     setIsPublicState(nextState);
 
+    // Always persist to localStorage & sync to Firestore
+    saveUserCV({ ...cv, isPublic: nextState });
+
     if (onUpdateVisibility) {
       onUpdateVisibility(nextState);
-    } else {
-      // Direct storage update if not in editor store
-      saveUserCV({ ...cv, isPublic: nextState });
     }
 
     setNoticeToast(

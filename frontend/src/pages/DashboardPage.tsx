@@ -10,6 +10,7 @@ import {
   saveUserCV,
 } from '../services/cvStorageService';
 import { TEMPLATES_REGISTRY } from '../features/cv-templates/TemplateRegistry';
+import { PublishTemplateModal } from '../features/cv-editor/components/PublishTemplateModal';
 import {
   LayoutDashboard,
   PlusCircle,
@@ -33,6 +34,7 @@ export const DashboardPage: React.FC = () => {
   const { user, isInitialized, openAuthModal } = useAuthStore();
   const [userCVs, setUserCVs] = useState<CVData[]>([]);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [publishTargetCV, setPublishTargetCV] = useState<CVData | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -66,7 +68,7 @@ export const DashboardPage: React.FC = () => {
       openAuthModal('login');
       return;
     }
-    const cloned = cloneCV(cv, user.uid);
+    cloneCV(cv, user.uid);
     setUserCVs(getUserCVs(user.uid));
     showNotification(`Đã tạo bản sao "${cv.personalInfo.fullName}" thành công!`);
   };
@@ -308,28 +310,35 @@ export const DashboardPage: React.FC = () => {
                           {template.name}
                         </span>
 
-                        <button
-                          type="button"
-                          onClick={() => handleTogglePublic(cv)}
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold border inline-flex items-center gap-1 transition-colors cursor-pointer ${
-                            cv.isPublic
-                              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100'
-                              : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
-                          }`}
-                          title="Nhấp để chuyển đổi giữa Công khai và Riêng tư"
-                        >
-                          {cv.isPublic ? (
-                            <>
-                              <Globe className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400" />
-                              <span>Công khai</span>
-                            </>
-                          ) : (
-                            <>
-                              <Lock className="w-2.5 h-2.5 text-slate-400" />
-                              <span>Riêng tư</span>
-                            </>
+                        <div className="flex items-center gap-1.5">
+                          {cv.isCommunityTemplate && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                              ★ Mẫu Cộng Đồng
+                            </span>
                           )}
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() => handleTogglePublic(cv)}
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold border inline-flex items-center gap-1 transition-colors cursor-pointer ${
+                              cv.isPublic
+                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100'
+                                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
+                            }`}
+                            title="Nhấp để chuyển đổi giữa Công khai và Riêng tư"
+                          >
+                            {cv.isPublic ? (
+                              <>
+                                <Globe className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400" />
+                                <span>Công khai</span>
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="w-2.5 h-2.5 text-slate-400" />
+                                <span>Riêng tư</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
 
                       <h3 className="font-bold text-base text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors line-clamp-1">
@@ -353,7 +362,7 @@ export const DashboardPage: React.FC = () => {
 
                     {/* Bottom Actions */}
                     <div className="px-4 py-3 bg-slate-50/70 dark:bg-slate-950/50 flex items-center justify-between gap-1.5 border-t border-slate-100 dark:border-slate-800">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1">
                         <Link
                           to={`/cv/${cv.id}`}
                           className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-white dark:hover:bg-slate-800 transition-colors"
@@ -368,6 +377,14 @@ export const DashboardPage: React.FC = () => {
                           title="Sao chép liên kết CV này"
                         >
                           <Link2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPublishTargetCV(cv)}
+                          className="p-2 rounded-lg text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors cursor-pointer"
+                          title="Lưu & chia sẻ CV này làm Mẫu Cộng Đồng"
+                        >
+                          <Sparkles className="w-4 h-4" />
                         </button>
                         <button
                           type="button"
@@ -409,7 +426,7 @@ export const DashboardPage: React.FC = () => {
               Khởi Tạo Nhanh Từ 3 Mẫu Chuẩn Doanh Nghiệp
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Chọn ngay một phong cách thiết kế để tạo mới hồ sơ của bạn với đầy đủ 9 khối thông tin chuyên nghiệp.
+              Chọn ngay một phong cách thiết kế để tạo mới hồ sơ của bạn với đầy đủ các khối thông tin chuyên nghiệp.
             </p>
           </div>
 
@@ -446,6 +463,22 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Publish Community Template Modal */}
+      {publishTargetCV && (
+        <PublishTemplateModal
+          isOpen={Boolean(publishTargetCV)}
+          onClose={() => setPublishTargetCV(null)}
+          cvData={publishTargetCV}
+          userId={user?.uid}
+          onPublished={() => {
+            if (user?.uid) {
+              setUserCVs(getUserCVs(user.uid));
+            }
+            showNotification('Đã lưu và chia sẻ Mẫu CV lên Thư viện Cộng Đồng!');
+          }}
+        />
+      )}
     </div>
   );
 };
