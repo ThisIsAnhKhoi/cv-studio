@@ -47,7 +47,7 @@ describe('text utility', () => {
   describe('removeVietnameseTones', () => {
     it('should normalize and remove tones accurately', () => {
       expect(removeVietnameseTones('Trần Anh Khôi')).toBe('tran anh khoi');
-      expect(removeVietnameseTones('Nguyễn Lê Thanh Trúc')).toBe('nguyen le thanh truc');
+      expect(removeVietnameseTones('Nguyễn Minh Châu')).toBe('nguyen minh chau');
       expect(removeVietnameseTones('Kỹ Sư Phần Mềm & AI')).toBe('ky su phan mem & ai');
     });
 

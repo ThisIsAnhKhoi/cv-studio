@@ -5,22 +5,22 @@ export const mockProfilesList: CVData[] = [
   // Profile 1: Trần Anh Khôi (Full-stack & Lecturer) - Template 1 Classic Teal (Đã duyệt)
   mockCVData,
 
-  // Profile 2: Nguyễn Lê Thanh Trúc (Senior Product Designer) - Template 2 Warm Bold
+  // Profile 2: Nguyễn Minh Châu (Senior Product Designer) - Template 2 Warm Bold
   {
-    id: 'cv-thanhtruc-design',
+    id: 'cv-minhchau-design',
     userId: 'user-002',
-    slug: 'nguyen-le-thanh-truc',
+    slug: 'nguyen-minh-chau',
     isPublic: true,
     personalInfo: {
       avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
-      fullName: 'Nguyễn Lê Thanh Trúc',
+      fullName: 'Nguyễn Minh Châu',
       title: 'Lead Product Designer & UX Strategist',
-      email: 'thanhtruc.design@gmail.com',
+      email: 'minhchau.design@gmail.com',
       phone: '0908 776 554',
       location: 'Quận Bình Thạnh, TP. Hồ Chí Minh',
       birthday: '24/11/1998',
-      website: 'https://thanhtruc.ux',
-      linkedin: 'linkedin.com/in/thanhtruc-designer',
+      website: 'https://minhchau.design',
+      linkedin: 'linkedin.com/in/minhchau-designer',
     },
     summary:
       'Chuyên gia Thiết kế Sản phẩm với hơn 5 năm kinh nghiệm dẫn dắt thiết kế trải nghiệm người dùng (UX/UI) cho các ứng dụng FinTech và E-commerce phục vụ hơn 1.2 triệu người dùng hoạt động. Thành thạo xây dựng Design System quy mô lớn, nghiên cứu hành vi người dùng định lượng và tối ưu hóa tỷ lệ chuyển đổi (CRO).',
@@ -158,7 +158,7 @@ export const mockProfilesList: CVData[] = [
     templateTitle: 'Portfolio UX/UI Lead — Ưu Tiên Dự Án Lên Đầu',
     templateDescription:
       'Bố cục tùy chỉnh đẩy mục Dự Án Tiêu Biểu lên ngay dưới phần Giới thiệu để gây ấn tượng thị giác lập tức với Hiring Manager ngành Product Design.',
-    authorName: 'Nguyễn Lê Thanh Trúc',
+    authorName: 'Nguyễn Minh Châu',
     cloneCount: 342,
   },
 

@@ -42,11 +42,11 @@ export const HeroSection: React.FC = () => {
             </a>
 
             <Link
-              to="/cv/cv-thanhtruc-01"
+              to="/cv/cv-tran-anh-khoi"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 active:scale-95 text-slate-800 dark:text-slate-100 font-bold text-sm border border-slate-200 dark:border-slate-700 shadow-sm transition-all cursor-pointer"
             >
               <Eye className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-              <span>Xem CV Mẫu (Đã duyệt)</span>
+              <span>Xem CV Mẫu (Trần Anh Khôi)</span>
             </Link>
           </div>
 

@@ -54,7 +54,7 @@ export const TemplatesShowcaseSection: React.FC = () => {
       description:
         'Bố cục 2 cột với sidebar màu ngọc lục bảo thanh lịch. Tối ưu cho giáo dục, kỹ thuật, quản lý và các ứng viên cần tính chuẩn mực cao.',
       highlights: ['Sidebar trang nhã', 'Điểm nhấn xanh Teal', 'Hỗ trợ kéo thả thứ tự mọi mục'],
-      sampleCvId: 'cv-thanhtruc-01',
+      sampleCvId: 'cv-tran-anh-khoi',
       accentBg: 'from-teal-600 to-emerald-700',
     },
     {
@@ -66,7 +66,7 @@ export const TemplatesShowcaseSection: React.FC = () => {
       description:
         'Banner header màu Ink nổi bật phối cùng vạch cam Tangerine ấm áp và cột cát Sand. Phù hợp cho IT, Product Designer và Marketing.',
       highlights: ['Banner header tương phản', 'Gam màu cam ấm áp', 'Timeline kinh nghiệm rõ ràng'],
-      sampleCvId: 'cv-thanhtruc-design',
+      sampleCvId: 'cv-minhchau-design',
       accentBg: 'from-amber-600 to-orange-700',
     },
     {

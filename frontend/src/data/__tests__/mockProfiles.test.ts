@@ -15,9 +15,9 @@ describe('mockProfiles utilities', () => {
   });
 
   it('test_search_filter_logic_homepage: should filter profiles by search keyword', () => {
-    const results = searchProfiles('Thanh Trúc');
+    const results = searchProfiles('Minh Châu');
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].personalInfo.fullName).toContain('Thanh Trúc');
+    expect(results[0].personalInfo.fullName).toContain('Minh Châu');
   });
 
   it('should return empty array for search keywords that match nothing', () => {

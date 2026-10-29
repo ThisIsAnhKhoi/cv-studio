@@ -38,7 +38,7 @@ export function truncateText(text: string, maxLength: number): string {
 
 /**
  * Chuyển đổi chuỗi tiếng Việt có dấu thành không dấu chữ thường, phục vụ tìm kiếm thông minh.
- * Ví dụ: "Nguyễn Lê Thanh Trúc" -> "nguyen le thanh truc"
+ * Ví dụ: "Trần Anh Khôi" -> "tran anh khoi"
  */
 export function removeVietnameseTones(str?: string | null): string {
   if (!str || typeof str !== 'string') return '';

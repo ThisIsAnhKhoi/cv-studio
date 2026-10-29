@@ -130,7 +130,7 @@ export async function processAvatarFile(
 export function cropAndExportAvatar(
   img: HTMLImageElement,
   transform: CropTransform,
-  cropFrameSize = 260,
+  cropFrameSize = 280,
   targetSize = 400,
   quality = 0.88,
   format: 'image/jpeg' | 'image/webp' = 'image/jpeg'
@@ -144,32 +144,37 @@ export function cropAndExportAvatar(
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  // Điền nền trắng dự phòng
+  // Điền nền trắng dự phòng (nếu ảnh zoom out không phủ kín)
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, targetSize, targetSize);
 
   const ratio = targetSize / cropFrameSize;
 
-  // Dịch tâm tới giữa canvas
+  // 1. Dịch tâm tới giữa canvas
   ctx.translate(targetSize / 2, targetSize / 2);
 
+  // 2. Dịch chuyển offset theo hệ tọa độ màn hình (nhân tỷ lệ canvas/UI)
+  ctx.translate(transform.offsetX * ratio, transform.offsetY * ratio);
+
+  // 3. Xoay quanh tâm đã dịch chuyển
   if (transform.rotation) {
     ctx.rotate((transform.rotation * Math.PI) / 180);
   }
 
-  const naturalW = img.naturalWidth || img.width;
-  const naturalH = img.naturalHeight || img.height;
-  const minSide = Math.min(naturalW, naturalH);
+  // 4. Thu phóng
+  ctx.scale(transform.zoom, transform.zoom);
+
+  const naturalW = img.naturalWidth || img.width || 400;
+  const naturalH = img.naturalHeight || img.height || 400;
+  const minSide = Math.min(naturalW, naturalH) || 1;
   const baseScale = cropFrameSize / minSide;
-  const currentScale = baseScale * transform.zoom * ratio;
 
-  const drawW = naturalW * currentScale;
-  const drawH = naturalH * currentScale;
+  // Kích thước vẽ cơ sở (trước zoom) tương ứng với kích thước hiển thị trên UI * ratio
+  const drawW = naturalW * baseScale * ratio;
+  const drawH = naturalH * baseScale * ratio;
 
-  const drawX = -drawW / 2 + transform.offsetX * ratio;
-  const drawY = -drawH / 2 + transform.offsetY * ratio;
-
-  ctx.drawImage(img, drawX, drawY, drawW, drawH);
+  // 5. Vẽ ảnh căn giữa tâm
+  ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
 
   return canvas.toDataURL(format, quality);
 }

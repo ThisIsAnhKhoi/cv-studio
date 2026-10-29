@@ -1,9 +1,9 @@
 import { CVData } from '../types/cv';
 
 export const mockCVData: CVData = {
-  id: 'cv-thanhtruc-01',
+  id: 'cv-tran-anh-khoi',
   userId: 'user-001',
-  slug: 'thanh-truc',
+  slug: 'tran-anh-khoi',
   isPublic: true,
   personalInfo: {
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
@@ -13,9 +13,9 @@ export const mockCVData: CVData = {
     phone: '0912 345 678',
     location: 'Quận 1, TP. Hồ Chí Minh',
     birthday: '15/08/2002',
-    website: 'https://thanhtruc.dev',
-    github: 'github.com/thanhtruc',
-    linkedin: 'linkedin.com/in/thanhtruc',
+    website: 'https://trankhoi.dev',
+    github: 'github.com/trankhoi',
+    linkedin: 'linkedin.com/in/trankhoi',
   },
   summary:
     'Cử nhân Công nghệ Thông tin đam mê sâu sắc với sư phạm công nghệ và phát triển web hiện đại. Hơn 3 năm kinh nghiệm đào tạo 300+ học viên về lập trình web full-stack, kết hợp xây dựng các sản phẩm thực tế với tư duy giải thuật vững chắc và trải nghiệm người dùng tối ưu.',
@@ -99,7 +99,7 @@ export const mockCVData: CVData = {
       description:
         'Hệ thống tạo CV chuyên nghiệp với nhiều mẫu hiện đại, tùy biến màu sắc, hỗ trợ Dark/Light mode và xuất file in PDF chuẩn A4.',
       techStack: ['React 18', 'Vite', 'TypeScript', 'Tailwind CSS'],
-      link: 'https://github.com/thanhtruc/cv-studio',
+      link: 'https://github.com/trankhoi/cv-studio',
     },
   ],
   achievements: [
@@ -147,4 +147,4 @@ export const mockCVData: CVData = {
   ownerDisabled: false,
   category: 'tech',
 };
-
+export default mockCVData;

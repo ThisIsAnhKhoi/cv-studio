@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useCVEditor } from '../features/cv-editor/hooks/useCVEditor';
-import { getCVByIdOrSlug } from '../data/mockProfiles';
+import { getCVByIdOrSlug, mockProfilesList } from '../data/mockProfiles';
 import { getTemplateComponent } from '../features/cv-templates/TemplateRegistry';
 import { exportCVToPDF } from '../services/exportPdfService';
 import {
@@ -252,7 +252,12 @@ export const CVEditorPage: React.FC<CVEditorPageProps> = ({ darkMode, onToggleDa
 
   // Tự động đồng bộ draft cá nhân và Firestore khi lưu tự động
   useEffect(() => {
-    if (saveStatus === 'saved' && cvData && cvData.id && cvData.id !== 'cv-thanhtruc-01') {
+    if (
+      saveStatus === 'saved' &&
+      cvData &&
+      cvData.id &&
+      !mockProfilesList.some((p) => p.id === cvData.id)
+    ) {
       saveUserCV(cvData, user?.uid);
     }
   }, [saveStatus]);

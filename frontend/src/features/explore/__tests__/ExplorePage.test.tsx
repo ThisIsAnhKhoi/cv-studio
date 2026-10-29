@@ -51,7 +51,7 @@ describe('ExplorePage Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Trần Anh Khôi')).toBeDefined();
-      expect(screen.getByText('Nguyễn Lê Thanh Trúc')).toBeDefined();
+      expect(screen.getByText('Nguyễn Minh Châu')).toBeDefined();
     });
   });
 
@@ -71,7 +71,7 @@ describe('ExplorePage Component', () => {
     fireEvent.change(input, { target: { value: 'khoi' } });
 
     expect(screen.getByText('Trần Anh Khôi')).toBeDefined();
-    expect(screen.queryByText('Nguyễn Lê Thanh Trúc')).toBeNull();
+    expect(screen.queryByText('Nguyễn Minh Châu')).toBeNull();
   });
 
   it('shows empty state when no profiles match', async () => {

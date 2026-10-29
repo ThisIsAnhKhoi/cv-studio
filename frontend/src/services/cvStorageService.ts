@@ -194,6 +194,152 @@ export interface PublishCommunityTemplateMeta {
   category?: CVCategory;
 }
 
+export interface CVQualityRule {
+  id: string;
+  label: string;
+  passed: boolean;
+  message: string;
+  sectionKey: string;
+}
+
+export interface CVValidationReport {
+  isValid: boolean;
+  completionRate: number; // 0 - 100%
+  passedCount: number;
+  totalCount: number;
+  rules: CVQualityRule[];
+}
+
+/**
+ * Kiểm tra các tiêu chuẩn chất lượng bắt buộc trước khi cho phép đăng tải mẫu CV lên cộng đồng.
+ * Đảm bảo mọi mẫu chia sẻ đều chỉn chu, có ích, không có dữ liệu rác hay trống trơn.
+ */
+export function validateCVForPublishing(
+  cv: CVData,
+  meta?: { templateTitle?: string; templateDescription?: string }
+): CVValidationReport {
+  const p = cv?.personalInfo || ({} as any);
+
+  const nameTrimmed = (p.fullName || '').trim();
+  const nameParts = nameTrimmed.split(/\s+/).filter(Boolean);
+  const isNameValid = nameTrimmed.length >= 4 && nameParts.length >= 2;
+
+  const isTitleValid = (p.title || '').trim().length >= 3;
+
+  const emailTrimmed = (p.email || '').trim();
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed);
+
+  const phoneTrimmed = (p.phone || '').replace(/[\s.-]/g, '');
+  const isPhoneValid = phoneTrimmed.length >= 9;
+
+  const isSummaryValid = (cv?.summary || '').trim().length >= 30;
+
+  const hasExperiences =
+    Array.isArray(cv?.experiences) &&
+    cv.experiences.some((e) => (e.company || '').trim() && (e.position || '').trim());
+  const hasEducations =
+    Array.isArray(cv?.educations) &&
+    cv.educations.some(
+      (e) => (e.school || '').trim() && ((e.degree || '').trim() || (e.major || '').trim())
+    );
+  const isExperienceOrEducationValid = hasExperiences || hasEducations;
+
+  const isSkillsValid =
+    Array.isArray(cv?.skillCategories) &&
+    cv.skillCategories.some(
+      (c) => Array.isArray(c.skills) && c.skills.length >= 1 && c.skills.some((s) => s.name?.trim())
+    );
+
+  const titleToCheck = (meta?.templateTitle ?? cv?.templateTitle ?? '').trim();
+  const isTemplateTitleValid = titleToCheck.length >= 5;
+
+  const descToCheck = (meta?.templateDescription ?? cv?.templateDescription ?? '').trim();
+  const isTemplateDescValid = descToCheck.length >= 15;
+
+  const rules: CVQualityRule[] = [
+    {
+      id: 'fullName',
+      label: 'Họ và tên đầy đủ',
+      passed: isNameValid,
+      message: isNameValid ? 'Họ tên hợp lệ' : 'Cần nhập đầy đủ Họ và Tên (tối thiểu 2 từ)',
+      sectionKey: 'personal',
+    },
+    {
+      id: 'title',
+      label: 'Chức danh chuyên môn',
+      passed: isTitleValid,
+      message: isTitleValid ? 'Chức danh rõ ràng' : 'Cần nhập chức danh hoặc vị trí (tối thiểu 3 ký tự)',
+      sectionKey: 'personal',
+    },
+    {
+      id: 'email',
+      label: 'Email liên hệ',
+      passed: isEmailValid,
+      message: isEmailValid ? 'Email hợp lệ' : 'Cần nhập địa chỉ email liên hệ đúng định dạng',
+      sectionKey: 'personal',
+    },
+    {
+      id: 'phone',
+      label: 'Số điện thoại',
+      passed: isPhoneValid,
+      message: isPhoneValid ? 'Số điện thoại hợp lệ' : 'Cần nhập số điện thoại liên hệ (tối thiểu 9 số)',
+      sectionKey: 'personal',
+    },
+    {
+      id: 'summary',
+      label: 'Giới thiệu bản thân',
+      passed: isSummaryValid,
+      message: isSummaryValid ? 'Đã có tóm tắt năng lực' : 'Mục giới thiệu cần tối thiểu 30 ký tự để nêu bật năng lực',
+      sectionKey: 'summary',
+    },
+    {
+      id: 'experienceOrEducation',
+      label: 'Kinh nghiệm hoặc Học vấn',
+      passed: isExperienceOrEducationValid,
+      message: isExperienceOrEducationValid
+        ? 'Đã có kinh nghiệm / học vấn'
+        : 'Cần có ít nhất 1 mục Kinh Nghiệm Làm Việc hoặc 1 mục Học Vấn',
+      sectionKey: hasExperiences ? 'experience' : 'education',
+    },
+    {
+      id: 'skills',
+      label: 'Kỹ năng chuyên môn',
+      passed: isSkillsValid,
+      message: isSkillsValid ? 'Đã có kỹ năng cụ thể' : 'Cần có ít nhất 1 nhóm kỹ năng với tối thiểu 1 kỹ năng',
+      sectionKey: 'skills',
+    },
+    {
+      id: 'templateTitle',
+      label: 'Tên mẫu CV cộng đồng',
+      passed: isTemplateTitleValid,
+      message: isTemplateTitleValid ? 'Tên mẫu đạt chuẩn' : 'Cần đặt tên mẫu CV (tối thiểu 5 ký tự)',
+      sectionKey: 'template',
+    },
+    {
+      id: 'templateDescription',
+      label: 'Mô tả điểm nổi bật của mẫu',
+      passed: isTemplateDescValid,
+      message: isTemplateDescValid
+        ? 'Mô tả mẫu đạt chuẩn'
+        : 'Cần mô tả ngắn gọn vì sao bố cục này hiệu quả (tối thiểu 15 ký tự)',
+      sectionKey: 'template',
+    },
+  ];
+
+  const passedCount = rules.filter((r) => r.passed).length;
+  const totalCount = rules.length;
+  const completionRate = Math.round((passedCount / totalCount) * 100);
+  const isValid = passedCount === totalCount;
+
+  return {
+    isValid,
+    completionRate,
+    passedCount,
+    totalCount,
+    rules,
+  };
+}
+
 /**
  * Publishes/saves a CV as a shared Community Template so everyone can preview and clone it.
  */
@@ -202,6 +348,12 @@ export function publishCommunityTemplate(
   meta: PublishCommunityTemplateMeta,
   userId?: string
 ): CVData {
+  const report = validateCVForPublishing(cv, meta);
+  if (!report.isValid) {
+    const missing = report.rules.filter((r) => !r.passed).map((r) => r.label).join(', ');
+    throw new Error(`Mẫu CV chưa đáp ứng đủ tiêu chuẩn cộng đồng. Vui lòng hoàn thiện: ${missing}`);
+  }
+
   const now = new Date().toISOString();
   const publishedCV: CVData = {
     ...JSON.parse(JSON.stringify(cv)),
@@ -239,18 +391,18 @@ export async function getCommunityTemplates(): Promise<CVData[]> {
 }
 
 /**
- * Creates a brand new CV from a chosen template.
+ * Tạo một CV hoàn toàn mới ở trạng thái TRẮNG SẠCH ("bản chưa data").
+ * Không điền sẵn dữ liệu cá nhân hay kinh nghiệm của người khác.
+ * Kế thừa bảng màu, phông chữ và bố cục 2 cột linh hoạt của template được chọn.
  */
-export function createNewCV(templateId = 'template-classic-teal', userId?: string): CVData {
-  // Find a base template profile to copy structure from
+export function createBlankCV(templateId = 'template-classic-teal', userId?: string): CVData {
   const baseProfile =
     mockProfilesList.find((p) => p.themeConfig.templateId === templateId) || mockCVData;
 
   const newId = generateId('cv');
   const now = new Date().toISOString();
 
-  const freshCV: CVData = {
-    ...JSON.parse(JSON.stringify(baseProfile)),
+  const blankCV: CVData = {
     id: newId,
     userId: userId || 'anonymous',
     slug: `cv-${Math.random().toString(36).substring(2, 8)}`,
@@ -262,16 +414,46 @@ export function createNewCV(templateId = 'template-classic-teal', userId?: strin
     cloneCount: 0,
     category: baseProfile.category || 'tech',
     personalInfo: {
-      ...baseProfile.personalInfo,
-      fullName: 'Họ Và Tên Của Bạn',
-      title: 'Chức Danh Chuyên Môn Của Bạn',
+      avatarUrl: '',
+      fullName: '',
+      title: '',
+      email: '',
+      phone: '',
+      location: '',
+      birthday: '',
+      website: '',
+      github: '',
+      linkedin: '',
+      socialLinks: [],
     },
+    summary: '',
+    experiences: [],
+    educations: [],
+    skillCategories: [
+      {
+        id: generateId('skill-cat'),
+        categoryName: 'Kỹ Năng Chuyên Môn',
+        skills: [],
+      },
+    ],
+    projects: [],
+    achievements: [],
+    certificates: [],
+    customSections: [],
+    themeConfig: JSON.parse(JSON.stringify(baseProfile.themeConfig)),
     createdAt: now,
     updatedAt: now,
   };
 
-  saveUserCV(freshCV, userId);
-  return freshCV;
+  saveUserCV(blankCV, userId);
+  return blankCV;
+}
+
+/**
+ * Creates a brand new CV from a chosen template (Blank draft by default).
+ */
+export function createNewCV(templateId = 'template-classic-teal', userId?: string): CVData {
+  return createBlankCV(templateId, userId);
 }
 
 /**

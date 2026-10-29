@@ -56,13 +56,13 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
-                <Link to="/cv/cv-thanhtruc-01" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-                  Mẫu 1: Classic Teal (Đã duyệt)
+                <Link to="/cv/cv-tran-anh-khoi" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
+                  Mẫu 1: Classic Teal (Trần Anh Khôi)
                 </Link>
               </li>
               <li>
-                <Link to="/cv/cv-thanhtruc-design" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-                  Mẫu 2: Warm Bold
+                <Link to="/cv/cv-minhchau-design" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
+                  Mẫu 2: Warm Bold (Nguyễn Minh Châu)
                 </Link>
               </li>
               <li>

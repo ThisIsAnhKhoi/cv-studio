@@ -36,7 +36,7 @@ export function formatSafeUrl(url?: string | null): string {
     return trimmed;
   }
 
-  // Tự động bổ sung https:// cho các domain thông thường (github.com/abc, thanhtruc.dev)
+  // Tự động bổ sung https:// cho các domain thông thường (github.com/abc, trankhoi.dev)
   return `https://${trimmed}`;
 }
 

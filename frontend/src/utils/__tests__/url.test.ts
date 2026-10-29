@@ -20,9 +20,9 @@ describe('formatSafeUrl utility', () => {
   });
 
   it('should auto-prepend https:// when protocol is missing', () => {
-    expect(formatSafeUrl('thanhtruc.dev')).toBe('https://thanhtruc.dev');
-    expect(formatSafeUrl('github.com/thanhtruc')).toBe('https://github.com/thanhtruc');
-    expect(formatSafeUrl('linkedin.com/in/thanhtruc')).toBe('https://linkedin.com/in/thanhtruc');
+    expect(formatSafeUrl('trankhoi.dev')).toBe('https://trankhoi.dev');
+    expect(formatSafeUrl('github.com/trankhoi')).toBe('https://github.com/trankhoi');
+    expect(formatSafeUrl('linkedin.com/in/trankhoi')).toBe('https://linkedin.com/in/trankhoi');
   });
 
   it('should preserve already valid http and https URLs', () => {
@@ -33,7 +33,7 @@ describe('formatSafeUrl utility', () => {
 
 describe('cleanDisplayUrl utility', () => {
   it('should clean display URLs by stripping protocol and www', () => {
-    expect(cleanDisplayUrl('https://www.github.com/thanhtruc/')).toBe('github.com/thanhtruc');
+    expect(cleanDisplayUrl('https://www.github.com/trankhoi/')).toBe('github.com/trankhoi');
     expect(cleanDisplayUrl('http://myportfolio.com/')).toBe('myportfolio.com');
     expect(cleanDisplayUrl('')).toBe('');
   });

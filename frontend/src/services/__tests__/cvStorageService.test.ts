@@ -93,12 +93,14 @@ describe('cvStorageService', () => {
   });
 
   describe('createNewCV', () => {
-    it('should create a fresh CV with specified template and userId', () => {
+    it('should create a fresh blank CV with specified template and userId', () => {
       const newCV = createNewCV('template-warm-bold', 'user-creator');
 
       expect(newCV.id.startsWith('cv-')).toBe(true);
       expect(newCV.userId).toBe('user-creator');
-      expect(newCV.personalInfo.fullName).toBe('Họ Và Tên Của Bạn');
+      expect(newCV.personalInfo.fullName).toBe('');
+      expect(newCV.experiences.length).toBe(0);
+      expect(newCV.educations.length).toBe(0);
 
       const userCVs = getUserCVs('user-creator');
       expect(userCVs.length).toBe(1);
@@ -128,13 +130,13 @@ describe('cvStorageService', () => {
 
   describe('getCVById', () => {
     it('should resolve mock profiles by ID or Slug', async () => {
-      const cv = await getCVById('thanh-truc');
+      const cv = await getCVById('tran-anh-khoi');
       expect(cv).not.toBeNull();
       expect(cv?.personalInfo.fullName).toBe('Trần Anh Khôi');
 
-      const cv2 = await getCVById('nguyen-le-thanh-truc');
+      const cv2 = await getCVById('nguyen-minh-chau');
       expect(cv2).not.toBeNull();
-      expect(cv2?.personalInfo.fullName).toBe('Nguyễn Lê Thanh Trúc');
+      expect(cv2?.personalInfo.fullName).toBe('Nguyễn Minh Châu');
     });
 
     it('should resolve locally saved user draft by ID', async () => {
@@ -219,6 +221,25 @@ describe('cvStorageService', () => {
 
       const templates = await getCommunityTemplates();
       expect(templates.some((t) => t.id === 'cv-my-template-1')).toBe(true);
+    });
+
+    it('should reject publishing when CV is missing required information', () => {
+      const incompleteCV = {
+        ...mockCVData,
+        id: 'cv-empty-1',
+        personalInfo: {
+          ...mockCVData.personalInfo,
+          fullName: '', // empty name
+        },
+      };
+
+      expect(() =>
+        publishCommunityTemplate(incompleteCV, {
+          templateTitle: 'Mẫu Thiếu Thông Tin',
+          templateDescription: 'Mô tả ngắn gọn về mẫu này',
+          authorName: 'Test',
+        })
+      ).toThrowError(/tiêu chuẩn cộng đồng/i);
     });
   });
 });
