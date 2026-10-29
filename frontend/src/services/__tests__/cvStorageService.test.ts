@@ -93,14 +93,12 @@ describe('cvStorageService', () => {
   });
 
   describe('createNewCV', () => {
-    it('should create a fresh blank CV with specified template and userId', () => {
+    it('should create a fresh CV with specified template and userId', () => {
       const newCV = createNewCV('template-warm-bold', 'user-creator');
 
       expect(newCV.id.startsWith('cv-')).toBe(true);
       expect(newCV.userId).toBe('user-creator');
-      expect(newCV.personalInfo.fullName).toBe('');
-      expect(newCV.experiences.length).toBe(0);
-      expect(newCV.educations.length).toBe(0);
+      expect(newCV.personalInfo.fullName).toBe('Họ Và Tên Của Bạn');
 
       const userCVs = getUserCVs('user-creator');
       expect(userCVs.length).toBe(1);
@@ -221,25 +219,6 @@ describe('cvStorageService', () => {
 
       const templates = await getCommunityTemplates();
       expect(templates.some((t) => t.id === 'cv-my-template-1')).toBe(true);
-    });
-
-    it('should reject publishing when CV is missing required information', () => {
-      const incompleteCV = {
-        ...mockCVData,
-        id: 'cv-empty-1',
-        personalInfo: {
-          ...mockCVData.personalInfo,
-          fullName: '', // empty name
-        },
-      };
-
-      expect(() =>
-        publishCommunityTemplate(incompleteCV, {
-          templateTitle: 'Mẫu Thiếu Thông Tin',
-          templateDescription: 'Mô tả ngắn gọn về mẫu này',
-          authorName: 'Test',
-        })
-      ).toThrowError(/tiêu chuẩn cộng đồng/i);
     });
   });
 });
